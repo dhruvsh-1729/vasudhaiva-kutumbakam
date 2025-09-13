@@ -1,3 +1,4 @@
+// components/Register.tsx
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -11,10 +12,29 @@ interface FormData {
   institution: string;
 }
 
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  error?: string;
+}
+
 type FormField = keyof FormData;
 
 interface BulletPoint {
   text: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  phone?: string;
+  institution?: string;
+  general?: string;
 }
 
 const Register: React.FC = () => {
@@ -26,18 +46,97 @@ const Register: React.FC = () => {
     institution: "",
   });
 
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setForm({ ...form, [name as FormField]: value });
+    
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const validateForm = (): FormErrors => {
+    const newErrors: FormErrors = {};
+    
+    if (!form.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+    
+    if (!form.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    
+    if (!form.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    }
+    
+    if (!form.institution.trim()) {
+      newErrors.institution = 'Institution is required';
+    }
+    
+    return newErrors;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    // TODO: Hook this up with backend / Google Sheets / Firebase
-    console.log("Form submitted:", form);
-    alert("Registration successful! ✅");
-    // Redirect to main dashboard after successful registration
-    router.push("/main");
+    
+    // Validate form
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const response = await fetch('/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      if (data.success) {
+        alert("Registration successful! Welcome to the VK Competition community.");
+        
+        // Store user info in localStorage for future use
+        if (data.user) {
+          localStorage.setItem('vk_user', JSON.stringify(data.user));
+        }
+        
+        // Redirect to main dashboard
+        router.push("/main");
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes('email')) {
+          setErrors({ email: 'This email is already registered. Please use a different email.' });
+        } else {
+          setErrors({ general: error.message });
+        }
+      } else {
+        setErrors({ general: 'An unexpected error occurred. Please try again.' });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Feature bullet points data
@@ -194,6 +293,13 @@ const Register: React.FC = () => {
             <p className="text-gray-600">Begin your sacred expression journey</p>
           </div>
 
+          {/* General Error Message */}
+          {errors.general && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm">{errors.general}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Dynamic Form Fields */}
             {formFields.map((field) => (
@@ -208,8 +314,15 @@ const Register: React.FC = () => {
                   value={form[field.name]}
                   onChange={handleChange}
                   required
-                  className="w-full border-2 border-red-200 rounded-xl p-4 focus:outline-none focus:border-red-500 transition-colors text-gray-700 placeholder-gray-400"
+                  className={`w-full border-2 rounded-xl p-4 focus:outline-none transition-colors text-gray-700 placeholder-gray-400 ${
+                    errors[field.name] 
+                      ? 'border-red-500 bg-red-50' 
+                      : 'border-red-200 focus:border-red-500'
+                  }`}
                 />
+                {errors[field.name] && (
+                  <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+                )}
               </div>
             ))}
 
@@ -217,9 +330,24 @@ const Register: React.FC = () => {
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                disabled={isLoading}
+                className={`w-full font-bold py-4 rounded-xl transition-all duration-300 shadow-lg transform ${
+                  isLoading
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white hover:shadow-xl hover:-translate-y-0.5'
+                }`}
               >
-                Begin Sacred Expression Journey
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating your account...
+                  </div>
+                ) : (
+                  'Begin Sacred Expression Journey'
+                )}
               </button>
             </div>
 

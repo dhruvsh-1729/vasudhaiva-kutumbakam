@@ -1,15 +1,455 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+// User model - main participant in competitions
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String   @unique
+  password    String
+  phone       String?
+  institution String?
+  avatarUrl   String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Reference fields for relations
+  // submissionIds      String[] @db.ObjectId
+  // announcementIds    String[] @db.ObjectId
+  // competitionUserIds String[] @db.ObjectId
+  // commentIds         String[] @db.ObjectId
+  // notificationIds    String[] @db.ObjectId
+
+  // // Relations
+  // submissions      Submission[]      @relation(fields: [submissionIds], references: [id])
+  // announcements    Announcement[]    @relation(fields: [announcementIds], references: [id])
+  // competitionUsers CompetitionUser[] @relation(fields: [competitionUserIds], references: [id])
+  // comments         Comment[]         @relation(fields: [commentIds], references: [id])
+  // notifications    Notification[]    @relation(fields: [notificationIds], references: [id])
+  // Vote             Vote[]
+
+  // @@map("users")
+}
+
+// Competition model - represents each competition/challenge
+// model Competition {
+//   id             String            @id @default(auto()) @map("_id") @db.ObjectId
+//   title          String
+//   description    String
+//   icon           String?
+//   deadline       DateTime
+//   startDate      DateTime
+//   endDate        DateTime
+//   status         CompetitionStatus @default(UPCOMING)
+//   prizePool      Int? // in smallest currency unit (e.g., paise for rupees)
+//   maxSubmissions Int               @default(1)
+
+//   // Competition metadata
+//   category    String?
+//   difficulty  DifficultyLevel @default(INTERMEDIATE)
+//   isPublished Boolean         @default(false)
+
+//   // Embedded sections array (MongoDB-specific optimization)
+//   sections CompetitionSectionEmbed[]
+
+//   // Prize structure as embedded document
+//   prizes PrizeStructure?
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   // Reference fields for relations
+//   submissionIds      String[] @db.ObjectId
+//   competitionUserIds String[] @db.ObjectId
+//   announcementIds    String[] @db.ObjectId
+//   timelineEventIds   String[] @db.ObjectId
+
+//   // Relations
+//   submissions      Submission[]      @relation(fields: [submissionIds], references: [id])
+//   competitionUsers CompetitionUser[] @relation(fields: [competitionUserIds], references: [id])
+//   announcements    Announcement[]    @relation(fields: [announcementIds], references: [id])
+//   timelineEvents   TimelineEvent[]   @relation(fields: [timelineEventIds], references: [id])
+
+//   @@map("competitions")
+// }
+
+// // Embedded type for competition sections (MongoDB optimization)
+// type CompetitionSectionEmbed {
+//   id        String    @db.ObjectId
+//   title     String
+//   content   String
+//   order     Int
+//   isActive  Boolean   @default(true)
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime? @updatedAt
+// }
+
+// // Prize structure as embedded document
+// type PrizeStructure {
+//   firstPrize  Int?
+//   secondPrize Int?
+//   thirdPrize  Int?
+//   totalPool   Int
+//   currency    String  @default("INR")
+//   description String?
+// }
+
+// // Many-to-many relationship between users and competitions
+// model CompetitionUser {
+//   id            String              @id @default(auto()) @map("_id") @db.ObjectId
+//   userId        String              @db.ObjectId
+//   competitionId String              @db.ObjectId
+//   role          CompetitionUserRole @default(PARTICIPANT)
+//   registeredAt  DateTime            @default(now())
+
+//   // Relations
+//   user        User        @relation(fields: [userId], references: [id])
+//   competition Competition @relation(fields: [competitionId], references: [id])
+
+//   @@map("competition_users")
+// }
+
+// // Submissions model - main entity for user submissions
+// model Submission {
+//   id            String @id @default(auto()) @map("_id") @db.ObjectId
+//   userId        String @db.ObjectId
+//   competitionId String @db.ObjectId
+
+//   // Submission content
+//   submissionType SubmissionType
+//   submissionLink String?
+
+//   // File metadata as embedded document
+//   fileMetadata FileMetadata?
+
+//   description String?
+//   status      SubmissionStatus @default(PENDING)
+
+//   // Scoring/Judging as embedded document
+//   judging JudgingInfo?
+
+//   // Metadata
+//   isPublic  Boolean  @default(false)
+//   viewCount Int      @default(0)
+//   tags      String[] // for categorization
+
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   submittedAt DateTime @default(now())
+
+//   // Reference fields for relations
+//   commentIds String[] @db.ObjectId
+//   voteIds    String[] @db.ObjectId
+
+//   // Relations
+//   user        User        @relation(fields: [userId], references: [id])
+//   competition Competition @relation(fields: [competitionId], references: [id])
+//   comments    Comment[]   @relation(fields: [commentIds], references: [id])
+//   votes       Vote[]      @relation(fields: [voteIds], references: [id])
+
+//   @@map("submissions")
+// }
+
+// // Embedded file metadata
+// type FileMetadata {
+//   fileName     String
+//   originalName String
+//   filePath     String
+//   fileSize     Int
+//   mimeType     String
+//   uploadedAt   DateTime @default(now())
+// }
+
+// // Embedded judging information
+// type JudgingInfo {
+//   score    Float?
+//   rank     Int?
+//   judgedAt DateTime?
+//   judgedBy String?          @db.ObjectId
+//   feedback String?
+//   criteria JudgingCriteria?
+// }
+
+// // Judging criteria as embedded document
+// type JudgingCriteria {
+//   creativity   Float?
+//   technical    Float?
+//   presentation Float?
+//   originality  Float?
+//   relevance    Float?
+// }
+
+// // Comments on submissions
+// model Comment {
+//   id           String  @id @default(auto()) @map("_id") @db.ObjectId
+//   submissionId String  @db.ObjectId
+//   userId       String  @db.ObjectId
+//   content      String
+//   isPublic     Boolean @default(true)
+
+//   // Nested replies support
+//   parentId String?  @db.ObjectId
+//   replies  String[] @db.ObjectId // child comment IDs
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   // Relations
+//   submission Submission @relation(fields: [submissionId], references: [id])
+//   user       User       @relation(fields: [userId], references: [id])
+
+//   @@map("comments")
+// }
+
+// // Voting/Rating system for submissions
+// model Vote {
+//   id           String @id @default(auto()) @map("_id") @db.ObjectId
+//   submissionId String @db.ObjectId
+//   userId       String @db.ObjectId
+//   rating       Int // 1-5 scale
+
+//   // Additional voting metadata
+//   category String? // what aspect they're voting on
+//   comment  String? // optional comment with vote
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   // Relations
+//   submission Submission @relation(fields: [submissionId], references: [id])
+//   user       User       @relation(fields: [userId], references: [id])
+
+//   @@map("votes")
+// }
+
+// // Announcements model - for the notice board
+// model Announcement {
+//   id            String           @id @default(auto()) @map("_id") @db.ObjectId
+//   title         String
+//   content       String
+//   type          AnnouncementType @default(NORMAL)
+//   competitionId String?          @db.ObjectId
+//   userId        String?          @db.ObjectId
+
+//   // Rich content support
+//   contentType String            @default("text") // "text", "markdown", "html"
+//   attachments AttachmentEmbed[]
+
+//   isPublished Boolean   @default(true)
+//   isPinned    Boolean   @default(false)
+//   expiresAt   DateTime?
+
+//   // View tracking
+//   viewCount Int      @default(0)
+//   viewedBy  String[] @db.ObjectId // user IDs who viewed
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   // Relations
+//   competition Competition? @relation(fields: [competitionId], references: [id])
+//   user        User?        @relation(fields: [userId], references: [id])
+
+//   @@map("announcements")
+// }
+
+// // Embedded attachment type
+// type AttachmentEmbed {
+//   id       String @db.ObjectId
+//   fileName String
+//   fileUrl  String
+//   fileSize Int
+//   mimeType String
+// }
+
+// // Timeline events for competition phases
+// model TimelineEvent {
+//   id            String              @id @default(auto()) @map("_id") @db.ObjectId
+//   competitionId String              @db.ObjectId
+//   title         String
+//   description   String?
+//   date          DateTime
+//   status        TimelineEventStatus @default(UPCOMING)
+//   order         Int
+
+//   // Additional metadata
+//   icon     String?
+//   color    String?
+//   metadata Json? // flexible data storage
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   // Relations
+//   competition Competition @relation(fields: [competitionId], references: [id])
+
+//   @@map("timeline_events")
+// }
+
+// // Notifications for users
+// model Notification {
+//   id      String           @id @default(auto()) @map("_id") @db.ObjectId
+//   userId  String           @db.ObjectId
+//   title   String
+//   message String
+//   type    NotificationType
+//   isRead  Boolean          @default(false)
+
+//   // Rich notification data
+//   actionUrl String?
+//   metadata  Json?
+//   priority  NotificationPriority @default(NORMAL)
+
+//   // Delivery tracking
+//   deliveredAt DateTime?
+//   readAt      DateTime?
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   // Relations
+//   user User @relation(fields: [userId], references: [id])
+
+//   @@map("notifications")
+// }
+
+// // File storage metadata
+// model FileUpload {
+//   id           String @id @default(auto()) @map("_id") @db.ObjectId
+//   fileName     String
+//   originalName String
+//   filePath     String
+//   fileSize     Int
+//   mimeType     String
+//   uploadedBy   String @db.ObjectId
+
+//   // File categorization
+//   category String  @default("general") // "submission", "avatar", "announcement"
+//   isPublic Boolean @default(false)
+
+//   // Storage metadata
+//   bucket   String? // for cloud storage
+//   region   String?
+//   checksum String? // for integrity verification
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@map("file_uploads")
+// }
+
+// // System settings and configuration
+// model Setting {
+//   id          String  @id @default(auto()) @map("_id") @db.ObjectId
+//   key         String  @unique
+//   value       String
+//   description String?
+//   category    String  @default("general")
+
+//   // Setting metadata
+//   isPublic Boolean @default(false)
+//   dataType String  @default("string") // "string", "number", "boolean", "json"
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@map("settings")
+// }
+
+// // User sessions for authentication
+// model Session {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   userId    String   @db.ObjectId
+//   token     String   @unique
+//   expiresAt DateTime
+//   isActive  Boolean  @default(true)
+
+//   // Session metadata
+//   ipAddress    String?
+//   userAgent    String?
+//   lastActivity DateTime @default(now())
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@map("sessions")
+// }
+
+// // Enums
+// enum CompetitionStatus {
+//   DRAFT
+//   UPCOMING
+//   ACTIVE
+//   JUDGING
+//   COMPLETED
+//   CANCELLED
+// }
+
+// enum CompetitionUserRole {
+//   PARTICIPANT
+//   JUDGE
+//   MODERATOR
+//   ADMIN
+// }
+
+// enum SubmissionType {
+//   LINK
+//   FILE
+//   TEXT
+// }
+
+// enum SubmissionStatus {
+//   DRAFT
+//   PENDING
+//   UNDER_REVIEW
+//   APPROVED
+//   REJECTED
+//   WINNER
+//   RUNNER_UP
+// }
+
+// enum AnnouncementType {
+//   NORMAL
+//   IMPORTANT
+//   WINNER
+//   DEADLINE
+//   SYSTEM
+// }
+
+// enum TimelineEventStatus {
+//   COMPLETED
+//   CURRENT
+//   UPCOMING
+// }
+
+// enum NotificationType {
+//   SUBMISSION_RECEIVED
+//   SUBMISSION_APPROVED
+//   SUBMISSION_REJECTED
+//   COMPETITION_STARTED
+//   COMPETITION_ENDED
+//   ANNOUNCEMENT
+//   WINNER_DECLARED
+//   SYSTEM
+// }
+
+// enum NotificationPriority {
+//   LOW
+//   NORMAL
+//   HIGH
+//   URGENT
+// }
+
+// enum DifficultyLevel {
+//   BEGINNER
+//   INTERMEDIATE
+//   ADVANCED
+//   EXPERT
+// }
