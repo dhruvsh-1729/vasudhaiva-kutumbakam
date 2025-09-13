@@ -9,6 +9,7 @@ import SidebarNav from '../../components/SidebarNav';
 import { getAllCompetitionIds, getCompetitionById } from '@/data/competitions';
 import CompetitionDetails from '@/components/CompetitionDetails';
 import SubmissionPanel from '@/components/SubmissionPanel';
+import Header from '@/components/Header';
 
 // Type definitions
 interface Competition {
@@ -128,7 +129,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
 
       <div className="min-h-screen bg-gray-50">
         {/* Header/Breadcrumb */}
-        <div className="bg-white border-b border-gray-200">
+        {/* <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-6 py-4">
             <nav className="flex items-center space-x-2 text-sm text-gray-600">
               {breadcrumbItems.map((item: BreadcrumbItem, index: number) => (
@@ -147,7 +148,8 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
               ))}
             </nav>
           </div>
-        </div>
+        </div> */}
+        <Header />
 
         {/* Main Content */}
         <main className="px-6 py-8">

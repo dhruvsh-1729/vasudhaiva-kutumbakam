@@ -2,6 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 // Initialize Prisma Client
 const prisma = new PrismaClient();
@@ -12,6 +13,7 @@ interface RegisterRequestBody {
   email: string;
   phone: string;
   institution: string;
+  password: string;
 }
 
 interface ApiResponse {
@@ -22,19 +24,38 @@ interface ApiResponse {
     name: string;
     email: string;
   };
+  token?: string;
   error?: string;
 }
 
-// Validation helper
+// Validation helpers
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
 const validatePhone = (phone: string): boolean => {
-  // Basic phone validation - adjust based on your requirements
   const phoneRegex = /^\+?[\d\s\-\(\)]{10,15}$/;
   return phoneRegex.test(phone.replace(/\s/g, ''));
+};
+
+const validatePassword = (password: string): string[] => {
+  const errors: string[] = [];
+  
+  if (password.length < 6) {
+    errors.push('Password must be at least 6 characters long');
+  }
+  if (!/(?=.*[a-z])/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+  if (!/(?=.*[A-Z])/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+  if (!/(?=.*\d)/.test(password)) {
+    errors.push('Password must contain at least one number');
+  }
+  
+  return errors;
 };
 
 export default async function handler(
@@ -51,13 +72,15 @@ export default async function handler(
   }
 
   try {
-    const { name, email, phone, institution }: RegisterRequestBody = req.body;
+    const { name, email, phone, institution, password }: RegisterRequestBody = req.body;
 
     // Input validation
     const errors: string[] = [];
 
     if (!name || name.trim().length === 0) {
       errors.push('Name is required');
+    } else if (name.trim().length < 2) {
+      errors.push('Name must be at least 2 characters long');
     }
 
     if (!email || email.trim().length === 0) {
@@ -74,6 +97,13 @@ export default async function handler(
 
     if (!institution || institution.trim().length === 0) {
       errors.push('Institution is required');
+    }
+
+    if (!password || password.trim().length === 0) {
+      errors.push('Password is required');
+    } else {
+      const passwordErrors = validatePassword(password);
+      errors.push(...passwordErrors);
     }
 
     // Return validation errors
@@ -100,9 +130,8 @@ export default async function handler(
       });
     }
 
-    // Generate a temporary password (you might want to implement proper authentication later)
-    const tempPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create new user
     const newUser = await prisma.user.create({
@@ -124,18 +153,22 @@ export default async function handler(
       },
     });
 
-    // Log successful registration (you might want to use a proper logger)
+    // Generate JWT token
+    const jwtSecret = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
+    const token = jwt.sign(
+      {
+        userId: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+      },
+      jwtSecret,
+      { expiresIn: '7d' } // Token expires in 7 days
+    );
+
+    // Log successful registration
     console.log(`New user registered: ${newUser.email} at ${new Date().toISOString()}`);
 
-    // TODO: Send welcome email with temporary password
-    // You might want to integrate with services like:
-    // - SendGrid
-    // - Nodemailer
-    // - AWS SES
-    // Example:
-    // await sendWelcomeEmail(newUser.email, newUser.name, tempPassword);
-
-    // Return success response
+    // Return success response with token
     return res.status(201).json({
       success: true,
       message: 'Registration successful! Welcome to the VK Competition community.',
@@ -144,6 +177,7 @@ export default async function handler(
         name: newUser.name,
         email: newUser.email,
       },
+      token,
     });
 
   } catch (error) {
@@ -152,7 +186,6 @@ export default async function handler(
     // Handle specific Prisma errors
     if (error && typeof error === 'object' && 'code' in error) {
       if (error.code === 'P2002') {
-        // Unique constraint violation
         return res.status(409).json({
           success: false,
           error: 'An account with this email already exists.',
@@ -168,10 +201,8 @@ export default async function handler(
       message: 'Internal server error'
     });
   } finally {
-    // Ensure Prisma client is disconnected
     await prisma.$disconnect();
   }
 }
 
-// Optional: Export types for use in other files
 export type { RegisterRequestBody, ApiResponse };
