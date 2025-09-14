@@ -504,7 +504,7 @@ const MainPage: React.FC = () => {
                   Welcome back, {((user?.name ?? '').trim().split(/\s+/)[0] || 'Friend')}!
                 </h1>
                 <p className="text-gray-600 text-sm sm:text-base">
-                  Continue your sacred expression journey
+                  Continue your journey
                 </p>
                 </div>
               </div>
