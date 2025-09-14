@@ -17,6 +17,7 @@ interface FormData {
   competition: string;
 }
 
+
 interface NavItem {
   id: SectionId;
   label: string;
@@ -338,8 +339,8 @@ const Home: React.FC = () => {
                   <div className="h-px w-12 bg-orange-400/60"></div>
                 </div>
                 
-                <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
-                  <span class="block text-white/95 mb-2 ">VASUDHAIVA KUTUMBAKAM
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
+                  <span className="block text-white/95 mb-2 ">VASUDHAIVA KUTUMBAKAM
                   </span>
                   <span></span>
                 </h1>
