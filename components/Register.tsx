@@ -493,7 +493,7 @@ const Register: React.FC = () => {
                     Creating your account...
                   </div>
                 ) : (
-                  'Begin Sacred Expression Journey'
+                  'Register Now'
                 )}
               </button>
             </div>
