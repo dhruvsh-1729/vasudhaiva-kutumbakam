@@ -179,7 +179,7 @@ const Home: React.FC = () => {
                 onClick={handleSubmit}
                 className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
-                Begin Sacred Expression Journey
+                Begin Sacred Journey
               </button>
             </div>
   
