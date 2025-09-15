@@ -4,8 +4,6 @@ import { toast } from 'sonner';
 
 // Type definitions
 interface FormData {
-  name: string;
-  email: string;
   submissionType: 'link' | 'file';
   submissionLink: string;
   file: File | null;
@@ -25,8 +23,6 @@ interface SubmissionPanelProps {
 
 const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
     submissionType: 'link',
     submissionLink: '',
     file: null,
@@ -58,16 +54,6 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
 
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
     
     if (formData.submissionType === 'link') {
       if (!formData.submissionLink.trim()) {
@@ -108,8 +94,6 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     
     // Reset form
     setFormData({
-      name: '',
-      email: '',
       submissionType: 'link',
       submissionLink: '',
       file: null,
@@ -179,50 +163,12 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Name Field */}
-              <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-orange-800 mb-2 font-inter">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 font-inter text-sm backdrop-blur-sm ${
-                    errors.name ? 'border-red-400 bg-red-50/50' : 'border-orange-200/50 bg-white/80 hover:border-orange-300'
-                  }`}
-                  placeholder="Enter your full name"
-                />
-                {errors.name && <p className="mt-1 text-xs text-red-600 font-inter">{errors.name}</p>}
-              </div>
-
-              {/* Email Field */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-orange-800 mb-2 font-inter">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 font-inter text-sm backdrop-blur-sm ${
-                    errors.email ? 'border-red-400 bg-red-50/50' : 'border-orange-200/50 bg-white/80 hover:border-orange-300'
-                  }`}
-                  placeholder="your@email.com"
-                />
-                {errors.email && <p className="mt-1 text-xs text-red-600 font-inter">{errors.email}</p>}
-              </div>
-
               {/* Submission Type Toggle */}
               <div>
                 <label className="block text-sm font-semibold text-orange-800 mb-3 font-inter">
                   Submission Method *
                 </label>
-                <div className="grid grid-cols-2 gap-2 p-1 bg-orange-50/80 rounded-xl">
+                <div className="grid grid-cols-1 gap-2 p-1 bg-orange-50/80 rounded-xl">
                   <button
                     type="button"
                     onClick={() => handleSubmissionTypeChange('link')}
@@ -232,9 +178,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                         : 'text-orange-700 hover:bg-orange-100/50'
                     }`}
                   >
-                    Link/URL
+                    Google drive Link/URL
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => handleSubmissionTypeChange('file')}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 font-inter ${
@@ -244,7 +190,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                     }`}
                   >
                     File Upload
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -311,7 +257,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                 <textarea
                   id="description"
                   name="description"
-                  rows={3}
+                  rows={15}
                   value={formData.description}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2.5 border border-orange-200/50 bg-white/80 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 resize-none font-inter text-sm backdrop-blur-sm hover:border-orange-300"

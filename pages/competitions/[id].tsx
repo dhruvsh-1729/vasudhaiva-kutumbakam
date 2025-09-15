@@ -130,26 +130,6 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
 
       <div className="min-h-screen bg-gray-50">
         {/* Header/Breadcrumb */}
-        {/* <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-6 py-4">
-            <nav className="flex items-center space-x-2 text-sm text-gray-600">
-              {breadcrumbItems.map((item: BreadcrumbItem, index: number) => (
-                <div key={index} className="flex items-center">
-                  {index > 0 && <ChevronIcon />}
-                  {item.href && !item.isActive ? (
-                    <Link href={item.href} className="hover:text-blue-600 transition-colors ml-2">
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <span className={`ml-2 ${item.isActive ? 'text-gray-900 font-medium' : ''}`}>
-                      {item.label}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </nav>
-          </div>
-        </div> */}
         <Header />
 
         {/* Main Content */}
