@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { clientAuth } from '../middleware/auth';
+import { toast } from 'sonner';
 
 interface NavigationItem {
   href: string;
@@ -44,8 +45,8 @@ const Header: React.FC = () => {
   ];
 
   const handleLogout = async (): Promise<void> => {
-    const confirmLogout = confirm('Are you sure you want to logout?');
-    if (!confirmLogout) return;
+    // const confirmLogout = confirm('Are you sure you want to logout?');
+    // if (!confirmLogout) return;
 
     try {
       // Call logout API to invalidate token on server
@@ -59,6 +60,7 @@ const Header: React.FC = () => {
 
       // Clear local storage and redirect regardless of API response
       clientAuth.logout();
+      toast.success('Logged out successfully');
     } catch (error) {
       console.error('Logout error:', error);
       // Still logout locally even if API fails
