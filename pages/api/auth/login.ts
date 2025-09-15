@@ -20,9 +20,10 @@ interface ApiResponse {
     id: string;
     name: string;
     email: string;
-    // isEmailVerified: boolean;
+    isEmailVerified: boolean;
   };
   token?: string;
+  requiresEmailVerification?: boolean;
   error?: string;
 }
 
@@ -81,13 +82,14 @@ export default async function handler(
         email: true,
         password: true,
         isActive: true,
+        isEmailVerified: true,
       },
     });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'No account found with this email address. Please register first.',
+        error: 'No account found with this email address. Please register first or check your credentials carefully.',
         message: 'Account not found'
       });
     }
@@ -111,6 +113,22 @@ export default async function handler(
       });
     }
 
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        success: false,
+        error: 'Please verify your email address before signing in. Check your inbox for the verification email.',
+        message: 'Email not verified',
+        requiresEmailVerification: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          isEmailVerified: false,
+        }
+      });
+    }
+
     // Generate JWT token
     const jwtSecret = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
     const token = jwt.sign(
@@ -123,7 +141,7 @@ export default async function handler(
       { expiresIn: '7d' } // Token expires in 7 days
     );
 
-    // Update last login timestamp (optional)
+    // Update last login timestamp
     await prisma.user.update({
       where: { id: user.id },
       data: { updatedAt: new Date() },
@@ -137,14 +155,15 @@ export default async function handler(
       success: true,
       message: 'Login successful! Welcome back to VK Competition.',
       user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        isEmailVerified: user.isEmailVerified,
       },
       token,
     });
 
-    } catch (error) {
+  } catch (error) {
     console.error('Login error:', error);
 
     // Generic error response

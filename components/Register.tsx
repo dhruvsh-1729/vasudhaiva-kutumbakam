@@ -1,9 +1,10 @@
-// components/Register.tsx
+// components/Register.tsx (Updated)
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 import backgroundImage from "@/public/map.jpg";
+import { toast } from "sonner";
 
 // Type definitions
 interface FormData {
@@ -18,6 +19,7 @@ interface FormData {
 interface ApiResponse {
   success: boolean;
   message: string;
+  requiresEmailVerification?: boolean;
   user?: {
     id: string;
     name: string;
@@ -26,8 +28,6 @@ interface ApiResponse {
   token?: string;
   error?: string;
 }
-
-type FormField = keyof Omit<FormData, 'confirmPassword'>;
 
 interface BulletPoint {
   text: string;
@@ -58,6 +58,8 @@ const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string>('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -143,15 +145,26 @@ const Register: React.FC = () => {
         throw new Error(data.error || 'Registration failed');
       }
 
-      if (data.success && data.user && data.token) {
-        // Store user info and token
-        localStorage.setItem('vk_user', JSON.stringify(data.user));
-        localStorage.setItem('vk_token', data.token);
-        
-        alert("Registration successful! Welcome to the VK Competition community.");
-        
-        // Redirect to main dashboard
-        router.push("/main");
+      if (data.success) {
+        // Check if email verification is required (new flow)
+        if (data.requiresEmailVerification && data.user) {
+          setRegistrationSuccess(true);
+          setRegisteredEmail(data.user.email);
+          
+          // Redirect to email verification page after 3 seconds
+          setTimeout(() => {
+            router.push(`/verify-email?email=${encodeURIComponent(data.user!.email)}`);
+          }, 3000);
+          
+        } else if (data.user && data.token) {
+          // Legacy flow - if token is provided (shouldn't happen with new flow)
+          localStorage.setItem('vk_user', JSON.stringify(data.user));
+          localStorage.setItem('vk_token', data.token);
+          
+          // alert("Registration successful! Welcome to the VK Competition community.");
+          toast.success("Registration successful! Welcome to the VK Competition community.");
+          router.push("/main");
+        }
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -170,6 +183,10 @@ const Register: React.FC = () => {
     }
   };
 
+  const handleVerifyEmail = (): void => {
+    router.push(`/verify-email?email=${encodeURIComponent(registeredEmail)}`);
+  };
+
   // Feature bullet points data
   const bulletPoints: BulletPoint[] = [
     { text: "Global artistic community" },
@@ -177,6 +194,64 @@ const Register: React.FC = () => {
     { text: "Prizes & recognition" },
     { text: "Unity through diversity" }
   ];
+
+  // Show success message after registration
+  if (registrationSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-red-50 to-pink-50">
+        <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-lg border border-red-100 text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          
+          <h2 className="text-3xl font-bold text-green-700 mb-4">Registration Successful!</h2>
+          
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+            <div className="flex items-start">
+              <svg className="flex-shrink-0 w-6 h-6 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <div className="ml-3 text-left">
+                <p className="text-sm font-medium text-amber-800">Email Verification Required</p>
+                <p className="text-sm text-amber-700 mt-1">
+                  We have sent a verification email to <strong>{registeredEmail}</strong>. 
+                  Please check your inbox and click the verification link to complete your registration.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-gray-600 mb-6">
+            You will be redirected to the email verification page in a few seconds, or you can click the button below.
+          </p>
+          
+          <div className="space-y-4">
+            <button
+              onClick={handleVerifyEmail}
+              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            >
+              Go to Email Verification
+            </button>
+            
+            <p className="text-sm text-gray-500">
+              Did not receive the email? Check your spam folder or try the verification page to resend.
+            </p>
+          </div>
+          
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <p className="text-sm text-gray-600">
+              Already verified?{' '}
+              <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
+                Sign In
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -288,7 +363,7 @@ const Register: React.FC = () => {
             <h2 className="text-2xl lg:text-3xl font-bold text-red-700 mb-2">
               Join the Movement
             </h2>
-            <p className="text-gray-600 text-sm">Begin your journey</p>
+            <p className="text-gray-600 text-sm">Begin your journey with email verification</p>
           </div>
 
           {/* General Error Message */}
@@ -473,6 +548,20 @@ const Register: React.FC = () => {
                 {errors.confirmPassword && (
                   <p className="mt-1 text-xs text-red-600">{errors.confirmPassword}</p>
                 )}
+              </div>
+            </div>
+
+            {/* Email Verification Notice */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <svg className="flex-shrink-0 w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-800">
+                    <strong>Email Verification Required:</strong> After registration, you will receive an email to verify your account before you can sign in.
+                  </p>
+                </div>
               </div>
             </div>
 

@@ -1,5 +1,6 @@
 // components/SubmissionPanel.tsx
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 // Type definitions
 interface FormData {
@@ -102,7 +103,8 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     });
     
     // Show success alert
-    alert('Submission successful! Your entry has been received and will be reviewed by our panel of judges. Check your email for confirmation details.');
+    // alert('Submission successful! Your entry has been received and will be reviewed by our panel of judges. Check your email for confirmation details.');
+    toast.success('Submission successful! Your entry has been received and will be reviewed by our panel of judges. Check your email for confirmation details.');
     
     // Reset form
     setFormData({

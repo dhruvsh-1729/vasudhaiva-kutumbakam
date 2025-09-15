@@ -10,22 +10,57 @@ datasource db {
 
 // User model - main participant in competitions
 model User {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  email       String  @unique
-  password    String
-  phone       String?
-  institution String?
-  avatarUrl   String?
-  isActive    Boolean @default(true)
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String  @unique
+  password        String
+  phone           String?
+  institution     String?
+  avatarUrl       String?
+  isActive        Boolean @default(true)
+  isEmailVerified Boolean @default(false)
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Add any competition-related fields as needed in the future
-  // competitions    Competition[] @relation("UserCompetitions")
-  // submissions     Submission[]
+  // Relations
+  verificationTokens  VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+// Email verification tokens
+model VerificationToken {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  token     String    @unique
+  userId    String    @db.ObjectId
+  type      TokenType @default(EMAIL_VERIFICATION)
+  expiresAt DateTime
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Password reset tokens
+model PasswordResetToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  userId    String   @db.ObjectId
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum TokenType {
+  EMAIL_VERIFICATION
+  WELCOME_EMAIL
 }
 
 // Optional: Competition model for future use

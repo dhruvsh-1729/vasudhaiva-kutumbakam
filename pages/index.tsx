@@ -6,6 +6,8 @@ import backgroundImage from "@/public/map.jpg";
 import { useRouter } from 'next/router';
 import NotificationBanner from '../components/NotificationBanner';
 import { ArrowRight, MoveRight } from 'lucide-react';
+import Footer from '@/components/Footer';
+import { clientAuth } from '@/middleware/auth';
 
 // Type definitions
 type SectionId = 'what-is-competition' | 'who-is-involved' | 'prizes-opportunities' | 'competition-list' | 'about-jyot';
@@ -18,7 +20,11 @@ interface FormData {
   competition: string;
 }
 
-
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 interface NavItem {
   id: SectionId;
   label: string;
@@ -44,12 +50,45 @@ interface CompetitionCategory {
 
 const Home: React.FC = () => {
   const [activeSection, setActiveSection] = useState<SectionId>('what-is-competition');
-  const [showRegister, setShowRegister] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const router = useRouter();
+
+  useEffect(() => {
+    const currentUser = clientAuth.getUser();
+    const token = clientAuth.getToken();
+    if (currentUser && token) {
+      setUser(currentUser);
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   const handleRegisterClick = (): void => {
     router.push("/register");
   };
+  
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${clientAuth.getToken()}`,
+        },
+      });
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+    clientAuth.logout();
+  };
+  
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
 
   const scrollToSection = (sectionId: SectionId): void => {
     const element = document.getElementById(sectionId);
@@ -85,116 +124,6 @@ const Home: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Registration Component
-  const Register: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-      name: "",
-      email: "",
-      phone: "",
-      institution: "",
-      competition: ""
-    });
-  
-    const handleInputChange = (field: keyof FormData, value: string): void => {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    };
-  
-    const handleSubmit = (): void => {
-      if (!formData.name || !formData.email || !formData.phone || !formData.institution || !formData.competition) {
-        alert("Please fill all fields!");
-        return;
-      }
-      console.log("Form submitted:", formData);
-      alert("Registration successful! ✅\nThank you for joining the VK Competition!");
-      setShowRegister(false);
-      setFormData({ name: "", email: "", phone: "", institution: "", competition: "" });
-    };
-  
-    return (
-      <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-50 backdrop-blur-sm">
-        <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-lg w-full relative border border-gray-100">
-          <button
-            onClick={() => setShowRegister(false)}
-            className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-3xl font-light transition-colors"
-          >
-            ×
-          </button>
-          
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <div className="text-white font-bold text-lg">VK</div>
-            </div>
-            <h1 className="text-3xl font-bold text-red-700 mb-2">
-              Registration
-            </h1>
-            <p className="text-gray-600">Join the global family movement</p>
-          </div>
-  
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-              <input
-                type="text"
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('name', e.target.value)}
-                className="w-full border-2 border-red-200 rounded-xl p-4 focus:outline-none focus:border-red-500 transition-colors text-gray-700 placeholder-gray-400"
-              />
-            </div>
-  
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('email', e.target.value)}
-                className="w-full border-2 border-red-200 rounded-xl p-4 focus:outline-none focus:border-red-500 transition-colors text-gray-700 placeholder-gray-400"
-              />
-            </div>
-  
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
-              <input
-                type="tel"
-                placeholder="Enter your phone number"
-                value={formData.phone}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('phone', e.target.value)}
-                className="w-full border-2 border-red-200 rounded-xl p-4 focus:outline-none focus:border-red-500 transition-colors text-gray-700 placeholder-gray-400"
-              />
-            </div>
-  
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Institution / College</label>
-              <input
-                type="text"
-                placeholder="Enter your institution or college name"
-                value={formData.institution}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('institution', e.target.value)}
-                className="w-full border-2 border-red-200 rounded-xl p-4 focus:outline-none focus:border-red-500 transition-colors text-gray-700 placeholder-gray-400"
-              />
-            </div>
-  
-            <div className="pt-4">
-              <button
-                onClick={handleSubmit}
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                Begin your Journey
-              </button>
-            </div>
-  
-            <div className="text-center">
-              <p className="text-xs text-gray-500">
-                By registering, you agree to honor the principles of Vasudhaiva Kutumbakam
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   // Navigation items configuration
   const navItems: NavItem[] = [
@@ -242,62 +171,100 @@ const Home: React.FC = () => {
 
   // Return statement for the main component
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50">
-      {showRegister && <Register />}
-      
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50">      
       {/* Navigation */}
       <nav
         aria-label="Primary"
-        className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-[0_1px_0_0_rgba(255,255,255,0.6)_inset,0_8px_20px_-12px_rgba(0,0,0,0.25)] transition-colors"
+        className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-md"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
-            VK
-          </div>
-          <div className="text-lg sm:text-xl font-semibold tracking-tight">
-            <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
-          VK Competition
-            </span>
-          </div>
-        </div>
+            {/* Brand */}
+            <div className="flex items-center gap-3">
+              <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
+                VK
+              </div>
+              <div className="text-lg sm:text-xl font-semibold tracking-tight">
+                <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
+                  VK Competition
+                </span>
+              </div>
+            </div>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-1">
-          {navItems.map((item: NavItem) => {
-            const active = activeSection === item.id;
-            return (
-          <button
-            key={item.id}
-            onClick={() => scrollToSection(item.id)}
-            className={`relative px-5 cursor-pointer py-2 rounded-full text-sm font-medium outline-none transition-all duration-200
-              focus-visible:ring-2 focus-visible:ring-red-400/50
-              ${active
-            ? 'text-red-700 bg-red-50 ring-1 ring-red-100 shadow-sm'
-            : 'text-gray-700 hover:text-red-700 hover:bg-gray-100/60'
-              }`}
-            aria-current={active ? 'page' : undefined}
-          >
-            {item.label}
-            {active && (
-              <span className="pointer-events-none absolute -bottom-2 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-red-500 to-transparent" />
-            )}
-          </button>
-            );
-          })}
-        </div>
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-1">
+              {navItems.map((item: NavItem) => {
+                const active = activeSection === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className={`relative cursor-pointer px-6 py-2 rounded-full text-sm font-medium transition-all
+                      ${
+                        active
+                          ? "text-red-700 bg-red-50 ring-1 ring-red-100 shadow-sm"
+                          : "text-gray-700 hover:text-red-700 hover:bg-gray-100/60"
+                      }`}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {item.label}
+                    {active && (
+                      <span className="pointer-events-none absolute -bottom-2 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* CTA */}
-        <button
-          onClick={handleRegisterClick}
-          className="inline-flex items-center gap-2 cursor-pointer rounded-full bg-gradient-to-r from-red-600 to-red-700 text-white px-4 sm:px-6 py-2.5 font-semibold shadow-lg shadow-red-500/25 hover:shadow-red-500/35 hover:from-red-700 hover:to-red-800 transition-all duration-200"
-        >
-          <span className='hidden sm:block'>Register Now</span>
-          <span className='block sm:hidden'>Register</span>
-          <MoveRight />
-        </button>
+            {/* Right Side - Auth Aware */}
+            <div className="flex items-center gap-4">
+              {isAuthenticated && user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu((prev) => !prev)}
+                    className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-semibold shadow hover:shadow-lg transition"
+                  >
+                    {getInitials(user.name)}
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-semibold text-gray-900">
+                          {user.name}
+                        </p>
+                        <p className="text-xs text-gray-600">{user.email}</p>
+                      </div>
+                      <button
+                        onClick={() => router.push("/profile")}
+                        className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        Profile
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Link href="/login">
+                    <button className="text-gray-700 hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
+                      Sign In
+                    </button>
+                  </Link>
+                  <Link href="/register">
+                    <button className="bg-gradient-to-r from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
+                      Register
+                    </button>
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -593,6 +560,13 @@ const Home: React.FC = () => {
                   </div>
                   
                   <h2 className="text-4xl md:text-5xl lg:text-6xl font-light mb-4">
+                    <Image 
+                      src={jyotimage}
+                      alt="Jyot Logo"
+                      width={48}
+                      height={48}
+                      className="inline-block mr-3"
+                    />
                     <span className="text-white">Jyot</span>
                   </h2>
                   
@@ -690,21 +664,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-red-800 text-white py-10">
-        <div className="w-full px-4 sm:px-6 lg:px-8 text-center">
-          <div className="mb-6">
-            <div className="text-3xl font-bold mb-2">VK Competition</div>
-            <p className="text-red-200">Uniting the world through creative expression</p>
-          </div>
-          
-          <div className="border-t border-red-700 pt-8">
-            <p className="text-red-200">
-              © 2025 All rights reserved. | 
-              <span className="ml-2">वसुधैव कुटुम्बकम् - The World is One Family</span>
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
+
     </div>
   );
 };

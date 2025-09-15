@@ -2,7 +2,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { EmailService } from '../../../lib/emailService';
+import { TokenUtils } from '../../../lib/tokenUtils';
 
 // Initialize Prisma Client
 const prisma = new PrismaClient();
@@ -19,12 +20,12 @@ interface RegisterRequestBody {
 interface ApiResponse {
   success: boolean;
   message: string;
+  requiresEmailVerification?: boolean;
   user?: {
     id: string;
     name: string;
     email: string;
   };
-  token?: string;
   error?: string;
 }
 
@@ -133,7 +134,7 @@ export default async function handler(
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create new user
+    // Create new user (email not verified by default)
     const newUser = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -142,6 +143,7 @@ export default async function handler(
         institution: institution.trim(),
         password: hashedPassword,
         isActive: true,
+        isEmailVerified: false, // Important: email not verified initially
       },
       select: {
         id: true,
@@ -149,35 +151,42 @@ export default async function handler(
         email: true,
         phone: true,
         institution: true,
+        isEmailVerified: true,
         createdAt: true,
       },
     });
 
-    // Generate JWT token
-    const jwtSecret = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
-    const token = jwt.sign(
-      {
-        userId: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-      },
-      jwtSecret,
-      { expiresIn: '7d' } // Token expires in 7 days
+    // Generate verification token
+    const verificationToken = await TokenUtils.createVerificationToken(newUser.id);    
+
+    // Send verification email
+    const emailService = EmailService.getInstance();
+    const emailSent = await emailService.sendVerificationEmail(
+      newUser.email,
+      newUser.name,
+      verificationToken
     );
+
+    if (!emailSent) {
+      console.error('Failed to send verification email to:', newUser.email);
+      // Continue with registration but inform user
+    }
 
     // Log successful registration
     console.log(`New user registered: ${newUser.email} at ${new Date().toISOString()}`);
 
-    // Return success response with token
+    // Return success response - NO TOKEN until email is verified
     return res.status(201).json({
       success: true,
-      message: 'Registration successful! Welcome to the VK Competition community.',
+      message: emailSent 
+        ? 'Registration successful! Please check your email to verify your account before signing in.'
+        : 'Registration successful! Please contact support to verify your email address.',
+      requiresEmailVerification: true,
       user: {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
-      },
-      token,
+      }
     });
 
   } catch (error) {

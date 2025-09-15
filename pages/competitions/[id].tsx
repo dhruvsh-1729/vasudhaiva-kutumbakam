@@ -10,6 +10,7 @@ import { getAllCompetitionIds, getCompetitionById } from '@/data/competitions';
 import CompetitionDetails from '@/components/CompetitionDetails';
 import SubmissionPanel from '@/components/SubmissionPanel';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 // Type definitions
 interface Competition {
@@ -167,26 +168,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
         </main>
 
         {/* Footer */}
-        <footer className="bg-white border-t border-gray-200 mt-16">
-          <div className="max-w-7xl mx-auto px-6 py-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="text-gray-600 text-sm mb-4 md:mb-0">
-                © 2024 Competition Platform. All rights reserved.
-              </div>
-              <div className="flex space-x-6 text-sm text-gray-600">
-                {footerLinks.map((link: FooterLink, index: number) => (
-                  <Link 
-                    key={index}
-                    href={link.href} 
-                    className="hover:text-blue-600 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Login from '../components/Login';
 import { clientAuth } from '../middleware/auth';
+import { toast } from 'sonner';
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
@@ -28,13 +29,15 @@ const LoginPage: React.FC = () => {
     if (registered === 'true') {
       // Show success message if redirected from registration
       setTimeout(() => {
-        alert('Registration successful! Please log in with your credentials.');
+        // alert('Registration successful! Please log in with your credentials.');
+        toast.success('Registration successful! Please log in with your credentials.');
       }, 100);
     }
     
     if (message && typeof message === 'string') {
       setTimeout(() => {
-        alert(decodeURIComponent(message));
+        // alert(decodeURIComponent(message));
+        toast.success(decodeURIComponent(message));
       }, 100);
     }
   }, [router.query]);
