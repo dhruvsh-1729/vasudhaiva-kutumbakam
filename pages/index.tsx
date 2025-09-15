@@ -5,6 +5,7 @@ import Image from 'next/image';
 import backgroundImage from "@/public/map.jpg";
 import { useRouter } from 'next/router';
 import NotificationBanner from '../components/NotificationBanner';
+import { ArrowRight, MoveRight } from 'lucide-react';
 
 // Type definitions
 type SectionId = 'what-is-competition' | 'who-is-involved' | 'prizes-opportunities' | 'competition-list' | 'about-jyot';
@@ -245,36 +246,58 @@ const Home: React.FC = () => {
       {showRegister && <Register />}
       
       {/* Navigation */}
-      <nav className="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-40 border-b border-red-100">
+      <nav
+        aria-label="Primary"
+        className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-[0_1px_0_0_rgba(255,255,255,0.6)_inset,0_8px_20px_-12px_rgba(0,0,0,0.25)] transition-colors"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <Image src={jyotimage} alt="Jyot Logo" className="h-10 w-10" />
-              <div className="text-2xl font-bold text-red-700">VK Competition</div>
-            </div>
-            
-            <div className="hidden md:flex items-center space-x-8">
-              {navItems.map((item: NavItem) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeSection === item.id
-                      ? 'text-red-600 bg-red-50'
-                      : 'text-gray-700 hover:text-red-600'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
+          <div className="flex h-16 items-center justify-between">
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
+            VK
+          </div>
+          <div className="text-lg sm:text-xl font-semibold tracking-tight">
+            <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
+          VK Competition
+            </span>
+          </div>
+        </div>
 
-            <button
-              onClick={handleRegisterClick}
-              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              Register Now
-            </button>
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-1">
+          {navItems.map((item: NavItem) => {
+            const active = activeSection === item.id;
+            return (
+          <button
+            key={item.id}
+            onClick={() => scrollToSection(item.id)}
+            className={`relative px-5 cursor-pointer py-2 rounded-full text-sm font-medium outline-none transition-all duration-200
+              focus-visible:ring-2 focus-visible:ring-red-400/50
+              ${active
+            ? 'text-red-700 bg-red-50 ring-1 ring-red-100 shadow-sm'
+            : 'text-gray-700 hover:text-red-700 hover:bg-gray-100/60'
+              }`}
+            aria-current={active ? 'page' : undefined}
+          >
+            {item.label}
+            {active && (
+              <span className="pointer-events-none absolute -bottom-2 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+            )}
+          </button>
+            );
+          })}
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={handleRegisterClick}
+          className="inline-flex items-center gap-2 cursor-pointer rounded-full bg-gradient-to-r from-red-600 to-red-700 text-white px-4 sm:px-6 py-2.5 font-semibold shadow-lg shadow-red-500/25 hover:shadow-red-500/35 hover:from-red-700 hover:to-red-800 transition-all duration-200"
+        >
+          <span className='hidden sm:block'>Register Now</span>
+          <span className='block sm:hidden'>Register</span>
+          <MoveRight />
+        </button>
           </div>
         </div>
       </nav>
@@ -354,7 +377,7 @@ const Home: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
                 <button
                   onClick={handleRegisterClick}
-                  className="group bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-medium py-4 px-8 rounded-full transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:-translate-y-1 text-lg"
+                  className="group bg-gradient-to-r cursor-pointer from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-medium py-4 px-8 rounded-full transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:-translate-y-1 text-lg"
                 >
                   <span className="mr-2">Begin your journey</span>
                   <svg className="inline w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" 
@@ -366,9 +389,9 @@ const Home: React.FC = () => {
                 
                 <button
                   onClick={() => scrollToSection('what-is-competition')}
-                  className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-medium py-4 px-8 rounded-full border border-white/30 hover:border-white/50 transition-all duration-300 text-lg"
+                  className="group bg-white/10 cursor-pointer backdrop-blur-sm hover:bg-white/20 text-white font-medium py-4 px-8 rounded-full border border-white/30 hover:border-white/50 transition-all duration-300 text-lg"
                 >
-                  <span className="mr-2">Explore Competition</span>
+                  <span className="mr-2">Explore Competitions</span>
                   <svg className="inline w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" 
                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
@@ -391,26 +414,68 @@ const Home: React.FC = () => {
       </section>
 
       {/* What is Competition Section */}
-      <section id="what-is-competition" className="py-20 bg-white/50">
+      <section id="what-is-competition" className="relative py-24 overflow-hidden">
+        {/* Soft gradient ornaments */}
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute -top-20 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-rose-400/25 via-red-400/20 to-orange-300/25 blur-3xl" />
+          <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-gradient-to-tr from-orange-400/25 via-red-400/20 to-rose-300/25 blur-3xl" />
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-red-700 mb-6">
-              What is the VK Competition?
-            </h2>
-            <p className="text-xl text-gray-700 max-w-4xl mx-auto">
-              A global celebration of unity through creative expression, where artists from every corner of the world 
-              come together to showcase the beautiful principle that The World is One Family.
-            </p>
+          <div className="text-center mb-14">
+        <span className="inline-flex items-center rounded-full border border-red-200/60 bg-white/70 px-3 py-1 text-xs font-medium text-red-700 shadow-sm">
+          A celebration of unity
+        </span>
+        <h2 className="mt-4 text-3xl md:text-5xl font-bold tracking-tight">
+          <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
+            What is the VK Competition?
+          </span>
+        </h2>
+        <div className="mx-auto mt-5 h-px w-24 bg-gradient-to-r from-red-500/60 via-rose-500/60 to-orange-500/60 rounded-full" />
+        <p className="mt-6 text-lg md:text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
+          A global celebration of unity through creative expression, where artists from every corner of the world 
+          come together to showcase the beautiful principle that The World is One Family.
+        </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {competitionInfo.map((item: CompetitionInfo, index: number) => (
-              <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-red-100">
-                <div className="text-4xl mb-4">{item.icon}</div>
-                <h3 className="text-2xl font-bold text-red-700 mb-4">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {competitionInfo.map((item: CompetitionInfo, index: number) => (
+          <div key={index} className="group relative">
+            {/* Glow on hover */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/10 via-rose-500/10 to-orange-500/10 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100" />
+            
+            {/* Gradient border wrapper */}
+            <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-red-500/20 via-rose-500/20 to-orange-500/20">
+          {/* Card */}
+          <div className="rounded-2xl h-full bg-white/80 backdrop-blur-xl border border-white/60 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-0.5">
+            <div className="p-8">
+              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-red-50 to-orange-50 text-2xl ring-1 ring-red-100 transition-transform duration-300 group-hover:scale-105">
+            {item.icon}
               </div>
-            ))}
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3">
+            {item.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+            {item.description}
+              </p>
+            </div>
+
+            {/* Subtle top accent */}
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-red-400/40 to-transparent" />
+          </div>
+            </div>
+          </div>
+        ))}
+          </div>
+
+          <div className="mt-12 flex justify-center">
+        <button
+          onClick={() => scrollToSection('competition-list')}
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-red-500/25 hover:shadow-red-500/35 hover:from-red-700 hover:to-red-800 transition-all"
+        >
+          Explore categories
+          <ArrowRight className="h-4 w-4" />
+        </button>
           </div>
         </div>
       </section>
@@ -495,7 +560,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* About Jyot Section */}
-      <section id="about-jyot" className="relative h-[600px] overflow-hidden">
+      <section id="about-jyot" className="relative py-12 overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <Image
@@ -554,7 +619,7 @@ const Home: React.FC = () => {
                 </div>
                 
                 {/* CTA */}
-                <div className="pt-4">
+                <div className="pt-4 flex justify-center sm:justify-start">
                   <a
                     href="https://jyot.in"
                     target="_blank"
@@ -615,7 +680,7 @@ const Home: React.FC = () => {
             </div>
             
             {/* Bottom Quote - Mobile Optimized */}
-            <div className="absolute bottom-6 left-4 right-4 text-center lg:bottom-8 lg:left-8 lg:right-8">
+            <div className="my-4">
               <p className="text-orange-100/80 text-sm md:text-base font-light italic">
                 In diversity we find strength, in unity we discover light
               </p>
@@ -634,7 +699,7 @@ const Home: React.FC = () => {
           
           <div className="border-t border-red-700 pt-8">
             <p className="text-red-200">
-              © 2024 Host Organization. All rights reserved. | 
+              © 2025 All rights reserved. | 
               <span className="ml-2">वसुधैव कुटुम्बकम् - The World is One Family</span>
             </p>
           </div>
