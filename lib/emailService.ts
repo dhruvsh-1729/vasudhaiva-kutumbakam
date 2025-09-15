@@ -1,12 +1,5 @@
 // lib/emailService.ts
-import * as SibApiV3Sdk from 'sib-api-v3-typescript';
-
-// Configure Brevo API
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-apiInstance.setApiKey(
-  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY || ''
-);
+import { apiInstance } from './brevo';
 
 export interface EmailTemplate {
   subject: string;

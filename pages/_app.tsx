@@ -3,8 +3,8 @@ import type { AppProps } from "next/app";
 import { Toaster } from "sonner";
 
 // In your main app initialization
-import { initializeCleanupScheduler } from '../lib/scheduledCleanup';
-initializeCleanupScheduler(); // Runs cleanup every 6 hours
+// import { initializeCleanupScheduler } from '../lib/scheduledCleanup';
+// initializeCleanupScheduler(); // Runs cleanup every 6 hours
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
