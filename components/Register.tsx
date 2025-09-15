@@ -288,7 +288,7 @@ const Register: React.FC = () => {
             <h2 className="text-3xl font-bold text-red-700 mb-2">
               Join the Movement
             </h2>
-            <p className="text-gray-600">Begin your sacred expression journey</p>
+            <p className="text-gray-600">Begin your journey</p>
           </div>
 
           {/* General Error Message */}
