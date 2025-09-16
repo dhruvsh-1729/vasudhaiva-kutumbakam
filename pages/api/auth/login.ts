@@ -83,6 +83,7 @@ export default async function handler(
         password: true,
         isActive: true,
         isEmailVerified: true,
+        isAdmin: true,
       },
     });
 
@@ -136,6 +137,7 @@ export default async function handler(
         userId: user.id,
         email: user.email,
         name: user.name,
+        isAdmin: user.isAdmin,
       },
       jwtSecret,
       { expiresIn: '7d' } // Token expires in 7 days
@@ -159,6 +161,7 @@ export default async function handler(
         name: user.name,
         email: user.email,
         isEmailVerified: user.isEmailVerified,
+        ...(user.isAdmin ? { isAdmin: user.isAdmin } : {})
       },
       token,
     });
