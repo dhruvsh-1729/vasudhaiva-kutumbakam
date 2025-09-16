@@ -142,7 +142,7 @@ const Register: React.FC = () => {
       const data: ApiResponse = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+        // throw new Error(data.error || 'Registration failed');
       }
 
       if (data.success) {

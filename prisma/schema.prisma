@@ -19,6 +19,7 @@ model User {
   avatarUrl       String?
   isActive        Boolean @default(true)
   isEmailVerified Boolean @default(false)
+  isAdmin         Boolean @default(false)
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -27,6 +28,7 @@ model User {
   // Relations
   verificationTokens  VerificationToken[]
   passwordResetTokens PasswordResetToken[]
+  submissions         Submission[]
 }
 
 // Email verification tokens
@@ -58,39 +60,78 @@ model PasswordResetToken {
   @@index([userId])
 }
 
+// Admin settings for competition management
+model AdminSettings {
+  id                        String  @id @default(auto()) @map("_id") @db.ObjectId
+  currentInterval           Int     @default(1)
+  isSubmissionsOpen         Boolean @default(true)
+  maxSubmissionsPerInterval Int     @default(3)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_settings")
+}
+
+// Submissions for competitions
+model Submission {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  competitionId Int // References the static competition data
+  userId        String @db.ObjectId
+  interval      Int // Current interval when submission was made
+
+  // Submission data
+  fileUrl     String // Google Drive link
+  description String?
+
+  // Rating and evaluation
+  overallScore     Float? @default(0)
+  creativityScore  Float? @default(0)
+  technicalScore   Float? @default(0)
+  aiToolUsageScore Float? @default(0)
+  adherenceScore   Float? @default(0)
+  impactScore      Float? @default(0)
+
+  // Admin evaluation
+  judgeComments String?
+  evaluatedBy   String? // Admin/Judge ID or name
+  evaluatedAt   DateTime?
+
+  // Status tracking
+  status                 SubmissionStatus @default(PENDING)
+  isDisqualified         Boolean          @default(false)
+  disqualificationReason String?
+
+  // Access verification
+  isAccessVerified Boolean @default(false)
+  accessCheckError String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Composite indexes for efficient queries
+  @@index([competitionId, userId, interval])
+  @@index([competitionId, interval])
+  @@index([userId, competitionId])
+  @@index([status])
+  @@map("submissions")
+}
+
 enum TokenType {
   EMAIL_VERIFICATION
   WELCOME_EMAIL
 }
 
-// Optional: Competition model for future use
-// model Competition {
-//   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-//   title       String
-//   description String
-//   startDate   DateTime
-//   endDate     DateTime
-//   isActive    Boolean  @default(true)
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-//   
-//   participants User[] @relation("UserCompetitions")
-//   submissions  Submission[]
-// }
-
-// Optional: Submission model for future use
-// model Submission {
-//   id            String      @id @default(auto()) @map("_id") @db.ObjectId
-//   title         String
-//   description   String?
-//   fileUrl       String
-//   category      String
-//   userId        String      @db.ObjectId
-//   competitionId String      @db.ObjectId
-//   isActive      Boolean     @default(true)
-//   createdAt     DateTime    @default(now())
-//   updatedAt     DateTime    @updatedAt
-//   
-//   user          User        @relation(fields: [userId], references: [id])
-//   competition   Competition @relation(fields: [competitionId], references: [id])
-// }
+enum SubmissionStatus {
+  PENDING // Just submitted, awaiting review
+  UNDER_REVIEW // Being evaluated by judges
+  EVALUATED // Scoring completed
+  REJECTED // Doesn't meet criteria
+  WINNER // Competition winner
+  FINALIST // Top submissions
+}

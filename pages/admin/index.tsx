@@ -41,7 +41,7 @@ const TokenCleanupDashboard: React.FC = () => {
 
   const callCleanupAPI = async (action: string): Promise<any> => {
     if (!adminToken.trim()) {
-      throw new Error('Admin token is required');
+      // throw new Error('Admin token is required');
     }
 
     const response = await fetch(`/api/admin/cleanup-tokens?action=${action}`, {
@@ -54,7 +54,7 @@ const TokenCleanupDashboard: React.FC = () => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'API request failed');
+      // throw new Error(errorData.message || 'API request failed');
     }
 
     return response.json();

@@ -55,6 +55,7 @@ export const authenticateToken = async (
         name: true,
         email: true,
         isActive: true,
+        isAdmin: true,
       },
     });
 
