@@ -116,7 +116,12 @@ const ForgotPassword: React.FC = () => {
             <h2 className="text-2xl lg:text-3xl font-bold text-red-700 mb-2">
               Forgot Password
             </h2>
-            <p className="text-gray-600 text-sm">Enter your email to reset your password</p>
+            <p className="text-gray-600 text-sm">Enter your email to reset your password</p>             
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs text-blue-700 text-center">
+                Password reset requests can only be done once every 24 hours
+              </p>
+            </div>
           </div>
 
           {/* Result Message */}
