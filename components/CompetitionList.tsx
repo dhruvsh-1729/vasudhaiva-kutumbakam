@@ -156,10 +156,10 @@ const CompetitionList: React.FC = () => {
                       </div>
                       
                       {/* Action Section */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                        <div className="flex flex-col sm:flex-row items-center gap-3">
                           <Link href={`/competitions/${competition.id}`}>
-                            <button className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-inter font-semibold py-2 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] text-sm">
+                            <button className="bg-gradient-to-r cursor-pointer from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-inter font-semibold py-2 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] text-sm">
                               <div className="flex items-center gap-2">
                                 <span>View Details</span>
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +180,7 @@ const CompetitionList: React.FC = () => {
                         </div>
                         
                         {/* Submissions Count */}
-                        <div className="flex items-center gap-1 text-gray-600">
+                        <div className="flex items-center gap-1 mt-2 ml-1 sm:mt-0 text-gray-600">
                           <span className="text-lg">👥</span>
                           <span className="font-inter text-sm font-medium">221 submitted</span>
                         </div>

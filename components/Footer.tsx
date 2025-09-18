@@ -42,12 +42,12 @@ const Footer: React.FC = () => {
     // { href: "/main", label: "Dashboard", requiresAuth: true },
     // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
     { href: "/contact", label: "Contact" },
-    { href: "/privacy", label: "Privacy Policy" }
+    // { href: "/privacy", label: "Privacy Policy" }
   ];
 
   const authLinks: FooterLink[] = isAuthenticated 
     ? [
-        { href: "/profile", label: "Profile" },
+        // { href: "/profile", label: "Profile" },
         { href: "/main", label: "Dashboard" }
       ]
     : [
@@ -235,8 +235,12 @@ const Footer: React.FC = () => {
             {/* Competition Stats */}
             <div className="flex items-center space-x-6 text-sm">
               <div className="text-center">
-                <div className="text-orange-400 font-bold">1000+</div>
+                <div className="text-orange-400 font-bold">100+</div>
                 <div className="text-gray-500 text-xs">Participants</div>
+              </div>
+              <div className="text-center">
+                <div className="text-orange-200 font-bold">500+</div>
+                <div className="text-gray-500 text-xs">Submissions</div>
               </div>
               <div className="text-center">
                 <div className="text-red-400 font-bold">50+</div>

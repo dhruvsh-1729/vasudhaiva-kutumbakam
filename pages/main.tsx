@@ -487,7 +487,7 @@ const MainPage: React.FC = () => {
           <NotificationBanner />
           
             {/* Welcome Section for Authenticated User */}
-            <div className="w-full px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+            {/* <div className="w-full px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
             <div className="component-container mb-6 sm:mb-8 p-4 sm:p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 sm:gap-6 text-center sm:text-left">
               <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
@@ -523,26 +523,26 @@ const MainPage: React.FC = () => {
               </div>
               </div>
             </div>
-            </div>
+            </div> */}
           
-          <main className="w-full px-4 sm:px-6 lg:px-8 pb-12">
-            <div className="dashboard-grid grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <main className="w-full px-4 sm:px-6 lg:px-8 py-12">
+            <div className="dashboard-grid grid grid-cols-1 xl:grid-cols-12 gap-8">
               {/* Left Sidebar - Announcements */}
-              <div className="lg:col-span-3 space-y-8 order-2 lg:order-1">
+              <div className="xl:col-span-3 space-y-8 order-2 xl:order-1">
                 <div className="component-container">
                   <NoticeBoard announcements={announcements} />
                 </div>
               </div>
 
               {/* Center Section - Competition List */}
-              <div className="lg:col-span-6 space-y-8 order-1 lg:order-2">
+              <div className="xl:col-span-6 space-y-8 order-1 xl:order-2">
                 <div className="component-container">
                   <CompetitionList />
                 </div>
               </div>
 
               {/* Right Sidebar - Timeline */}
-              <div className="lg:col-span-3 space-y-8 order-3 lg:order-3">
+              <div className="xl:col-span-3 space-y-8 order-3 xl:order-3">
                 <div className="component-container">
                   <Timeline />
                 </div>

@@ -256,6 +256,12 @@ const Home: React.FC = () => {
                         Dashboard
                       </button>
                       <button
+                        onClick={() => router.push("/leaderboard")}
+                        className="block w-full px-4 py-2 text-sm text-zinc-700 hover:bg-gray-50"
+                      >
+                        Leaderboard
+                      </button>
+                      <button
                         onClick={handleLogout}
                         className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                       >
@@ -283,6 +289,8 @@ const Home: React.FC = () => {
           </div>
         </div>
       </nav>
+
+      <NotificationBanner />
   
       {/* Hero Section */}
       <section className="relative z-[1] min-h-screen flex items-center overflow-hidden py-8 sm:-mt-6">
