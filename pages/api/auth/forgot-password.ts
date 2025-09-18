@@ -58,7 +58,7 @@ export default async function handler(
       });
     }
 
-    if (!user.isActive) {
+    if (!user.isActive || !user.isEmailVerified) {
       // Don't reveal account status
       return res.status(200).json({
         success: true,
@@ -66,10 +66,25 @@ export default async function handler(
       });
     }
 
-    if (!user.isEmailVerified) {
-      // Don't reveal verification status
+    // Check for recent password reset requests (24-hour rate limiting)
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const recentResetRequest = await prisma.passwordResetToken.findFirst({
+      where: {
+        userId: user.id,
+        createdAt: {
+          gte: twentyFourHoursAgo
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    if (recentResetRequest) {
+      // Don't reveal rate limiting for security, but log it
+      console.log(`Rate limited password reset attempt for user ${user.id} (${user.email})`);
       return res.status(200).json({
-        success: true,
+        success: false,
         message: successMessage
       });
     }
