@@ -74,6 +74,27 @@ export default async function handler(
           });
         }
 
+        // Check for duplicate inquiry within last hour
+        const oneHourAgo = new Date();
+        oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+        const recentInquiry = await prisma.inquiry.findFirst({
+          where: {
+            email: email.toLowerCase().trim(),
+            createdAt: {
+              gte: oneHourAgo
+            }
+          }
+        });
+
+        if (recentInquiry) {
+          return res.status(429).json({
+            success: false,
+            error: 'You have already submitted an inquiry within the last hour. Please wait before submitting another.',
+            message: 'Rate limit exceeded'
+          });
+        }
+
         const inquiry = await prisma.inquiry.create({
           data: {
             name: name.trim(),

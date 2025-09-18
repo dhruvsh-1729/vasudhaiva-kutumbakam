@@ -369,10 +369,10 @@ export class TokenUtils {
         return { canResend: true };
       }
 
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-      
-      if (lastToken.createdAt > fiveMinutesAgo) {
-        const waitTime = Math.ceil((lastToken.createdAt.getTime() + 5 * 60 * 1000 - Date.now()) / 1000);
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+      if (lastToken.createdAt > thirtyMinutesAgo) {
+        const waitTime = Math.ceil((lastToken.createdAt.getTime() + 30 * 60 * 1000 - Date.now()) / 1000);
         return { canResend: false, waitTime };
       }
 
