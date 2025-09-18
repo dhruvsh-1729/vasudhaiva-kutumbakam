@@ -11,6 +11,7 @@ import CompetitionDetails from '@/components/CompetitionDetails';
 import SubmissionPanel from '@/components/SubmissionPanel';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import NotificationBanner from '@/components/NotificationBanner';
 
 // Type definitions
 interface Competition {
@@ -131,6 +132,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
       <div className="min-h-screen bg-gray-50">
         {/* Header/Breadcrumb */}
         <Header />
+        <NotificationBanner />
 
         {/* Main Content */}
         <main className="px-6 py-8">

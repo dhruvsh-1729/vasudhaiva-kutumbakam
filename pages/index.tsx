@@ -93,7 +93,14 @@ const Home: React.FC = () => {
   const scrollToSection = (sectionId: SectionId): void => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+      
+      window.scrollTo({
+        top: middle,
+        behavior: 'smooth'
+      });
     }
   };
   
@@ -219,6 +226,13 @@ const Home: React.FC = () => {
             {/* Right Side - Auth Aware */}
             <div className="flex items-center gap-4">
               {isAuthenticated && user ? (
+                <>
+                <button 
+                  className='hidden lg:block text-base px-5 py-2 bg-gradient-to-r from-red-600 to-orange-800 rounded-md text-white font-medium cursor-pointer hover:from-red-700 hover:to-orange-600' 
+                  onClick={() => router.push("/main")}
+                >
+                  Dashboard
+                </button>
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu((prev) => !prev)}
@@ -236,10 +250,16 @@ const Home: React.FC = () => {
                         <p className="text-xs text-gray-600">{user.email}</p>
                       </div>
                       <button
-                        onClick={() => router.push("/profile")}
+                        onClick={() => router.push("/main")}
                         className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
-                        Profile
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={() => router.push("/leaderboard")}
+                        className="block w-full px-4 py-2 text-sm text-zinc-700 hover:bg-gray-50"
+                      >
+                        Leaderboard
                       </button>
                       <button
                         onClick={handleLogout}
@@ -250,6 +270,7 @@ const Home: React.FC = () => {
                     </div>
                   )}
                 </div>
+                </>
               ) : (
                 <div className="flex items-center gap-3">
                   <Link href="/login">
@@ -268,9 +289,11 @@ const Home: React.FC = () => {
           </div>
         </div>
       </nav>
+
+      <NotificationBanner />
   
       {/* Hero Section */}
-      <section className="relative z-[1] min-h-screen flex items-center overflow-hidden py-8">
+      <section className="relative z-[1] min-h-screen flex items-center overflow-hidden py-8 sm:-mt-6">
         {/* Background Image with Overlay */}
         <div className="absolute z-[2] inset-0">
           <Image
@@ -292,7 +315,7 @@ const Home: React.FC = () => {
             <div className="text-center text-white space-y-8">
               
               {/* Decorative Element */}
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center mb-3">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full border-2 border-orange-300/40 flex items-center justify-center">
                     <div className="w-12 h-12 rounded-full border border-orange-200/50 flex items-center justify-center">
@@ -318,7 +341,7 @@ const Home: React.FC = () => {
               </div>
 
               {/* Main Heading */}
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div className="inline-flex items-center mb-6">
                   <div className="h-px w-12 bg-orange-400/60"></div>
                   <div className="mx-4 w-1 h-1 bg-orange-400 rounded-full"></div>
@@ -330,23 +353,18 @@ const Home: React.FC = () => {
                 </div>
                 
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
-                  <span className="block text-white/95 mb-2 ">VASUDHAIVA KUTUMBAKAM
+                  <span className="block text-white/95">VASUDHAIVA KUTUMBAKAM
                   </span>
                   <span></span>
                 </h1>
                 
-                <p className="text-xl md:text-2xl text-orange-100/90 font-light max-w-3xl mx-auto leading-relaxed mt-8">
-                  The World is One Family — Unite hearts across borders through the universal language of art
-                </p>
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
+                {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-3">
                 <button
                   onClick={handleRegisterClick}
                   className="group bg-gradient-to-r cursor-pointer from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-medium py-4 px-8 rounded-full transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:-translate-y-1 text-lg"
                 >
-                  <span className="mr-2">Begin your journey</span>
+                  <span className="mr-2">{isAuthenticated ? "Take me to dashboard" : "Begin your journey"}</span>
                   <svg className="inline w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" 
                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
@@ -365,6 +383,11 @@ const Home: React.FC = () => {
                           d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                   </svg>
                 </button>
+              </div>
+
+                <p className="text-xl md:text-2xl text-orange-100/90 font-light max-w-3xl mx-auto leading-relaxed mt-8">
+                  The World is One Family — Unite hearts across borders through the universal language of art
+                </p>
               </div>
             </div>
           </div>
