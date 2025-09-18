@@ -152,9 +152,9 @@ const Register: React.FC = () => {
           setRegisteredEmail(data.user.email);
           
           // Redirect to email verification page after 3 seconds
-          setTimeout(() => {
-            router.push(`/verify-email?email=${encodeURIComponent(data.user!.email)}`);
-          }, 3000);
+          // setTimeout(() => {
+          //   router.push(`/verify-email?email=${encodeURIComponent(data.user!.email)}`);
+          // }, 3000);
           
         } else if (data.user && data.token) {
           // Legacy flow - if token is provided (shouldn't happen with new flow)
@@ -223,20 +223,20 @@ const Register: React.FC = () => {
             </div>
           </div>
           
-          <p className="text-gray-600 mb-6">
+          {/* <p className="text-gray-600 mb-6">
             You will be redirected to the email verification page in a few seconds, or you can click the button below.
-          </p>
+          </p> */}
           
           <div className="space-y-4">
-            <button
+            {/* <button
               onClick={handleVerifyEmail}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
               Go to Email Verification
-            </button>
+            </button> */}
             
             <p className="text-sm text-gray-500">
-              Did not receive the email? Check your spam folder or try the verification page to resend.
+              Did not receive the email? Check your spam folder or contact us at vk4.ki.oar@gmail.com
             </p>
           </div>
           
