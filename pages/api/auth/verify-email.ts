@@ -61,8 +61,8 @@ export default async function handler(
     });
 
     // Send welcome email
-    const emailService = EmailService.getInstance();
-    await emailService.sendWelcomeEmail(user.email, user.name);
+    // const emailService = EmailService.getInstance();
+    // await emailService.sendWelcomeEmail(user.email, user.name);
 
     console.log(`Email verified for user: ${user.email} at ${new Date().toISOString()}`);
 
