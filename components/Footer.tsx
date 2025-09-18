@@ -38,9 +38,9 @@ const Footer: React.FC = () => {
 
   const quickLinks: FooterLink[] = [
     { href: "/", label: "Home" },
-    { href: "/about", label: "About VK" },
-    { href: "/main", label: "Dashboard", requiresAuth: true },
-    { href: "/main#competitions", label: "Competitions", requiresAuth: true },
+    // { href: "/about", label: "About VK" },
+    // { href: "/main", label: "Dashboard", requiresAuth: true },
+    // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
     { href: "/contact", label: "Contact" },
     { href: "/privacy", label: "Privacy Policy" }
   ];
@@ -187,7 +187,7 @@ const Footer: React.FC = () => {
           {/* Social & Contact */}
           <div>
             <h4 className="text-lg font-semibold mb-6 text-gray-100">Connect With Us</h4>
-            <div className="flex space-x-4 mb-6">
+            {/* <div className="flex space-x-4 mb-6">
               {socialLinks.map((social: SocialLink, index: number) => (
                 <a 
                   key={index} 
@@ -198,7 +198,7 @@ const Footer: React.FC = () => {
                   {social.icon}
                 </a>
               ))}
-            </div>
+            </div> */}
             
             {/* Contact Info */}
             <div className="space-y-3 text-sm">
@@ -206,7 +206,7 @@ const Footer: React.FC = () => {
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                support@vkcompetition.com
+                vk4.ki.oar@gmail.com
               </div>
               
               <div className="flex items-center text-gray-400">
