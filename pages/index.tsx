@@ -8,6 +8,7 @@ import NotificationBanner from '../components/NotificationBanner';
 import { ArrowRight, MoveRight } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { clientAuth } from '@/middleware/auth';
+import logo from '../public/vk-competition-logo.png';
 
 // Type definitions
 type SectionId = 'what-is-competition' | 'who-is-involved' | 'prizes-opportunities' | 'competition-list' | 'about-jyot';
@@ -188,9 +189,11 @@ const Home: React.FC = () => {
           <div className="flex h-16 items-center justify-between">
             {/* Brand */}
             <div className="flex items-center gap-3">
-              <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
+              {/* <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
                 VK
-              </div>
+              </div> */}
+              <Image className="w-10 h-10 rounded-full" alt="VK Logo" width={40} height={40}
+                  src={logo.src} />
               <div className="text-lg sm:text-xl font-semibold tracking-tight">
                 <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
                   VK Competition

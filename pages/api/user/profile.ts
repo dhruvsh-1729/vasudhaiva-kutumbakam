@@ -1,115 +1,74 @@
-// pages/api/user/profile.ts (Example protected route)
-import { NextApiResponse } from 'next';
-import { AuthenticatedRequest, withAuth } from '../../../middleware/auth';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
-interface ProfileResponse {
-  success: boolean;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-    phone?: string | null;
-    institution?: string | null;
-    avatarUrl?: string | null;
-    createdAt: Date;
-  };
-  error?: string;
-  message: string;
-}
-
-async function profileHandler(
-  req: AuthenticatedRequest,
-  res: NextApiResponse<ProfileResponse>
-) {
-  if (req.method === 'GET') {
-    // Get user profile
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: req.user!.id },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          institution: true,
-          avatarUrl: true,
-          createdAt: true,
-        },
-      });
-
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          error: 'User not found',
-          message: 'Profile not found'
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        user,
-        message: 'Profile retrieved successfully'
-      });
-
-    } catch (error) {
-      console.error('Profile fetch error:', error);
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to fetch profile',
-        message: 'Internal server error'
-      });
+// Helper function to check admin status
+function getAdminFromToken(req: NextApiRequest): { userId: string; isAdmin: boolean } | null {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
     }
 
-  } else if (req.method === 'PUT') {
-    // Update user profile
-    try {
-      const { name, phone, institution } = req.body;
-
-      const updatedUser = await prisma.user.update({
-        where: { id: req.user!.id },
-        data: {
-          ...(name && { name: name.trim() }),
-          ...(phone && { phone: phone.trim() }),
-          ...(institution && { institution: institution.trim() }),
-          updatedAt: new Date(),
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          institution: true,
-          avatarUrl: true,
-          createdAt: true,
-        },
-      });
-
-      return res.status(200).json({
-        success: true,
-        user: updatedUser,
-        message: 'Profile updated successfully'
-      });
-
-    } catch (error) {
-      console.error('Profile update error:', error);
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to update profile',
-        message: 'Internal server error'
-      });
-    }
-
-  } else {
-    return res.status(405).json({
-      success: false,
-      error: 'Method not allowed',
-      message: 'Only GET and PUT methods are allowed'
-    });
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+    
+    return { userId: decoded.userId, isAdmin: decoded.isAdmin };
+  } catch (error) {
+    return null;
   }
 }
 
-// Export with authentication middleware
-export default withAuth(profileHandler);
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  try {
+    const admin = getAdminFromToken(req);
+    if (!admin) {
+      return res.status(401).json({ error: 'Unauthorized. Admin access required.' });
+    }
+
+    // Find user by email from session
+    const user = await prisma.user.findUnique({
+      where: {
+        userId: admin.userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        institution: true,
+        avatarUrl: true,
+        isActive: true,
+        isEmailVerified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Internal server error' 
+    });
+  } finally {
+    await prisma.$disconnect();
+  }
+}

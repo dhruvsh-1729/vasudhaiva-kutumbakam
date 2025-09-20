@@ -4,6 +4,8 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { clientAuth } from '../middleware/auth';
 import { toast } from 'sonner';
+import Image from 'next/image';
+import logo from '../public/vk-competition-logo.png';
 
 interface NavigationItem {
   href: string;
@@ -117,9 +119,11 @@ const Header: React.FC = () => {
             <div className="flex-shrink-0">
               <Link href="/">
                 <div className="flex items-center space-x-3 cursor-pointer group">
-                  <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  {/* <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
                     <span className="text-white font-bold text-sm">VK</span>
-                  </div>
+                  </div> */}
+                  <Image className="w-10 h-10 rounded-full" alt="VK Logo" width={40} height={40}
+                  src={logo.src} />
                   <div>
                     <h1 className="text-xl font-bold text-red-700 group-hover:text-red-800 transition-colors">VK Competition</h1>
                     <p className="text-xs text-gray-500 hidden sm:block">Vasudhaiva Kutumbakam</p>
