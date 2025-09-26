@@ -277,12 +277,12 @@ const Home: React.FC = () => {
               ) : (
                 <div className="flex items-center gap-3">
                   <Link href="/login">
-                    <button className="text-gray-700 hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
+                    <button className="text-gray-700 cursor-pointer hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
                       Sign In
                     </button>
                   </Link>
                   <Link href="/register">
-                    <button className="bg-gradient-to-r from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
+                    <button className="bg-gradient-to-r cursor-pointer from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
                       Register
                     </button>
                   </Link>
