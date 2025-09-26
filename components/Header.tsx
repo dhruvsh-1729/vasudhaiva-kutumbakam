@@ -43,6 +43,7 @@ const Header: React.FC = () => {
     { href: "/", label: "Home" },
     { href: "/main", label: "Dashboard", requiresAuth: true },
     { href: "/profile", label: "My Profile", requiresAuth: true },
+    { href: "/contact", label: "Contact Us" },  
     // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
     // { href: "/main#timeline", label: "Timeline", requiresAuth: true }
   ];
@@ -202,7 +203,14 @@ const Header: React.FC = () => {
                           </span>
                         </Link>
 
-                        <div className="border-t border-gray-100 my-1"></div>
+                        <Link href="/contact">
+                          <span className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer">
+                            <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                            </svg>
+                            Contact us
+                          </span>
+                        </Link>
 
                         <button
                           onClick={handleLogout}

@@ -256,13 +256,13 @@ const Home: React.FC = () => {
                         onClick={() => router.push("/main")}
                         className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
-                        Dashboard
+                        Competitions
                       </button>
                       <button
-                        onClick={() => router.push("/leaderboard")}
+                        onClick={() => router.push("/profile")}
                         className="block w-full px-4 py-2 text-sm text-zinc-700 hover:bg-gray-50"
                       >
-                        Leaderboard
+                        My Profile
                       </button>
                       <button
                         onClick={handleLogout}
