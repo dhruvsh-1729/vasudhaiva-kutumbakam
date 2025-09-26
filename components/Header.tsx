@@ -6,6 +6,7 @@ import { clientAuth } from '../middleware/auth';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import logo from '../public/vk-competition-logo.png';
+import { Phone } from 'lucide-react';
 
 interface NavigationItem {
   href: string;
@@ -43,6 +44,7 @@ const Header: React.FC = () => {
     { href: "/", label: "Home" },
     { href: "/main", label: "Dashboard", requiresAuth: true },
     { href: "/profile", label: "My Profile", requiresAuth: true },
+    { href: "/contact", label: "Contact Us" },  
     // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
     // { href: "/main#timeline", label: "Timeline", requiresAuth: true }
   ];
@@ -167,7 +169,7 @@ const Header: React.FC = () => {
                       e.stopPropagation();
                       setShowUserMenu(!showUserMenu);
                     }}
-                    className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    className="w-10 h-10 cursor-pointer bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   >
                     {getInitials(user.name)}
                   </button>
@@ -176,16 +178,16 @@ const Header: React.FC = () => {
                   {showUserMenu && (
                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                       {/* User Info in Menu */}
-                      <div className="px-4 py-3 border-b border-gray-100">
+                      {/* <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-semibold text-gray-900">{user.name}</p>
                         <p className="text-xs text-gray-600">{user.email}</p>
-                      </div>
+                      </div> */}
 
                       {/* Menu Items */}
                       <div className="py-1">
                         <button
                           onClick={handleProfileClick}
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                          className="flex items-center cursor-pointer w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                         >
                           <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -202,11 +204,16 @@ const Header: React.FC = () => {
                           </span>
                         </Link>
 
-                        <div className="border-t border-gray-100 my-1"></div>
+                        <Link href="/contact">
+                          <span className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer">
+                            <Phone className="w-4 h-4 mr-3" />
+                            Contact us
+                          </span>
+                        </Link>
 
                         <button
                           onClick={handleLogout}
-                          className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                          className="flex cursor-pointer items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
                         >
                           <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

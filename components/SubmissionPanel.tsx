@@ -4,16 +4,19 @@ import { toast } from 'sonner';
 
 // Type definitions
 interface FormData {
+  title: string;
   fileUrl: string;
   description: string;
 }
 
 interface FormErrors {
+  title?: string;
   fileUrl?: string;
 }
 
 interface Submission {
   id: string;
+  title: string;
   competitionId: number;
   interval: number;
   fileUrl: string;
@@ -22,6 +25,7 @@ interface Submission {
   status: 'PENDING' | 'UNDER_REVIEW' | 'EVALUATED' | 'REJECTED' | 'WINNER' | 'FINALIST';
   isAccessVerified: boolean;
   accessCheckError?: string;
+  judgeComments?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +42,7 @@ interface AdminSettings {
 
 const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const [formData, setFormData] = useState<FormData>({
+    title: '',
     fileUrl: '',
     description: ''
   });
@@ -127,6 +132,12 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
 
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
+
+    if (!formData.title.trim()) {
+      newErrors.title = 'Title is required';
+    } else if (formData.title.length > 100) {
+      newErrors.title = 'Title cannot exceed 100 characters';
+    }
     
     if (!formData.fileUrl.trim()) {
       newErrors.fileUrl = 'Google Drive link is required';
@@ -198,24 +209,29 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
         },
         body: JSON.stringify({
           competitionId: Number(competitionId),
+          title: formData.title,
           fileUrl: formData.fileUrl,
           description: formData.description,
         }),
       });
       
       if (!response.ok) {
-        // throw new Error('Submission failed');
+        toast.error('Failed to submit entry. Please try again.');
+        return;
       }
       
       const newSubmission = await response.json();
-      
-      // Update local state
-      setSubmissions(prev => [newSubmission, ...prev]);
+      if (!newSubmission) {
+        toast.error('Failed to submit entry. Please try again.');
+        return;
+      }
       
       toast.success('Submission successful! Your entry has been received and will be reviewed by our panel of judges.');
+      window.location.reload(); // Reload to fetch updated submissions
       
       // Reset form
       setFormData({
+        title: '',
         fileUrl: '',
         description: ''
       });
@@ -305,7 +321,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       `}</style>
 
       <div className="lg:col-span-1 text-black">
-        <div className="sticky top-8 bg-white/95 backdrop-blur-md rounded-2xl border border-orange-100/50 shadow-xl overflow-hidden relative">
+        <div className="sticky top-8 bg-white/95 backdrop-blur-md rounded-2xl border border-orange-100/50 shadow-xl overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-200/20 to-transparent rounded-full"></div>
           <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-amber-200/20 to-transparent rounded-full"></div>
@@ -354,18 +370,19 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <h3 className="font-playfair text-xl font-bold submission-gradient">
+                    <h3 className="font-medium text-xl submission-gradient">
                       Submit Entry
                     </h3>
                   </div>
-                  <p className="font-inter text-orange-700/70 text-sm ml-11">Ready to participate? Submit your entry below.</p>
+                  <p className="font-bold text-orange-700/70 text-sm ml-11">Ready to participate? Submit your entry below.</p>
+                  <p className='font-inter text-black-700/70 text-sm ml-11'>Best of 3 submissions will be considered for final evaluation of the competition for the specfic week.</p>
                 </div>
 
                 {/* Submission Status Info */}
                 {adminSettings && (
                   <div className="mb-6 p-4 bg-blue-50/80 rounded-xl border border-blue-200/50">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-inter text-sm font-semibold text-blue-800">Current Interval: {adminSettings.currentInterval}</span>
+                      <span className="font-inter text-sm font-semibold text-blue-800">Current Week: {adminSettings.currentInterval}</span>
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                         adminSettings.isSubmissionsOpen 
                           ? 'bg-green-100 text-green-800' 
@@ -381,6 +398,27 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {/* Title Field */}
+                  <div>
+                    <label htmlFor="title" className="block text-sm font-semibold text-orange-800 mb-2 font-inter">
+                      Title *
+                    </label>
+                    <input
+                      type="text"
+                      id="title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 font-inter text-sm backdrop-blur-sm ${
+                        errors.title ? 'border-red-400 bg-red-50/50' : 'border-orange-200/50 bg-white/80 hover:border-orange-300'
+                      }`}
+                      placeholder="Enter a title for your submission"
+                      maxLength={100}
+                    />
+                    {errors.title && <p className="mt-1 text-xs text-red-600 font-inter">{errors.title}</p>}
+                    <p className="text-xs text-orange-600/70 mt-1 font-inter">{formData.title.length}/100 characters</p>
+                  </div>
+
                   {/* Google Drive Link Field */}
                   <div>
                     <label htmlFor="fileUrl" className="block text-sm font-semibold text-orange-800 mb-2 font-inter">
@@ -503,9 +541,17 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                             </span>
                           </div>
                           <span className="text-xs text-gray-500 font-inter">
-                            Interval {submission.interval}
+                            Week {submission.interval}
                           </span>
                         </div>
+
+                        <h4 className="font-semibold text-md text-gray-800 font-inter mb-1 break-words">{submission.title}</h4>
+                        
+                        {/* {submission.description && (
+                          <p className="text-sm text-gray-700 font-inter mb-3 line-clamp-3">
+                            {submission.description}
+                          </p>
+                        )} */}
                         
                         <div className="mb-3">
                           <a
@@ -518,13 +564,13 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                           </a>
                         </div>
                         
-                        {submission.description && (
+                        {submission.judgeComments && (
                           <p className="text-sm text-gray-700 font-inter mb-3 line-clamp-2">
-                            {submission.description}
+                            <span className="font-semibold">Judge's Comments:</span> {submission.judgeComments}
                           </p>
                         )}
                         
-                        {submission.overallScore && submission.overallScore > 0 && (
+                        {(typeof submission.overallScore === 'number' && submission.overallScore > 0) && (
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-sm font-semibold text-gray-700 font-inter">Score:</span>
                             <div className="flex items-center gap-1">

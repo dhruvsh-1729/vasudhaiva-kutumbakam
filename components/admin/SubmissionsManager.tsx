@@ -513,7 +513,6 @@ const ScoreModal: React.FC<ScoreModalProps> = ({ submission, onClose, onSave }) 
           ...scores,
           overallScore,
           evaluatedBy: 'Current Admin', // Replace with actual admin name
-          status: 'EVALUATED',
         }),
       });
 
