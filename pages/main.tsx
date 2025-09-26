@@ -9,6 +9,7 @@ import NoticeBoard from '@/components/NoticeBoard';
 import Timeline from '@/components/Timeline';
 import Footer from '@/components/Footer';
 import { clientAuth } from '../middleware/auth';
+import CompactSubmissions from '@/components/Submissions';
 
 // Type definitions
 interface Announcement {
@@ -530,6 +531,7 @@ const MainPage: React.FC = () => {
               {/* Left Sidebar - Announcements */}
               <div className="xl:col-span-3 space-y-8 order-2 xl:order-1">
                 <div className="component-container">
+                  <CompactSubmissions />
                   <NoticeBoard announcements={announcements} />
                 </div>
               </div>

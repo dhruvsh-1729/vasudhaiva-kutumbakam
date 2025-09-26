@@ -25,7 +25,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const payload = getUserFromToken(req);
     if (!payload?.userId) return res.status(401).json({ error: 'Unauthorized. Please log in.' });
 
-    if (req.method === 'GET') return getUserSubmissions(req, res, payload.userId);
+    if (req.method === 'GET') {
+      if(req.query.competitionId) {
+        return getUserCompetitionSubmissions(req, res, payload.userId);
+      } else {
+        return getUserSubmissions(req, res, payload.userId);
+      }
+    }
     if (req.method === 'POST') return createSubmission(req, res, payload.userId);
 
     res.setHeader('Allow', ['GET', 'POST']);
@@ -35,6 +41,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: 'Internal server error' });
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+async function getUserCompetitionSubmissions(req: NextApiRequest, res: NextApiResponse, userId: string) {
+  try {
+    const { competitionId } = req.query;
+
+    if (!competitionId) {
+      return res.status(400).json({ error: 'Competition ID is required' });
+    }
+
+    const submissions = await prisma.submission.findMany({
+      where: {
+        userId,
+        competitionId: parseInt(competitionId as string),
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        competitionId: true,
+        title: true,
+        interval: true,
+        fileUrl: true,
+        description: true,
+        overallScore: true,
+        creativityScore: true,
+        technicalScore: true,
+        aiToolUsageScore: true,
+        adherenceScore: true,
+        impactScore: true,
+        judgeComments: true,
+        status: true,
+        isAccessVerified: true,
+        accessCheckError: true,
+        isDisqualified: true,
+        disqualificationReason: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return res.status(200).json(submissions);
+  } catch (error) {
+    console.error('Get user submissions error:', error);
+    return res.status(500).json({ error: 'Failed to fetch submissions' });
   }
 }
 
@@ -61,6 +114,7 @@ async function getUserSubmissions(req: NextApiRequest, res: NextApiResponse, use
         id: true,
         competitionId: true,
         interval: true,
+        title: true,
         fileUrl: true,
         description: true,
 
@@ -106,11 +160,20 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
   try {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { competitionId, fileUrl, description } = req.body as {
+    const { competitionId, fileUrl, description, title } = req.body as {
       competitionId?: number | string;
       fileUrl?: string;
       description?: string;
+      title?: string;
     };
+
+    // Validate title
+    if (!title || typeof title !== 'string' || title.trim().length === 0) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+    if (title.length > 100) {
+      return res.status(400).json({ error: 'Title cannot exceed 100 characters' });
+    }
 
     // Validate required fields
     const compId = typeof competitionId === 'string' ? Number(competitionId) : competitionId;
@@ -157,6 +220,7 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
 
     const created = await prisma.submission.create({
       data: {
+        title: title.trim(),
         competitionId: compId,
         userId,
         interval: adminSettings.currentInterval,

@@ -82,6 +82,7 @@ model Submission {
   interval      Int // Current interval when submission was made
 
   // Submission data
+  title       String // Title of the submission
   fileUrl     String // Google Drive link
   description String?
 
