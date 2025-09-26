@@ -4,6 +4,8 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { clientAuth } from '../middleware/auth';
 import { toast } from 'sonner';
+import Image from 'next/image';
+import logo from '../public/vk-competition-logo.png';
 
 interface NavigationItem {
   href: string;
@@ -40,8 +42,9 @@ const Header: React.FC = () => {
   const navigationItems: NavigationItem[] = [
     { href: "/", label: "Home" },
     { href: "/main", label: "Dashboard", requiresAuth: true },
-    { href: "/main#competitions", label: "Competitions", requiresAuth: true },
-    { href: "/main#timeline", label: "Timeline", requiresAuth: true }
+    { href: "/profile", label: "My Profile", requiresAuth: true },
+    // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
+    // { href: "/main#timeline", label: "Timeline", requiresAuth: true }
   ];
 
   const handleLogout = async (): Promise<void> => {
@@ -109,7 +112,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+    <header className="shadow-sm border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
@@ -117,9 +120,11 @@ const Header: React.FC = () => {
             <div className="flex-shrink-0">
               <Link href="/">
                 <div className="flex items-center space-x-3 cursor-pointer group">
-                  <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  {/* <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
                     <span className="text-white font-bold text-sm">VK</span>
-                  </div>
+                  </div> */}
+                  <Image className="w-10 h-10 rounded-full" alt="VK Logo" width={40} height={40}
+                  src={logo.src} />
                   <div>
                     <h1 className="text-xl font-bold text-red-700 group-hover:text-red-800 transition-colors">VK Competition</h1>
                     <p className="text-xs text-gray-500 hidden sm:block">Vasudhaiva Kutumbakam</p>
@@ -185,7 +190,7 @@ const Header: React.FC = () => {
                           <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
-                          Profile Settings
+                          My Profile
                         </button>
 
                         <Link href="/main">
@@ -217,12 +222,12 @@ const Header: React.FC = () => {
               // Not authenticated - show login/register buttons
               <div className="flex items-center space-x-3">
                 <Link href="/login">
-                  <button className="text-gray-700 hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition-all duration-200">
+                  <button className="text-gray-700 hover:text-red-600 cursor-pointer font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition-all duration-200">
                     Sign In
-                  </button>
+                  </button>Sign In
                 </Link>
                 <Link href="/register">
-                  <button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                  <button className="bg-gradient-to-r from-red-600 to-red-700 cursor-pointer hover:from-red-700 hover:to-red-800 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                     Register
                   </button>
                 </Link>

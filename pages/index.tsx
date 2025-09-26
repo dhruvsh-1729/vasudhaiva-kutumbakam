@@ -8,6 +8,7 @@ import NotificationBanner from '../components/NotificationBanner';
 import { ArrowRight, MoveRight } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { clientAuth } from '@/middleware/auth';
+import logo from '../public/vk-competition-logo.png';
 
 // Type definitions
 type SectionId = 'what-is-competition' | 'who-is-involved' | 'prizes-opportunities' | 'competition-list' | 'about-jyot';
@@ -188,9 +189,11 @@ const Home: React.FC = () => {
           <div className="flex h-16 items-center justify-between">
             {/* Brand */}
             <div className="flex items-center gap-3">
-              <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
+              {/* <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
                 VK
-              </div>
+              </div> */}
+              <Image className="w-10 h-10 rounded-full" alt="VK Logo" width={40} height={40}
+                  src={logo.src} />
               <div className="text-lg sm:text-xl font-semibold tracking-tight">
                 <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
                   VK Competition
@@ -274,12 +277,12 @@ const Home: React.FC = () => {
               ) : (
                 <div className="flex items-center gap-3">
                   <Link href="/login">
-                    <button className="text-gray-700 hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
+                    <button className="text-gray-700 cursor-pointer hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
                       Sign In
                     </button>
                   </Link>
                   <Link href="/register">
-                    <button className="bg-gradient-to-r from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
+                    <button className="bg-gradient-to-r cursor-pointer from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
                       Register
                     </button>
                   </Link>
