@@ -1,7 +1,7 @@
 // pages/api/submissions/index.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, SubmissionStatus } from '@prisma/client';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -199,7 +199,8 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
     if (!adminSettings.isSubmissionsOpen) {
       return res.status(403).json({ error: 'Submissions are currently closed' });
     }
-
+    console.log(userId, compId, adminSettings.currentInterval);
+    
     // Check submission limit for current interval
     const existingCount = await prisma.submission.count({
       where: {
@@ -259,6 +260,12 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
     console.error('Create submission error:', error);
     return res.status(500).json({ error: 'Failed to create submission' });
   }
+}
+
+// ---------- Submission Status Enum ----------
+enum SubmissionStatus {
+  PENDING = 'PENDING',
+  REJECTED = 'REJECTED',
 }
 
 // ---------- Helpers ----------

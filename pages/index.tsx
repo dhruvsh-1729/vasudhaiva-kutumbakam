@@ -429,8 +429,7 @@ const Home: React.FC = () => {
                   <div className="h-px w-12 bg-orange-400/60"></div>
                   <div className="mx-4 w-1 h-1 bg-orange-400 rounded-full"></div>
                   <span className="text-orange-200 text-sm font-light tracking-[0.2em] uppercase">
-                  Global Celebration of Unity through Creative Expression
-                  </span>
+                  Empowering Youth to Protect Heritage through Art                  </span>
                   <div className="mx-4 w-1 h-1 bg-orange-400 rounded-full"></div>
                   <div className="h-px w-12 bg-orange-400/60"></div>
                 </div>
@@ -496,9 +495,6 @@ const Home: React.FC = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <span className="inline-flex items-center rounded-lg border border-amber-300/50 bg-amber-100/60 px-4 py-2 text-sm font-medium text-amber-800 shadow-sm">
-              A celebration of unity
-            </span>
             <h2 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight">
               <span className="bg-gradient-to-r from-amber-800 via-orange-700 to-amber-900 bg-clip-text text-transparent">
                 What is the VK Competition?
@@ -506,7 +502,7 @@ const Home: React.FC = () => {
             </h2>
             <div className="mx-auto mt-6 h-px w-32 bg-gradient-to-r from-amber-600/60 via-orange-500/60 to-amber-700/60" />
             <p className="mt-8 text-lg md:text-xl text-amber-800/80 max-w-4xl mx-auto leading-relaxed">
-              A global celebration of unity through creative expression, where artists from every corner of the world 
+             Empowering Youth to Protect Heritage through Art and AI, where artists from every corner of the world 
               come together to showcase the beautiful principle that The World is One Family.
             </p>
           </div>
@@ -650,7 +646,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Prizes Section */}
-      <section id="prizes-opportunities" className="py-20 bg-white/50">
+      <section id="prizes-opportunities" className="py-20 bg-gradient-to-b from-amber-50/40 to-orange-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-red-700 mb-6">
@@ -667,14 +663,14 @@ const Home: React.FC = () => {
               Prize Pool of ₹3,00,000
             </h3>
             <p className="text-lg opacity-90">
-              And other exciting opportunities to showcase your work on global platforms 
+              And other exciting opportunities to showcase your work on global platforms in front of dignitaries and industry leaders.
             </p>
           </div>
         </div>
       </section>
 
       {/* Competition Categories Section */}
-      <section id="competition-list" className="py-20">
+      <section id="competition-list" className="py-20 bg-gradient-to-b from-amber-50/40 to-orange-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-red-700 mb-6">
