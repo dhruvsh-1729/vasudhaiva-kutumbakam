@@ -39,20 +39,20 @@ const generateSectionsForCompetition = (competition) => {
       content: `Specific requirements for AI Short Video submissions:
       
       **Technical Specifications:**
-      • Duration: Exactly 15 seconds
-      • Format: MP4, MOV, or AVI
+      • Duration: 1-3 minutes
+      • Watermark allowed
       • Resolution: Minimum 720p, preferred 1080p
       • Aspect Ratio: 9:16 (vertical) or 16:9 (horizontal)
       • File Size: Maximum 100MB
       
       **Content Guidelines:**
       • Must use at least one AI tool for video generation
-      • Weekly theme integration required
+      • Weekly theme integration must
       • Original content only (no copyrighted material)
       • Clear visual and audio quality
       • Engaging storytelling within time limit`
     });
-  } else if (competition.id === 2) { // Lextoons
+  } else if (competition.id === 2) { // Script Writing
     baseSections.push({
       id: "toon-requirements",
       title: "Toon Creation Guidelines",
@@ -71,7 +71,8 @@ const generateSectionsForCompetition = (competition) => {
       • PNG, JPEG, GIF, or MP4 formats accepted
       • Include process documentation showing AI tool usage`
     });
-  } else if (competition.id === 3) { // Political Toons
+  } 
+  /*else if (competition.id === 3) { // Political Toons
     baseSections.push({
       id: "satire-guidelines",
       title: "Political Satire Guidelines",
@@ -91,7 +92,7 @@ const generateSectionsForCompetition = (competition) => {
       • Clear political commentary or message
       • Engaging and thought-provoking content`
     });
-  }
+  }*/
 
   // AI Tools & Resources
   baseSections.push({

@@ -65,6 +65,86 @@ const Home: React.FC = () => {
     }
   }, []);
 
+  // Mobile carousel scroll hijacking
+  useEffect(() => {
+    // Only run on mobile devices
+    if (typeof window === 'undefined' || window.innerWidth >= 1024) return;
+
+    let currentIndex = 0;
+    const totalItems = 4;
+    const cardWidth = 320;
+    const gap = 24;
+    
+    const carousel = document.getElementById('mobile-carousel-track');
+    const container = document.getElementById('mobile-scroll-carousel');
+    const indicators = document.querySelectorAll('.indicator-dot');
+    const scrollHint = document.getElementById('scroll-hint');
+
+    const updateCarousel = () => {
+      if (!carousel) return;
+      
+      const translateX = -(currentIndex * (cardWidth + gap));
+      carousel.style.transform = `translateX(${translateX}px)`;
+      
+      // Update indicators
+      indicators.forEach((dot, index) => {
+        if (index === currentIndex) {
+          dot.className = 'w-8 h-2 rounded-full bg-amber-600 transition-all duration-300 indicator-dot active';
+        } else {
+          dot.className = 'w-2 h-2 rounded-full bg-amber-300 transition-all duration-300 indicator-dot';
+        }
+      });
+
+      // Update scroll hint
+      if (scrollHint) {
+        if (currentIndex === 0) {
+          scrollHint.textContent = 'Scroll down to explore →';
+        } else if (currentIndex === totalItems - 1) {
+          scrollHint.textContent = '← Scroll up to go back';
+        } else {
+          scrollHint.textContent = '← Scroll to navigate →';
+        }
+      }
+    };
+
+    const handleWheelScroll = (e: WheelEvent) => {
+      if (!container) return;
+
+      const rect = container.getBoundingClientRect();
+      const isInView = rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4;
+
+      if (isInView) {
+        const deltaY = e.deltaY;
+
+        if (Math.abs(deltaY) > 10) {
+          if (deltaY > 0 && currentIndex < totalItems - 1) {
+            // Scroll down -> next slide
+            e.preventDefault();
+            currentIndex++;
+            updateCarousel();
+          } else if (deltaY < 0 && currentIndex > 0) {
+            // Scroll up -> previous slide
+            e.preventDefault();
+            currentIndex--;
+            updateCarousel();
+          }
+          // At boundaries, allow normal scrolling (don't preventDefault)
+        }
+      }
+    };
+
+  // Add event listeners
+  document.addEventListener('wheel', handleWheelScroll, { passive: false });
+
+  // Initialize
+  updateCarousel();
+
+  // Cleanup
+  return () => {
+    document.removeEventListener('wheel', handleWheelScroll);
+  };
+}, []);
+
   const handleRegisterClick = (): void => {
     router.push("/register");
   };
@@ -349,8 +429,7 @@ const Home: React.FC = () => {
                   <div className="h-px w-12 bg-orange-400/60"></div>
                   <div className="mx-4 w-1 h-1 bg-orange-400 rounded-full"></div>
                   <span className="text-orange-200 text-sm font-light tracking-[0.2em] uppercase">
-                  Global Celebration of Unity through Creative Expression
-                  </span>
+                  Empowering Youth to Protect Heritage through Art                  </span>
                   <div className="mx-4 w-1 h-1 bg-orange-400 rounded-full"></div>
                   <div className="h-px w-12 bg-orange-400/60"></div>
                 </div>
@@ -407,99 +486,167 @@ const Home: React.FC = () => {
       </section>
 
       {/* What is Competition Section */}
-      <section id="what-is-competition" className="relative py-24 overflow-hidden">
-        {/* Soft gradient ornaments */}
+      <section id="what-is-competition" className="relative py-20 overflow-hidden bg-gradient-to-b from-amber-50/40 to-orange-50/30">
+        {/* Subtle background texture */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-20 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-rose-400/25 via-red-400/20 to-orange-300/25 blur-3xl" />
-          <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-gradient-to-tr from-orange-400/25 via-red-400/20 to-rose-300/25 blur-3xl" />
+          <div className="absolute top-20 left-10 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/15 via-orange-400/10 to-amber-300/15 blur-3xl" />
+          <div className="absolute bottom-10 right-20 h-48 w-48 rounded-full bg-gradient-to-tr from-orange-400/15 via-amber-400/10 to-orange-300/15 blur-3xl" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-        <span className="inline-flex items-center rounded-full border border-red-200/60 bg-white/70 px-3 py-1 text-xs font-medium text-red-700 shadow-sm">
-          A celebration of unity
-        </span>
-        <h2 className="mt-4 text-3xl md:text-5xl font-bold tracking-tight">
-          <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
-            What is the VK Competition?
-          </span>
-        </h2>
-        <div className="mx-auto mt-5 h-px w-24 bg-gradient-to-r from-red-500/60 via-rose-500/60 to-orange-500/60 rounded-full" />
-        <p className="mt-6 text-lg md:text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-          A global celebration of unity through creative expression, where artists from every corner of the world 
-          come together to showcase the beautiful principle that The World is One Family.
-        </p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        {competitionInfo.map((item: CompetitionInfo, index: number) => (
-          <div key={index} className="group relative">
-            {/* Glow on hover */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/10 via-rose-500/10 to-orange-500/10 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100" />
-            
-            {/* Gradient border wrapper */}
-            <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-red-500/20 via-rose-500/20 to-orange-500/20">
-          {/* Card */}
-          <div className="rounded-2xl h-full bg-white/80 backdrop-blur-xl border border-white/60 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-0.5">
-            <div className="p-8">
-              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-red-50 to-orange-50 text-2xl ring-1 ring-red-100 transition-transform duration-300 group-hover:scale-105">
-            {item.icon}
-              </div>
-              <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3">
-            {item.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-            {item.description}
-              </p>
-            </div>
-
-            {/* Subtle top accent */}
-            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-red-400/40 to-transparent" />
-          </div>
-            </div>
-          </div>
-        ))}
-          </div>
-
-          <div className="mt-12 flex justify-center">
-        <button
-          onClick={() => scrollToSection('competition-list')}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-red-500/25 hover:shadow-red-500/35 hover:from-red-700 hover:to-red-800 transition-all"
-        >
-          Explore categories
-          <ArrowRight className="h-4 w-4" />
-        </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Who is Involved Section */}
-      <section id="who-is-involved" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-red-700 mb-6">
-              Who Can Participate?
+            <h2 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight">
+              <span className="bg-gradient-to-r from-amber-800 via-orange-700 to-amber-900 bg-clip-text text-transparent">
+                What is the VK Competition?
+              </span>
             </h2>
-            <p className="text-xl text-gray-700 max-w-4xl mx-auto">
-              The VK Competition welcomes all souls who believe in the power of unity and wish to express 
-              the sacred bond that connects humanity.
+            <div className="mx-auto mt-6 h-px w-32 bg-gradient-to-r from-amber-600/60 via-orange-500/60 to-amber-700/60" />
+            <p className="mt-8 text-lg md:text-xl text-amber-800/80 max-w-4xl mx-auto leading-relaxed">
+             Empowering Youth to Protect Heritage through Art and AI, where artists from every corner of the world 
+              come together to showcase the beautiful principle that The World is One Family.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {participantCategories.map((participant: ParticipantCategory, index: number) => (
-              <div key={index} className="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-6 text-center border border-red-200">
-                <div className="text-3xl mb-3">{participant.icon}</div>
-                <h3 className="text-xl font-bold text-red-700 mb-2">{participant.category}</h3>
-                <p className="text-gray-600 text-sm">{participant.description}</p>
+          {/* Desktop Grid - Hidden on Mobile */}
+          <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[...competitionInfo, {
+              title: "Ancient Wisdom",
+              description: "Explore the profound knowledge of Indian civilization and weave timeless principles into contemporary narratives",
+              icon: "🏛️"
+            }].map((item: CompetitionInfo, index: number) => (
+              <div key={index} className="group relative transform transition-all duration-500 hover:scale-105">
+                {/* Subtle glow effect */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-amber-500/10 via-orange-500/8 to-amber-600/10 opacity-0 blur-lg transition-opacity duration-500 group-hover:opacity-100" />
+                
+                {/* Card */}
+                <div className="relative h-full bg-white/80 backdrop-blur-sm rounded-xl border border-amber-200/60 shadow-lg transition-all duration-500 group-hover:shadow-xl group-hover:border-amber-300/80">
+                  <div className="p-8">
+                    {/* Interactive SVG Icon instead of emoji */}
+                    <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200/50 shadow-inner transition-transform duration-300 group-hover:scale-110">
+                      {index === 0 && (
+                        <svg className="w-8 h-8 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                        </svg>
+                      )}
+                      {index === 1 && (
+                        <svg className="w-8 h-8 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6.5V7.5L12 8L9 7.5V6.5L3 7V9L9 9.5V12L3 12V14L9 14.5V17.5L12 16L15 17.5V14.5L21 14V12L15 11.5V9.5L21 9Z"/>
+                        </svg>
+                      )}
+                      {index === 2 && (
+                        <svg className="w-8 h-8 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                        </svg>
+                      )}
+                      {index === 3 && (
+                        <svg className="w-8 h-8 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M5,3C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H5M5,5H19V19H5V5M7,7V9H17V7H7M7,11V13H17V11H7M7,15V17H14V15H7Z"/>
+                        </svg>
+                      )}
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-medium text-amber-900 mb-4 transition-colors duration-300 group-hover:text-amber-800">
+                      {item.title}
+                    </h3>
+                    <p className="text-amber-700/80 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  {/* Elegant top accent line */}
+                  <div className="absolute inset-x-0 top-0 h-1 rounded-t-xl bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 transform scale-x-0 transition-transform duration-500 group-hover:scale-x-100 origin-left" />
+                  
+                  {/* Subtle corner accents */}
+                  <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-amber-300/0 transition-colors duration-300 group-hover:border-amber-400/60" />
+                  <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-amber-300/0 transition-colors duration-300 group-hover:border-amber-400/60" />
+                </div>
               </div>
             ))}
+          </div>
+
+          {/* Mobile Snap Scroll Carousel */}
+          <div className="lg:hidden">
+            <div className="overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+              <div className="flex gap-6 pb-4 px-4 w-max">
+                {[...competitionInfo, {
+                  title: "Ancient Wisdom",
+                  description: "Explore the profound knowledge of Indian civilization and weave timeless principles into contemporary narratives",
+                  icon: "🏛️"
+                }].map((item: CompetitionInfo, index: number) => (
+                  <div key={index} className="snap-center flex-none w-80 group relative">
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-amber-500/10 via-orange-500/8 to-amber-600/10 opacity-0 blur-lg transition-opacity duration-500 group-hover:opacity-100" />
+                    
+                    {/* Card */}
+                    <div className="relative h-full bg-white/80 backdrop-blur-sm rounded-xl border border-amber-200/60 shadow-lg transition-all duration-500 group-hover:shadow-xl group-hover:border-amber-300/80">
+                      <div className="p-6">
+                        {/* Interactive SVG Icon */}
+                        <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200/50 shadow-inner transition-transform duration-300 group-hover:scale-110">
+                          {index === 0 && (
+                            <svg className="w-6 h-6 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                            </svg>
+                          )}
+                          {index === 1 && (
+                            <svg className="w-6 h-6 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6.5V7.5L12 8L9 7.5V6.5L3 7V9L9 9.5V12L3 12V14L9 14.5V17.5L12 16L15 17.5V14.5L21 14V12L15 11.5V9.5L21 9Z"/>
+                            </svg>
+                          )}
+                          {index === 2 && (
+                            <svg className="w-6 h-6 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                            </svg>
+                          )}
+                          {index === 3 && (
+                            <svg className="w-6 h-6 text-amber-700" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M5,3C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H5M5,5H19V19H5V5M7,7V9H17V7H7M7,11V13H17V11H7M7,15V17H14V15H7Z"/>
+                            </svg>
+                          )}
+                        </div>
+                        <h3 className="text-lg font-medium text-amber-900 mb-3 transition-colors duration-300 group-hover:text-amber-800">
+                          {item.title}
+                        </h3>
+                        <p className="text-amber-700/80 text-sm leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+
+                      {/* Elegant top accent line */}
+                      <div className="absolute inset-x-0 top-0 h-1 rounded-t-xl bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 transform scale-x-0 transition-transform duration-500 group-hover:scale-x-100 origin-left" />
+                      
+                      {/* Subtle corner accents */}
+                      <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-amber-300/0 transition-colors duration-300 group-hover:border-amber-400/60" />
+                      <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-amber-300/0 transition-colors duration-300 group-hover:border-amber-400/60" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Scroll hint */}
+            <div className="text-center mt-4">
+              <p className="text-amber-600/70 text-xs animate-pulse">
+                ← Swipe horizontally to explore →
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-14 flex justify-center">
+            <button
+              onClick={() => scrollToSection('competition-list')}
+              className="group relative inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-amber-700 to-orange-700 text-white px-8 py-4 text-sm font-medium shadow-lg shadow-amber-500/25 hover:shadow-amber-500/35 hover:from-amber-800 hover:to-orange-800 transition-all duration-300 overflow-hidden"
+            >
+              <span className="relative z-10">Explore categories</span>
+              <ArrowRight className="h-4 w-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+              
+              {/* Button hover effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100 origin-left" />
+            </button>
           </div>
         </div>
       </section>
 
       {/* Prizes Section */}
-      <section id="prizes-opportunities" className="py-20 bg-white/50">
+      <section id="prizes-opportunities" className="py-20 bg-gradient-to-b from-amber-50/40 to-orange-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-red-700 mb-6">
@@ -516,14 +663,14 @@ const Home: React.FC = () => {
               Prize Pool of ₹3,00,000
             </h3>
             <p className="text-lg opacity-90">
-              And other exciting opportunities to showcase your work on global platforms 
+              And other exciting opportunities to showcase your work on global platforms in front of dignitaries and industry leaders.
             </p>
           </div>
         </div>
       </section>
 
       {/* Competition Categories Section */}
-      <section id="competition-list" className="py-20">
+      <section id="competition-list" className="py-20 bg-gradient-to-b from-amber-50/40 to-orange-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-red-700 mb-6">

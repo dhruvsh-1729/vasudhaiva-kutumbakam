@@ -532,7 +532,7 @@ const MainPage: React.FC = () => {
               <div className="xl:col-span-3 space-y-8 order-2 xl:order-1">
                 <div className="component-container">
                   <CompactSubmissions />
-                  <NoticeBoard announcements={announcements} />
+                  <NoticeBoard />
                 </div>
               </div>
 
