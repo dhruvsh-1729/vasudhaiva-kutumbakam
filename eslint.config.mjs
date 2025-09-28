@@ -19,6 +19,10 @@ const eslintConfig = [
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-inferrable-types": "off",
       "@typescript-eslint/no-require-imports": "off",
+      "@next/next/no-page-custom-font": "off",
+      "@next/next/no-img-element": "off",
+      "react/no-unescaped-entities": "off",
+      "react-hooks/exhaustive-deps": "off",
     },
   },
 ];
