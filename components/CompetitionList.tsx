@@ -59,6 +59,7 @@ const CompetitionList: React.FC = () => {
       `}</style>
 
       <div className="compact-container p-0">
+      </div>
         {/* Compact Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
@@ -193,50 +194,7 @@ const CompetitionList: React.FC = () => {
           })}
         </div>
 
-        {/* Compact Call to Action */}
-        <div className="mt-8">
-          <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-100/50 overflow-hidden">
-            {/* Background Decoration */}
-            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-200/20 to-transparent rounded-full"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-amber-200/20 to-transparent rounded-full"></div>
-            
-            <div className="relative z-10 text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl mb-4 shadow-md">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              
-              <h3 className="font-playfair text-xl font-bold text-gray-900 mb-2">
-                Ready to Begin Your Sacred Journey?
-              </h3>
-              
-              <p className="font-crimson text-sm text-gray-700 mb-4 leading-relaxed">
-                Join thousands of enlightened creators expressing unity through art.
-              </p>
-              
-              <div className="flex flex-wrap justify-center gap-3">
-                <Link href="/register">
-                  <button className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-inter font-semibold px-6 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-sm">
-                    <span className="flex items-center gap-2">
-                      Begin Your Expression
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </span>
-                  </button>
-                </Link>
-                
-                <Link href="/about">
-                  <button className="bg-white/80 backdrop-blur-sm hover:bg-white border border-orange-200 hover:border-orange-300 text-orange-700 font-inter font-semibold px-6 py-2 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-sm">
-                    Learn More About VK
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        
     </section>
   );
 };
