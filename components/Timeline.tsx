@@ -22,25 +22,25 @@ const Timeline: React.FC = () => {
     {
       id: 2,
       title: 'Week 1 Challenge',
-      date: 'March 1 - March 8, 2025',
-      status: 'completed'
+      date: 'OCtober 5 - October 12, 2025',
+      status: 'upcoming'
     },
     {
       id: 3,
       title: 'Week 2 Challenge',
-      date: 'March 8 - March 15, 2025',
-      status: 'current'
+      date: 'October 12 - October 19, 2025',
+      status: 'upcoming'
     },
     {
       id: 4,
       title: 'Week 3 Challenge',
-      date: 'March 15 - March 22, 2025',
+      date: 'October 19 - October 26, 2025',
       status: 'upcoming'
     },
     {
       id: 5,
       title: 'Final Results',
-      date: 'April 5, 2025',
+      date: 'December 27, 2025',
       status: 'upcoming'
     }
   ];
@@ -209,7 +209,7 @@ const Timeline: React.FC = () => {
           <div className="mt-6 pt-4 border-t border-orange-100">
             <div className="flex items-center justify-between text-xs mb-3">
               <span className="font-inter text-gray-600 font-medium">Progress</span>
-              <span className="font-inter text-orange-600 font-semibold">Week 2 of 5</span>
+              <span className="font-inter text-orange-600 font-semibold">Week 1 of 5</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden shadow-inner">
               <div className="bg-gradient-to-r from-emerald-500 via-orange-500 to-amber-500 h-2 rounded-full transition-all duration-1000 ease-out shadow-sm" style={{width: '40%'}}></div>
@@ -222,7 +222,7 @@ const Timeline: React.FC = () => {
           </div>
 
           {/* Weekly Challenge Stats */}
-          <div className="mt-4 p-3 bg-gradient-to-r from-orange-50/80 to-amber-50/80 rounded-xl border border-orange-100/50">
+          {/*<div className="mt-4 p-3 bg-gradient-to-r from-orange-50/80 to-amber-50/80 rounded-xl border border-orange-100/50">
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-playfair text-xs font-bold text-orange-800">Current Week Stats</h4>
               <div className="flex items-center gap-1">
@@ -244,7 +244,7 @@ const Timeline: React.FC = () => {
                 <div className="font-inter text-orange-600">Remaining</div>
               </div>
             </div>
-          </div>
+          </div>*/}
         </div>
       </div>
     </section>

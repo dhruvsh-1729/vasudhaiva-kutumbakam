@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const payload = getUserFromToken(req);
+    console.log('Token payload:', payload);
     if (!payload?.userId) return res.status(401).json({ message: 'Unauthorized' });
 
     const user = await prisma.user.findUnique({

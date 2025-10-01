@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
               </div>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              A global platform celebrating unity through creative expression. Join thousands of artists, creators, and innovators in our sacred journey of artistic collaboration.
+              A global platform celebrating unity through creative expression. Join thousands of artists, creators, and innovators in our journey of artistic collaboration.
             </p>
             
             {/* User Status */}

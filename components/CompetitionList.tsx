@@ -30,11 +30,17 @@ interface CompetitionStats {
 
 const CompetitionList: React.FC = () => {
   // Prize information configuration
-  const prizeInfo: PrizeInfo[] = [
-    { position: 1, amount: '₹8,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹5,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹3,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
-  ];
+  const prizeInfo1: PrizeInfo[] = [
+    { position: 1, amount: '₹10,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹6,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹4,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+  ]
+  const prizeInfo2: PrizeInfo[] = [
+    { position: 1, amount: '₹5,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹3,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹2,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+  ]
+  ;
 
   return (
     <section className="w-full relative">
@@ -59,6 +65,7 @@ const CompetitionList: React.FC = () => {
       `}</style>
 
       <div className="compact-container p-0">
+      </div>
         {/* Compact Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
@@ -74,7 +81,7 @@ const CompetitionList: React.FC = () => {
           </h2>
           
           <p className="font-crimson text-sm text-orange-700/80 max-w-md mx-auto leading-relaxed">
-            Join our sacred weekly challenges and express your creativity through the universal language of art and innovation
+            Join our weekly challenges and express your creativity through the universal language of art and innovation
           </p>
           
           {/* Compact Weekly Badge */}
@@ -90,8 +97,8 @@ const CompetitionList: React.FC = () => {
           {competitions.map((competition: Competition, index: number) => {
             // Generate competition stats for each competition
             const competitionStats: CompetitionStats[] = [
-              { label: 'Week 2', value: 'Week 2', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
-              { label: '5 Days Left', value: '5 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
+              { label: 'Week 1', value: 'Week 1', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
+              { label: '7 Days Left', value: '7 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
             ];
 
             return (
@@ -144,16 +151,21 @@ const CompetitionList: React.FC = () => {
                       <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200/50">
                         <h4 className="font-playfair font-semibold text-orange-800 text-sm mb-2">Competition Prizes</h4>
                         <div className="flex justify-between items-center text-xs">
-                          {prizeInfo.map((prize: PrizeInfo) => (
+                          {(competition.id === 1 ? prizeInfo1 : prizeInfo2).map((prize: PrizeInfo) => (
                             <div key={prize.position} className="flex items-center gap-1">
-                              <div className={`w-4 h-4 bg-gradient-to-br from-${prize.color} to-${prize.bgColor} rounded-full flex items-center justify-center`}>
+                              <div
+                                className={`w-4 h-4 bg-gradient-to-br from-${prize.color} to-${prize.bgColor} rounded-full flex items-center justify-center`}
+                              >
                                 <span className="text-white text-xs font-bold">{prize.position}</span>
                               </div>
-                              <span className={`font-inter font-medium text-${prize.textColor}`}>{prize.amount}</span>
+                              <span className={`font-inter font-medium text-${prize.textColor}`}>
+                                {prize.amount}
+                              </span>
                             </div>
                           ))}
                         </div>
                       </div>
+
                       
                       {/* Action Section */}
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
@@ -179,11 +191,7 @@ const CompetitionList: React.FC = () => {
                           </div>
                         </div>
                         
-                        {/* Submissions Count */}
-                        <div className="flex items-center gap-1 mt-2 ml-1 sm:mt-0 text-gray-600">
-                          <span className="text-lg">👥</span>
-                          <span className="font-inter text-sm font-medium">221 submitted</span>
-                        </div>
+                        
                       </div>
                     </div>
                   </div>
@@ -193,52 +201,16 @@ const CompetitionList: React.FC = () => {
           })}
         </div>
 
-        {/* Compact Call to Action */}
-        <div className="mt-8">
-          <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-100/50 overflow-hidden">
-            {/* Background Decoration */}
-            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-200/20 to-transparent rounded-full"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-amber-200/20 to-transparent rounded-full"></div>
-            
-            <div className="relative z-10 text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl mb-4 shadow-md">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              
-              <h3 className="font-playfair text-xl font-bold text-gray-900 mb-2">
-                Ready to Begin Your Sacred Journey?
-              </h3>
-              
-              <p className="font-crimson text-sm text-gray-700 mb-4 leading-relaxed">
-                Join thousands of enlightened creators expressing unity through art.
-              </p>
-              
-              <div className="flex flex-wrap justify-center gap-3">
-                <Link href="/register">
-                  <button className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-inter font-semibold px-6 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-sm">
-                    <span className="flex items-center gap-2">
-                      Begin Your Expression
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </span>
-                  </button>
-                </Link>
-                
-                <Link href="/about">
-                  <button className="bg-white/80 backdrop-blur-sm hover:bg-white border border-orange-200 hover:border-orange-300 text-orange-700 font-inter font-semibold px-6 py-2 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-sm">
-                    Learn More About VK
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        
     </section>
   );
 };
 
 export default CompetitionList;
+
+
+{/* Submissions Count
+<div className="flex items-center gap-1 mt-2 ml-1 sm:mt-0 text-gray-600">
+<span className="text-lg">👥</span>
+<span className="font-inter text-sm font-medium">221 submitted</span>
+</div> */}

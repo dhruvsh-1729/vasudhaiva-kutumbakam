@@ -252,9 +252,8 @@ const Home: React.FC = () => {
   // Competition categories data
   const competitionCategories: CompetitionCategory[] = [
     { category: "AI Reel Making", icon: "🎬", description: "Craft 1-3 minute stories using AI tools that bring global unity and creativity to life." },
-    { category: "Lextoons", icon: "🖋️", description: "Turn words into witty AI-generated cartoons that highlight values and social issues." },
     { category: "Political Toons", icon: "🏛️", description: "Use satire and AI artistry to creatively capture political ideas and principles." },
-    { category: "Creative Expression", icon: "✨", description: "An open category for unique AI-driven 5-7 pages script aligned with Vasudhaiva Kutumbakam." }              
+    { category: "Creative Expression", icon: "✨", description: "An open category for unique AI-driven script aligned with Vasudhaiva Kutumbakam." }              
   ];
 
   // Return statement for the main component
