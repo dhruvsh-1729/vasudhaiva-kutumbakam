@@ -30,11 +30,17 @@ interface CompetitionStats {
 
 const CompetitionList: React.FC = () => {
   // Prize information configuration
-  const prizeInfo: PrizeInfo[] = [
-    { position: 1, amount: '₹8,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹5,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹3,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
-  ];
+  const prizeInfo1: PrizeInfo[] = [
+    { position: 1, amount: '₹10,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹6,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹4,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+  ]
+  const prizeInfo2: PrizeInfo[] = [
+    { position: 1, amount: '₹5,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹3,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹2,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+  ]
+  ;
 
   return (
     <section className="w-full relative">
@@ -75,7 +81,7 @@ const CompetitionList: React.FC = () => {
           </h2>
           
           <p className="font-crimson text-sm text-orange-700/80 max-w-md mx-auto leading-relaxed">
-            Join our sacred weekly challenges and express your creativity through the universal language of art and innovation
+            Join our weekly challenges and express your creativity through the universal language of art and innovation
           </p>
           
           {/* Compact Weekly Badge */}
@@ -91,8 +97,8 @@ const CompetitionList: React.FC = () => {
           {competitions.map((competition: Competition, index: number) => {
             // Generate competition stats for each competition
             const competitionStats: CompetitionStats[] = [
-              { label: 'Week 2', value: 'Week 2', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
-              { label: '5 Days Left', value: '5 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
+              { label: 'Week 1', value: 'Week 1', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
+              { label: '7 Days Left', value: '7 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
             ];
 
             return (
@@ -145,16 +151,21 @@ const CompetitionList: React.FC = () => {
                       <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200/50">
                         <h4 className="font-playfair font-semibold text-orange-800 text-sm mb-2">Competition Prizes</h4>
                         <div className="flex justify-between items-center text-xs">
-                          {prizeInfo.map((prize: PrizeInfo) => (
+                          {(competition.id === 1 ? prizeInfo1 : prizeInfo2).map((prize: PrizeInfo) => (
                             <div key={prize.position} className="flex items-center gap-1">
-                              <div className={`w-4 h-4 bg-gradient-to-br from-${prize.color} to-${prize.bgColor} rounded-full flex items-center justify-center`}>
+                              <div
+                                className={`w-4 h-4 bg-gradient-to-br from-${prize.color} to-${prize.bgColor} rounded-full flex items-center justify-center`}
+                              >
                                 <span className="text-white text-xs font-bold">{prize.position}</span>
                               </div>
-                              <span className={`font-inter font-medium text-${prize.textColor}`}>{prize.amount}</span>
+                              <span className={`font-inter font-medium text-${prize.textColor}`}>
+                                {prize.amount}
+                              </span>
                             </div>
                           ))}
                         </div>
                       </div>
+
                       
                       {/* Action Section */}
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
@@ -180,11 +191,7 @@ const CompetitionList: React.FC = () => {
                           </div>
                         </div>
                         
-                        {/* Submissions Count */}
-                        <div className="flex items-center gap-1 mt-2 ml-1 sm:mt-0 text-gray-600">
-                          <span className="text-lg">👥</span>
-                          <span className="font-inter text-sm font-medium">221 submitted</span>
-                        </div>
+                        
                       </div>
                     </div>
                   </div>
@@ -200,3 +207,10 @@ const CompetitionList: React.FC = () => {
 };
 
 export default CompetitionList;
+
+
+{/* Submissions Count
+<div className="flex items-center gap-1 mt-2 ml-1 sm:mt-0 text-gray-600">
+<span className="text-lg">👥</span>
+<span className="font-inter text-sm font-medium">221 submitted</span>
+</div> */}
