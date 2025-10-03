@@ -2,8 +2,8 @@
 
 // Basic competition data structure
 export const competitions = [ 
-  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "October 9, 2025" }, 
-  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "October 9, 2025" }, 
+  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "November 20, 2025" }, 
+  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "November 20, 2025" }, 
 ];
 
 // Generate detailed sections dynamically based on competition type
@@ -31,7 +31,7 @@ const generateSectionsForCompetition = (competition) => {
 
       **⚖️ Legal & Constitutional Focus**
 
-      1.Reclaiming Bharat’s Civilizational Ethos: The Constitutional Amendment Imperative
+      1.Reclaiming Bharat's Civilizational Ethos: The Constitutional Amendment Imperative
       2.Secularism in Ancient India: Beyond the Western Paradigm
       3.Rights vs Duties: What Should Take Precedence in Nation-Building?
 
@@ -46,7 +46,7 @@ const generateSectionsForCompetition = (competition) => {
       id: "video-requirements",
       title: "Video Requirements",
       content: `**✨ What We Expect**
-Your video is your canvas! As long as it is original(can be inspired) aligns with the weekly theme/problem statement, you have full freedom to shape the storyline, script, visuals, and creativity in your own way. Use AI tools to bring your ideas alive—whether it’s animation, editing, voiceovers, or effects.
+Your video is your canvas! As long as it is original(can be inspired) aligns with the weekly theme/problem statement, you have full freedom to shape the storyline, script, visuals, and creativity in your own way. Use AI tools to bring your ideas alive—whether it's animation, editing, voiceovers, or effects.
 
 There are no limits on style or format: it can be funny, emotional, futuristic, or even abstract. What matters is that your submission clearly highlights the theme, tells a story, and showcases the power of AI + creativity.
       

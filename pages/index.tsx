@@ -8,7 +8,7 @@ import NotificationBanner from '../components/NotificationBanner';
 import { ArrowRight, MoveRight } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { clientAuth } from '@/middleware/auth';
-import logo from '../public/vk-competition-logo.png';
+import logo from '@/public/main_logo.png';
 
 // Type definitions
 type SectionId = 'what-is-competition' | 'who-is-involved' | 'prizes-opportunities' | 'competition-list' | 'about-jyot';
@@ -189,7 +189,6 @@ const Home: React.FC = () => {
     const handleScroll = (): void => {
       const sections: SectionId[] = [
         'what-is-competition',
-        'who-is-involved', 
         'prizes-opportunities',
         'competition-list',
         'about-jyot'
@@ -216,7 +215,6 @@ const Home: React.FC = () => {
   // Navigation items configuration
   const navItems: NavItem[] = [
     { id: 'what-is-competition', label: 'Competition' },
-    { id: 'who-is-involved', label: 'Participants' },
     { id: 'prizes-opportunities', label: 'Prizes' },
     { id: 'competition-list', label: 'Categories' },
     { id: 'about-jyot', label: 'About' }
@@ -253,7 +251,8 @@ const Home: React.FC = () => {
   const competitionCategories: CompetitionCategory[] = [
     { category: "AI Reel Making", icon: "🎬", description: "Craft 1-3 minute stories using AI tools that bring global unity and creativity to life." },
     { category: "Political Toons", icon: "🏛️", description: "Use satire and AI artistry to creatively capture political ideas and principles." },
-    { category: "Creative Expression", icon: "✨", description: "An open category for unique AI-driven script aligned with Vasudhaiva Kutumbakam." }              
+    { category: "Creative Expression", icon: "✨", description: "An open category for unique AI-driven script aligned with Vasudhaiva Kutumbakam." },
+    { category: "Painting Competition", icon: "🎨", description: "Express the essence of 'The World is One Family' through traditional and digital painting." }
   ];
 
   // Return statement for the main component
@@ -265,18 +264,18 @@ const Home: React.FC = () => {
         className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-md"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
+          <div className="flex h-20 items-center justify-between">
             {/* Brand */}
             <div className="flex items-center gap-3">
               {/* <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
                 VK
               </div> */}
-              <Image className="w-10 h-10 rounded-full" alt="VK Logo" width={40} height={40}
+              <Image className="w-20 h-20 rounded-full" alt="VK Logo" width={80} height={80}
                   src={logo.src} />
               <div className="text-lg sm:text-xl font-semibold tracking-tight">
-                <span className="bg-gradient-to-r from-red-700 via-rose-600 to-orange-500 bg-clip-text text-transparent">
-                  VK Competition
-                </span>
+                <div>
+                    <h1 className="text-xl font-bold text-red-700 group-hover:text-red-800 transition-colors">VK Competition</h1>
+                  </div>
               </div>
             </div>
 
@@ -375,7 +374,7 @@ const Home: React.FC = () => {
       <NotificationBanner />
   
       {/* Hero Section */}
-      <section className="relative z-[1] min-h-screen flex items-center overflow-hidden py-8 sm:-mt-6">
+      <section className="relative z-[1] min-h-screen flex items-center overflow-hidden py-8 sm:-mt-18">
         {/* Background Image with Overlay */}
         <div className="absolute z-[2] inset-0">
           <Image
@@ -500,7 +499,7 @@ const Home: React.FC = () => {
               </span>
             </h2>
             <div className="mx-auto mt-6 h-px w-32 bg-gradient-to-r from-amber-600/60 via-orange-500/60 to-amber-700/60" />
-            <p className="mt-8 text-lg md:text-xl text-amber-800/80 max-w-4xl mx-auto leading-relaxed">
+            <div className="mt-8 text-lg md:text-xl text-amber-800/80 max-w-4xl mx-auto leading-relaxed">
             <section className="max-w-3xl mx-auto text-center px-6 py-10">
 
               <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-4">
@@ -519,15 +518,15 @@ const Home: React.FC = () => {
                 to shape the new world order.
               </p>
 
-              <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl shadow-sm px-6 py-4 mt-6">
+              {/* <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl shadow-sm px-6 py-4 mt-6">
                 <h3 className="text-lg font-bold text-orange-800 mb-2">The Core Challenge</h3>
                 <p className="text-base md:text-lg font-semibold text-gray-800">
                   How does India leverage <span className="italic">"The World is One Family"</span> 
                   to become a global leader and trusted partner in an unstable world order? 🇮🇳
                 </p>
-              </div>
+              </div> */}
             </section>
-            </p>
+            </div>
           </div>
           
           {/* Desktop Grid - Hidden on Mobile */}
@@ -656,7 +655,7 @@ const Home: React.FC = () => {
           <div className="mt-14 flex justify-center">
             <button
               onClick={() => scrollToSection('competition-list')}
-              className="group relative inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-amber-700 to-orange-700 text-white px-8 py-4 text-sm font-medium shadow-lg shadow-amber-500/25 hover:shadow-amber-500/35 hover:from-amber-800 hover:to-orange-800 transition-all duration-300 overflow-hidden"
+              className="group relative cursor-pointer inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-amber-700 to-orange-700 text-white px-8 py-4 text-sm font-medium shadow-lg shadow-amber-500/25 hover:shadow-amber-500/35 hover:from-amber-800 hover:to-orange-800 transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10">Explore categories</span>
               <ArrowRight className="h-4 w-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
@@ -669,7 +668,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Prizes Section */}
-      <section id="prizes-opportunities" className="py-20 bg-gradient-to-b from-amber-50/40 to-orange-50/30">
+      <section id="prizes-opportunities" className="pt-10 pb-20 bg-gradient-to-b from-amber-50/40 to-orange-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-red-700 mb-6">
@@ -683,7 +682,7 @@ const Home: React.FC = () => {
           {/* Single Prize Pool Banner */}
           <div className="bg-gradient-to-r from-yellow-400 to-red-500 rounded-2xl shadow-2xl p-10 text-center text-white">
             <h3 className="text-5xl md:text-6xl font-extrabold mb-4">
-              Prize Pool of ₹3,00,000
+              Prize Pool of ₹5,00,000
             </h3>
             <p className="text-lg opacity-90">
               And other exciting opportunities to showcase your work on global platforms in front of dignitaries and industry leaders.
@@ -704,7 +703,7 @@ const Home: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {competitionCategories.map((category: CompetitionCategory, index: number) => (
               <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-red-100 hover:border-red-300">
                 <div className="text-3xl mb-3">{category.icon}</div>

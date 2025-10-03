@@ -98,7 +98,7 @@ const CompetitionList: React.FC = () => {
             // Generate competition stats for each competition
             const competitionStats: CompetitionStats[] = [
               { label: 'Week 1', value: 'Week 1', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
-              { label: '7 Days Left', value: '7 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
+              // { label: '7 Days Left', value: '7 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
             ];
 
             return (
@@ -134,9 +134,18 @@ const CompetitionList: React.FC = () => {
                       <div className="flex flex-wrap items-center gap-4 text-xs mb-4">
                         <div className="flex items-center gap-1 text-orange-600">
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
-                          <span className="font-inter font-medium">Weekly Format: 7 days per challenge</span>
+                          <span className="font-inter font-medium">
+                          {(() => {
+                            if (!competition.deadline) return 'Ongoing';
+                            const deadlineDate = new Date(competition.deadline);
+                            const currentDate = new Date();
+                            const timeDiff = deadlineDate.getTime() - currentDate.getTime();
+                            const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                            return daysLeft > 0 ? `${daysLeft} days left` : 'Expired';
+                          })()}
+                          </span>
                         </div>
                         
                         <div className="flex items-center gap-1 text-red-600">
@@ -149,9 +158,9 @@ const CompetitionList: React.FC = () => {
 
                       {/* Prize Information */}
                       <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200/50">
-                        <h4 className="font-playfair font-semibold text-orange-800 text-sm mb-2">Competition Prizes</h4>
+                        {/* <h4 className="font-playfair font-semibold text-orange-800 text-sm mb-2">Competition Prizes</h4> */}
                         <div className="flex justify-between items-center text-xs">
-                          {(competition.id === 1 ? prizeInfo1 : prizeInfo2).map((prize: PrizeInfo) => (
+                          {/* {(competition.id === 1 ? prizeInfo1 : prizeInfo2).map((prize: PrizeInfo) => (
                             <div key={prize.position} className="flex items-center gap-1">
                               <div
                                 className={`w-4 h-4 bg-gradient-to-br from-${prize.color} to-${prize.bgColor} rounded-full flex items-center justify-center`}
@@ -162,7 +171,13 @@ const CompetitionList: React.FC = () => {
                                 {prize.amount}
                               </span>
                             </div>
-                          ))}
+                          ))} */}
+                          <div className="flex items-center justify-center">
+                            <div className="flex items-center gap-1">
+                              <span className="font-inter font-medium text-orange-700">Total Prize Pool:</span>
+                              <span className="-mt-1 font-bold text-lg text-orange-800">₹3,000</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 

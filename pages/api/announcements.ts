@@ -21,29 +21,21 @@ export default async function handler(
     // Mock data for now - replace with your database query
     const announcements: Announcement[] = [
       {
-        id: 1,
-        type: 'important',
-        title: 'Registration Deadline Extended',
-        content: 'The registration deadline for all competitions has been extended by one week.',
-        date: 'October 15, 2023',
-        createdAt: '2023-10-15T10:30:00Z'
+      id: 1,
+      type: 'normal',
+      title: 'New AI Challenges Added',
+      content: 'We have added new AI challenges to the competition lineup.',
+      date: 'October 01, 2025',
+      createdAt: '2025-10-01T09:15:00Z'
       },
       {
-        id: 2,
-        type: 'winner',
-        title: 'Week 1 AI Challenge Winners!',
-        content: 'Congratulations to our first week winners! We will be contacting winners shortly regarding prize distribution.',
-        date: 'October 12, 2023',
-        createdAt: '2023-10-12T15:45:00Z'
+      id: 2,
+      type: 'normal',
+      title: 'Submission Deadline Extended',
+      content: 'Great news! The submission deadline has been extended till 20th November. Make sure to submit your projects before the new deadline.',
+      date: 'October 02, 2025',
+      createdAt: '2025-10-02T10:00:00Z'
       },
-      {
-        id: 3,
-        type: 'normal',
-        title: 'New AI Challenge Added',
-        content: 'We have added a new AI challenge to the competition lineup.',
-        date: 'October 10, 2023',
-        createdAt: '2023-10-10T09:15:00Z'
-      }
     ];
 
     res.status(200).json(announcements);
