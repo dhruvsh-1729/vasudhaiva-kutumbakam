@@ -9,6 +9,8 @@ import { ArrowRight, MoveRight } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { clientAuth } from '@/middleware/auth';
 import logo from '@/public/main_logo.png';
+import CountDown from '@/components/CountDown';
+import { getCompetitionById } from '@/data/competitions';
 
 // Type definitions
 type SectionId = 'what-is-competition' | 'who-is-involved' | 'prizes-opportunities' | 'competition-list' | 'about-jyot';
@@ -265,116 +267,119 @@ const Home: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
-            {/* Brand */}
-            <div className="flex items-center gap-3">
-              {/* <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
-                VK
-              </div> */}
-              <Image className="w-20 h-20 rounded-full" alt="VK Logo" width={80} height={80}
-                  src={logo.src} />
-              <div className="text-lg sm:text-xl font-semibold tracking-tight">
-                <div>
-                    <h1 className="text-xl font-bold text-red-700 group-hover:text-red-800 transition-colors">VK Competition</h1>
-                  </div>
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          {/* <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 text-white text-xs font-bold shadow-md shadow-red-500/30">
+            VK
+          </div> */}
+          <Image className="w-20 h-20 rounded-full" alt="VK Logo" width={80} height={80}
+          src={logo.src} />
+          <div className="text-lg sm:text-xl font-semibold tracking-tight">
+            <div>
+            <h1 className="text-xl font-bold text-red-700 group-hover:text-red-800 transition-colors">VK Competition</h1>
+          </div>
+          </div>
+        </div>
+
+        {/* Desktop Nav */}
+        <div className="hidden lg:flex items-center gap-1">
+          {navItems.map((item: NavItem) => {
+            const active = activeSection === item.id;
+            return (
+          <button
+            key={item.id}
+            onClick={() => scrollToSection(item.id)}
+            className={`relative cursor-pointer px-6 py-2 rounded-full text-sm font-medium transition-all
+              ${
+            active
+              ? "text-red-700 bg-red-50 ring-1 ring-red-100 shadow-sm"
+              : "text-gray-700 hover:text-red-700 hover:bg-gray-100/60"
+              }`}
+            aria-current={active ? "page" : undefined}
+          >
+            {item.label}
+            {active && (
+              <span className="pointer-events-none absolute -bottom-2 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+            )}
+          </button>
+            );
+          })}
+        </div>
+
+        {/* Right Side - Auth Aware */}
+        <div className="flex items-center gap-4">
+          {isAuthenticated && user ? (
+            <>
+            <button 
+          className='hidden lg:block text-base px-5 py-2 bg-gradient-to-r from-red-600 to-orange-800 rounded-md text-white font-medium cursor-pointer hover:from-red-700 hover:to-orange-600' 
+          onClick={() => router.push("/main")}
+            >
+          Dashboard
+            </button>
+            <div className="relative">
+          <button
+            onClick={() => setShowUserMenu((prev) => !prev)}
+            className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-semibold shadow hover:shadow-lg transition"
+          >
+            {getInitials(user.name)}
+          </button>
+
+          {showUserMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+              <div className="px-4 py-2 border-b border-gray-100">
+            <p className="text-sm font-semibold text-gray-900">
+              {user.name}
+            </p>
+            <p className="text-xs text-gray-600">{user.email}</p>
               </div>
+              <button
+            onClick={() => router.push("/main")}
+            className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+            Competitions
+              </button>
+              <button
+            onClick={() => router.push("/profile")}
+            className="block w-full px-4 py-2 text-sm text-zinc-700 hover:bg-gray-50"
+              >
+            My Profile
+              </button>
+              <button
+            onClick={handleLogout}
+            className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              >
+            Logout
+              </button>
             </div>
-
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1">
-              {navItems.map((item: NavItem) => {
-                const active = activeSection === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => scrollToSection(item.id)}
-                    className={`relative cursor-pointer px-6 py-2 rounded-full text-sm font-medium transition-all
-                      ${
-                        active
-                          ? "text-red-700 bg-red-50 ring-1 ring-red-100 shadow-sm"
-                          : "text-gray-700 hover:text-red-700 hover:bg-gray-100/60"
-                      }`}
-                    aria-current={active ? "page" : undefined}
-                  >
-                    {item.label}
-                    {active && (
-                      <span className="pointer-events-none absolute -bottom-2 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-red-500 to-transparent" />
-                    )}
-                  </button>
-                );
-              })}
+          )}
             </div>
-
-            {/* Right Side - Auth Aware */}
-            <div className="flex items-center gap-4">
-              {isAuthenticated && user ? (
-                <>
-                <button 
-                  className='hidden lg:block text-base px-5 py-2 bg-gradient-to-r from-red-600 to-orange-800 rounded-md text-white font-medium cursor-pointer hover:from-red-700 hover:to-orange-600' 
-                  onClick={() => router.push("/main")}
-                >
-                  Dashboard
-                </button>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu((prev) => !prev)}
-                    className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-semibold shadow hover:shadow-lg transition"
-                  >
-                    {getInitials(user.name)}
-                  </button>
-
-                  {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-900">
-                          {user.name}
-                        </p>
-                        <p className="text-xs text-gray-600">{user.email}</p>
-                      </div>
-                      <button
-                        onClick={() => router.push("/main")}
-                        className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      >
-                        Competitions
-                      </button>
-                      <button
-                        onClick={() => router.push("/profile")}
-                        className="block w-full px-4 py-2 text-sm text-zinc-700 hover:bg-gray-50"
-                      >
-                        My Profile
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  )}
-                </div>
-                </>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <Link href="/login">
-                    <button className="text-gray-700 cursor-pointer hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
-                      Sign In
-                    </button>
-                  </Link>
-                  <Link href="/register">
-                    <button className="bg-gradient-to-r cursor-pointer from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
-                      Register
-                    </button>
-                  </Link>
-                </div>
-              )}
+            </>
+          ) : (
+            <div className="flex items-center gap-3">
+          <Link href="/login">
+            <button className="text-gray-700 cursor-pointer hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
+              Sign In
+            </button>
+          </Link>
+          <Link href="/register" className="hidden sm:block">
+            <button className="bg-gradient-to-r cursor-pointer from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
+              Register
+            </button>
+          </Link>
             </div>
+          )}
+        </div>
           </div>
         </div>
       </nav>
 
       <NotificationBanner />
+      <div className='hidden sm:block relative top-0 z-10 w-full'>
+        <CountDown deadline={getCompetitionById(1)?.deadline as string} />
+      </div>
   
       {/* Hero Section */}
-      <section className="relative z-[1] min-h-screen flex items-center overflow-hidden py-8 sm:-mt-18">
+      <section className="relative z-[1] min-h-screen flex items-center overflow-hidden pb-8 pt-8 sm:pt-0 sm:-mt-20">
         {/* Background Image with Overlay */}
         <div className="absolute z-[2] inset-0">
           <Image

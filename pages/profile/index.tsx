@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { getCompetitionById } from '@/data/competitions';
 import Header from '@/components/Header';
+import { clientAuth } from '@/middleware/auth';
+import { useRouter } from 'next/router';
 
 export type User = {
   id: string;
@@ -54,6 +56,9 @@ const statusColors = {
 };
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [submissions, setSubmissions] = useState<GroupedSubmissions>({});
   const [loading, setLoading] = useState(true);
@@ -62,6 +67,21 @@ export default function ProfilePage() {
   const [editForm, setEditForm] = useState({ phone: '', institution: '' });
   const [expandedSubmission, setExpandedSubmission] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+      const currentUser = clientAuth.getUser();
+      const token = clientAuth.getToken();
+      
+      if (!currentUser || !token) {
+        // Not authenticated - redirect to login
+        router.push('/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
+        return;
+      }
+      
+      setUser(currentUser);
+      setIsAuthenticated(true);
+      setIsLoading(false);
+    }, [router]);
 
   useEffect(() => {
     (async () => {

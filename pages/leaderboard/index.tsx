@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import { clientAuth } from "@/middleware/auth";
+import { useRouter } from "next/router";
 
 interface User {
   id: string;
@@ -47,6 +49,27 @@ export default function LeaderboardPage() {
   const [competitionId, setCompetitionId] = useState("");
   const [interval, setInterval] = useState("");
   const [tab, setTab] = useState<"aggregated" | "detailed">("aggregated");
+  const token = localStorage.getItem("vk_token") || "";
+  const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<any>(null); // Replace 'any' with your user type
+
+  useEffect(() => {
+      const currentUser = clientAuth.getUser();
+      const token = clientAuth.getToken();
+      
+      if (!currentUser || !token) {
+        // Not authenticated - redirect to login
+        router.push('/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
+        return;
+      }
+      
+      setUser(currentUser);
+      setIsAuthenticated(true);
+      setIsLoading(false);
+    }, [router]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
