@@ -501,8 +501,32 @@ const Home: React.FC = () => {
             </h2>
             <div className="mx-auto mt-6 h-px w-32 bg-gradient-to-r from-amber-600/60 via-orange-500/60 to-amber-700/60" />
             <p className="mt-8 text-lg md:text-xl text-amber-800/80 max-w-4xl mx-auto leading-relaxed">
-             Empowering Youth to Protect Heritage through Art and AI, where artists from every corner of the world 
-              come together to showcase the beautiful principle that The World is One Family.
+            <section className="max-w-3xl mx-auto text-center px-6 py-10">
+
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-4">
+                Amid global crises — from conflicts and climate change to technological shifts and 
+                the rise of a multipolar world — 
+                <span className="font-semibold text-gray-900">India's role is crucial.</span>
+              </p>
+
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                This competition challenges participants to demonstrate how India can utilize the 
+                ancient concept of <span className="italic font-semibold text-orange-700">Vasudhaiva Kutumbakam</span> 
+                (<em>"The World is One Family"</em>) to emerge as a 
+                <span className="font-semibold text-gray-900"> Vishwa Mitra</span> (Global Friend) 
+                and a leading power, effectively using its 
+                <span className="font-semibold text-gray-900"> hard and soft power </span> 
+                to shape the new world order.
+              </p>
+
+              <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl shadow-sm px-6 py-4 mt-6">
+                <h3 className="text-lg font-bold text-orange-800 mb-2">The Core Challenge</h3>
+                <p className="text-base md:text-lg font-semibold text-gray-800">
+                  How does India leverage <span className="italic">"The World is One Family"</span> 
+                  to become a global leader and trusted partner in an unstable world order? 🇮🇳
+                </p>
+              </div>
+            </section>
             </p>
           </div>
           
