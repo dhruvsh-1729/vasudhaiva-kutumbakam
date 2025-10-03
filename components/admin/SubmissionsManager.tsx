@@ -511,6 +511,7 @@ const ScoreModal: React.FC<ScoreModalProps> = ({ submission, onClose, onSave }) 
         },
         body: JSON.stringify({
           ...scores,
+          status: scores.status === 'PENDING' ? 'EVALUATED' : scores.status,
           overallScore,
           evaluatedBy: 'Current Admin', // Replace with actual admin name
         }),
