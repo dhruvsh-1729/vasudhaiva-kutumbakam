@@ -1,0 +1,147 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// User model - main participant in competitions
+model User {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String  @unique
+  password        String
+  phone           String?
+  institution     String?
+  avatarUrl       String?
+  isActive        Boolean @default(true)
+  isEmailVerified Boolean @default(false)
+  isAdmin         Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  verificationTokens  VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  submissions         Submission[]
+}
+
+// Email verification tokens
+model VerificationToken {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  token     String    @unique
+  userId    String    @db.ObjectId
+  type      TokenType @default(EMAIL_VERIFICATION)
+  expiresAt DateTime
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Password reset tokens
+model PasswordResetToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  userId    String   @db.ObjectId
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Admin settings for competition management
+model AdminSettings {
+  id                        String  @id @default(auto()) @map("_id") @db.ObjectId
+  currentInterval           Int     @default(1)
+  isSubmissionsOpen         Boolean @default(true)
+  maxSubmissionsPerInterval Int     @default(3)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_settings")
+}
+
+// Submissions for competitions
+model Submission {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  competitionId Int // References the static competition data
+  userId        String @db.ObjectId
+  interval      Int // Current interval when submission was made
+
+  // Submission data
+  title       String // Title of the submission
+  fileUrl     String // Google Drive link
+  description String?
+
+  // Rating and evaluation
+  overallScore     Float? @default(0)
+  creativityScore  Float? @default(0)
+  technicalScore   Float? @default(0)
+  aiToolUsageScore Float? @default(0)
+  adherenceScore   Float? @default(0)
+  impactScore      Float? @default(0)
+
+  // Admin evaluation
+  judgeComments String?
+  evaluatedBy   String? // Admin/Judge ID or name
+  evaluatedAt   DateTime?
+
+  // Status tracking
+  status                 SubmissionStatus @default(PENDING)
+  isDisqualified         Boolean          @default(false)
+  disqualificationReason String?
+
+  // Access verification
+  isAccessVerified Boolean @default(false)
+  accessCheckError String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Composite indexes for efficient queries
+  @@index([competitionId, userId, interval])
+  @@index([competitionId, interval])
+  @@index([userId, competitionId])
+  @@index([status])
+  @@map("submissions")
+}
+
+model Inquiry {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  subject   String
+  message   String?
+  createdAt DateTime @default(now())
+}
+
+enum TokenType {
+  EMAIL_VERIFICATION
+  WELCOME_EMAIL
+}
+
+enum SubmissionStatus {
+  PENDING // Just submitted, awaiting review
+  UNDER_REVIEW // Being evaluated by judges
+  EVALUATED // Scoring completed
+  REJECTED // Doesn't meet criteria
+  WINNER // Competition winner
+  FINALIST // Top submissions
+}
