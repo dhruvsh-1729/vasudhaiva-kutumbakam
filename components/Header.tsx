@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { clientAuth } from '../middleware/auth';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import logo from '../public/vk-competition-logo.png';
+import logo from '@/public/main_logo.png';
 import { Phone } from 'lucide-react';
 
 interface NavigationItem {
@@ -116,20 +116,16 @@ const Header: React.FC = () => {
   return (
     <header className="shadow-sm border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo and Brand */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Link href="/">
                 <div className="flex items-center space-x-3 cursor-pointer group">
-                  {/* <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                    <span className="text-white font-bold text-sm">VK</span>
-                  </div> */}
-                  <Image className="w-10 h-10 rounded-full" alt="VK Logo" width={40} height={40}
+                  <Image className="w-20 h-20 rounded-full" alt="VK Logo" width={80} height={80}
                   src={logo.src} />
                   <div>
                     <h1 className="text-xl font-bold text-red-700 group-hover:text-red-800 transition-colors">VK Competition</h1>
-                    <p className="text-xs text-gray-500 hidden sm:block">Vasudhaiva Kutumbakam</p>
                   </div>
                 </div>
               </Link>
