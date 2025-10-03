@@ -49,7 +49,6 @@ export default function LeaderboardPage() {
   const [competitionId, setCompetitionId] = useState("");
   const [interval, setInterval] = useState("");
   const [tab, setTab] = useState<"aggregated" | "detailed">("aggregated");
-  const token = localStorage.getItem("vk_token") || "";
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
