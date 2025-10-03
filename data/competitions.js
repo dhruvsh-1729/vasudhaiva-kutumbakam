@@ -7,7 +7,7 @@ export const competitions = [
   { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "November 20, 2025" }, 
   { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "November 20, 2025" }, 
   // { id: 3, title: "Political Toons", description: "Create a political satire cartoon using AI tools.", icon: "🖼️", color: "from-purple-500 to-purple-600", deadline: "November 20, 2025" },
-  {id: 4 ,title:"Painting with AI", description:"Create a painting using AI tools.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"November 20, 2025"}
+  {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"November 30, 2025"}
 ];
 
 // Generate detailed sections dynamically based on competition type
@@ -18,7 +18,22 @@ const generateSectionsForCompetition = (competition) => {
   baseSections.push({
     id: "problem-statement",
     title: "Problem Statement",
-    content: `Welcome to the ${competition.title} competition! ${competition.description}
+    content: competition.id === 4 
+      ? `Welcome to the ${competition.title}!
+
+**Theme: Vasudhaiva Kutumbakam Ki Oar — The World is One Family**
+
+Create a painting that solves a modern global issue through one of the Five Guarantees. Your artwork should embody the ancient Indian philosophy of "Vasudhaiva Kutumbakam" (the world is one family) while addressing contemporary challenges.
+
+**Your Challenge:**
+Choose one of the Five Guarantees and create an original painting that demonstrates how this guarantee can solve a pressing global issue. Your artwork should bridge ancient wisdom with modern solutions, showing how the philosophy of global unity can address today's challenges.
+
+**Objective:**
+Express through visual art how traditional values and guarantees can provide innovative solutions to modern global problems. Your painting should inspire viewers to think about collective responsibility, universal values, and the interconnectedness of all humanity.
+
+**More Details:**
+Visit the Jyot app for detailed content about Vasudhaiva Kutumbakam and the Five Guarantees theme.`
+      : `Welcome to the ${competition.title} competition! ${competition.description}
           
       **📢 Week 1 Challenge – VK Competition**
 
@@ -68,7 +83,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
   } else if (competition.id === 2) { // Script Writing
     baseSections.push({
       id: "toon-requirements",
-      title: "Toon Creation Guidelines",
+      title: "Creative Writing Guidelines",
       content: `Guidelines for creating your AI-powered toons:
       
       **Technical Specifications:**
@@ -87,54 +102,147 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       **Note for Participants:**
       You are free to experiment with format, style, and tone. The storyline, characters, and flow are entirely your choice, as long as your script highlights the essence of the problem statement/theme. Let your imagination lead the way!`
     });
-  } 
-  /*else if (competition.id === 3) { // Political Toons
+  } else if (competition.id === 4) { // VK Painting Competition
     baseSections.push({
-      id: "satire-guidelines",
-      title: "Political Satire Guidelines",
-      content: `Important guidelines for political satire content:
+      id: "painting-requirements",
+      title: "Artwork Specifications",
+      content: `**Canvas & Medium:**
+      • Size: A3 (30×42 cm) to A2 (42×60 cm) only
+      • Surface: Thick Art Paper / Canvas Paper / Watercolor Paper / Stretched Canvas
+      • Medium: Charcoal or any color paints; mixed media allowed
+      • Orientation: Portrait or Landscape
+      • Originality: No AI/tracing/copyrighted images
       
-      **Content Standards:**
-      • Focus on issues, not personal attacks
-      • Maintain respectful discourse
-      • Factual basis for satirical content
-      • Avoid hate speech or discrimination
-      • Consider diverse political perspectives
+      **The 5 Guarantees (Choose Any One):**
+      • Guarantee of Security — Protection and safety of individuals within a community
+      • Guarantee of Basic Necessities — Access to fundamental resources for all individuals
+      • Guarantee of Health and Education of Choice — Freedom to access health and education based on individual preferences
+      • Guarantee of Family Strength — Emotional and social support system provided by the family unit
+      • Guarantee of Equal Access to Common Resources — Ensuring equal opportunity for resources regardless of background
       
-      **Creative Approach:**
-      • Use humor to highlight important issues
-      • Clever visual metaphors and symbolism
-      • AI-generated elements for enhanced creativity
-      • Clear political commentary or message
-      • Engaging and thought-provoking content`
+      **Artist Statement:**
+      • Attach a 100–150 word statement explaining your concept
+      • Explain how your chosen guarantee solves a global issue
+      • Sign and date your artwork discreetly`
     });
-  }*/
-
-  // AI Tools & Resources
-  baseSections.push({
-    id: "ai-tools",
-    title: "Recommended AI Tools (you're free to use any)",
-    content: `Explore these AI tools to enhance your submission:
     
-    **Video Generation:**
-    • Runway ML - Advanced video creation and editing
-    • Pika Labs - AI-powered short video generation
-    • Stable Video Diffusion - Open-source video tools
-    • Luma AI Dream Machine - Text-to-video generation
+    baseSections.push({
+      id: "painting-guidelines",
+      title: "Do's and Don'ts",
+      content: `**✓ Do:**
+      • Align your artwork to the theme
+      • Show clearly how your chosen guarantee solves a global issue
+      • Keep your message clear and impactful
+      • Sign and date your work discreetly
+      • Attach your artist statement (100–150 words)
+      
+      **✗ Don't:**
+      • No plagiarism or copying existing artworks
+      • No offensive or political content
+      • Avoid using direct globe icon; use creative, alternative symbols
+      • No AI-generated or traced images
+      • No copyrighted imagery`
+    });
     
-    **Image/Art Generation:**
-    • Midjourney - High-quality artistic images
-    • DALL-E 3 - Creative image generation
-    • Stable Diffusion - Open-source image creation
-    • Adobe Firefly - Integrated creative tools`
+    baseSections.push({
+      id: "prizes",
+      title: "Prizes & Recognition",
+      content: `**Prize Money:**
+      • 1st Prize: ₹1,00,000
+      • 2nd Prize: ₹51,000
+      • 3rd Prize: ₹25,000
+      
+      **Additional Recognition:**
+      • Showcase at VK 4.0 Conclave, Mumbai
+      • Felicitation ceremony during the event
+      • Results announced: 16–22 January 2026
+      
+      **Important Dates:**
+      • Competition Launch: 2 October 2025
+      • Submission Deadline: 30 November 2025 (11:59 PM IST)
+      • Results Announcement: VK 4.0 Conclave (16–22 January 2026)`
+    });
+  }
 
-  });
+  // AI Tools & Resources or Judging Criteria
+  if (competition.id === 4) {
+    baseSections.push({
+      id: "judging-criteria",
+      title: "Judging Criteria",
+      content: `Your artwork will be evaluated based on the following criteria:
+      
+      **Creativity & Originality (30%):**
+      • Unique interpretation of the theme
+      • Innovative approach to solving global issues
+      • Original artistic expression
+      
+      **Relevance to Theme (25%):**
+      • Clear connection to Vasudhaiva Kutumbakam philosophy
+      • Effective representation of chosen guarantee
+      • Meaningful solution to a global issue
+      
+      **Clarity of Message (20%):**
+      • Clear communication of concept
+      • Effective visual storytelling
+      • Impact and emotional resonance
+      
+      **Technical Skill & Finish (25%):**
+      • Quality of execution
+      • Mastery of chosen medium
+      • Overall craftsmanship and presentation`
+    });
+  } else {
+    baseSections.push({
+      id: "ai-tools",
+      title: "Recommended AI Tools (you're free to use any)",
+      content: `Explore these AI tools to enhance your submission:
+      
+      **Video Generation:**
+      • Runway ML - Advanced video creation and editing
+      • Pika Labs - AI-powered short video generation
+      • Stable Video Diffusion - Open-source video tools
+      • Luma AI Dream Machine - Text-to-video generation
+      
+      **Image/Art Generation:**
+      • Midjourney - High-quality artistic images
+      • DALL-E 3 - Creative image generation
+      • Stable Diffusion - Open-source image creation
+      • Adobe Firefly - Integrated creative tools`
+    });
+  }
 
   // Submission Guidelines
   baseSections.push({
     id: "submission-guidelines",
     title: "Submission Guidelines",
-    content: `Follow these guidelines for a successful submission:
+    content: competition.id === 4
+      ? `Follow these guidelines for a successful submission:
+    
+    **Online Submission:**
+    • Upload 1 full artwork photo + 2 detail photos
+    • Format: JPEG or TIFF
+    • Resolution: 300 DPI minimum
+    • File Size: Maximum 15MB per image
+    • File Naming: Lastname_Firstname_Title_Size_Medium_Year.jpg
+    • Use the submission panel on this page
+    • Ensure Google Drive link permissions are set to "Anyone with the link can view"
+    
+    **Physical Submission (Optional):**
+    • Label the back of your artwork with name, title, and contact details
+    • Pack securely to prevent damage during transit
+    • Courier to the official address (will be provided upon request)
+    
+    **Required Information:**
+    • Your full name and contact email
+    • Artwork title and dimensions
+    • Medium used
+    • Artist statement (100–150 words)
+    • Which of the Five Guarantees you've chosen
+    • Brief explanation of how your artwork addresses a global issue
+    
+    **Important Deadline:**
+    • Submit before: ${competition.deadline} (11:59 PM IST)`
+      : `Follow these guidelines for a successful submission:
     
     **Submission Process:**
     • Use the submission panel on this page
