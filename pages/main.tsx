@@ -10,6 +10,8 @@ import Timeline from '@/components/Timeline';
 import Footer from '@/components/Footer';
 import { clientAuth } from '../middleware/auth';
 import CompactSubmissions from '@/components/Submissions';
+import CountDown from '@/components/CountDown';
+import { getCompetitionById } from '@/data/competitions';
 
 // Type definitions
 interface Announcement {
@@ -524,8 +526,7 @@ const MainPage: React.FC = () => {
               </div>
               </div>
             </div>
-            </div> */}
-          
+            </div> */}          
           <main className="w-full px-4 sm:px-6 lg:px-8 py-12">
             <div className="dashboard-grid grid grid-cols-1 xl:grid-cols-12 gap-8">
               {/* Left Sidebar - Announcements */}

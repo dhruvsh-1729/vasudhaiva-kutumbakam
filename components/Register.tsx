@@ -142,6 +142,13 @@ const Register: React.FC = () => {
       const data: ApiResponse = await response.json();
 
       if (!response.ok) {
+        if(response.status === 409) {
+          setErrors({ email: 'This email is already registered. Please use a different email.' });
+          toast.error('This email is already registered. Please use a different email.');
+        } else {
+          setErrors({ general: data.error || 'Registration failed. Please try again later or report bug at vk4.ki.oar@gmail.com' });
+          toast.error(data.error || 'Registration failed. Please try again later or report bug at vk4.ki.oar@gmail.com');
+        }
         // throw new Error(data.error || 'Registration failed');
       }
 

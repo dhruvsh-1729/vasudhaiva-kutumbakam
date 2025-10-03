@@ -400,6 +400,24 @@ const Login: React.FC = () => {
               </button>
             </div>
 
+            <div className="pt-2">
+              <div className="flex items-center">
+                <div className="flex-grow border-t border-gray-200"></div>
+                <span className="mx-3 text-xs text-gray-400">or</span>
+                <div className="flex-grow border-t border-gray-200"></div>
+              </div>
+            </div>
+            
+            {/* take me back to / page */}
+            <div className="pt-2">
+              <Link
+                href="/"
+                className="w-full block text-center font-bold py-3 rounded-lg transition-all duration-300 shadow-lg transform text-sm bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white hover:shadow-xl hover:-translate-y-0.5"
+              >
+                Take me back to Home
+              </Link>
+            </div>
+
             {/* Register Link */}
             <div className="text-center pt-3 border-t border-gray-200">
               <p className="text-sm text-gray-600">

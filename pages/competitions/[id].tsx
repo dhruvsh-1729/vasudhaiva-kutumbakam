@@ -12,6 +12,8 @@ import SubmissionPanel from '@/components/SubmissionPanel';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
+import CountDown from '@/components/CountDown';
+import { clientAuth } from '@/middleware/auth';
 
 // Type definitions
 interface Competition {
@@ -49,6 +51,10 @@ interface FooterLink {
 const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competition }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<any>(null); // Replace 'any' with your user type
+
+  // Handle loading state during fallback
 
   useEffect(() => {
     if (router.isFallback) {
@@ -56,6 +62,21 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
     }
     setIsLoading(false);
   }, [router.isFallback]);
+
+  useEffect(() => {
+      const currentUser = clientAuth.getUser();
+      const token = clientAuth.getToken();
+      
+      if (!currentUser || !token) {
+        // Not authenticated - redirect to login
+        router.push('/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
+        return;
+      }
+      
+      setUser(currentUser);
+      setIsAuthenticated(true);
+      setIsLoading(false);
+    }, [router]);
 
   // Breadcrumb items configuration
   const breadcrumbItems: BreadcrumbItem[] = [
@@ -133,7 +154,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
         {/* Header/Breadcrumb */}
         <Header />
         <NotificationBanner />
-
+        <CountDown deadline={getCompetitionById(1)?.deadline as string} />
         {/* Main Content */}
         <main className="px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

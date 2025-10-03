@@ -1,6 +1,7 @@
 // components/CompetitionList.tsx
 import Link from 'next/link';
-import { competitions } from '../data/competitions';
+import { competitions, getCompetitionById } from '../data/competitions';
+import CountDown from './CountDown';
 
 // Type definitions
 interface Competition {
@@ -87,10 +88,12 @@ const CompetitionList: React.FC = () => {
           {/* Compact Weekly Badge */}
           <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-orange-200/50 shadow-md">
             <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-            <span className="font-inter font-medium text-orange-700 text-xs">Weekly Challenges • New Problems Every Monday</span>
+            <span className="font-inter font-medium text-orange-700 text-xs">Weekly Challenges • New Problems</span>
             <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
           </div>
         </div>
+
+        <CountDown deadline={getCompetitionById(1)?.deadline as string} />
 
         {/* Compact Competition Cards */}
         <div className="space-y-6">
@@ -194,13 +197,13 @@ const CompetitionList: React.FC = () => {
                           </Link>
                           
                           {/* Quick Stats */}
-                          <div className="flex items-center gap-2 text-xs">
+                          {/* <div className="flex items-center gap-2 text-xs">
                             {competitionStats.map((stat: CompetitionStats, statIndex: number) => (
                               <div key={statIndex} className={`${stat.bgColor} rounded-lg px-2 py-1`}>
                                 <span className={`font-inter font-bold ${stat.textColor}`}>{stat.value}</span>
                               </div>
                             ))}
-                          </div>
+                          </div> */}
                         </div>
                         
                         
