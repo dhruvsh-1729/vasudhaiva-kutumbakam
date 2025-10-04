@@ -102,6 +102,23 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       **Note for Participants:**
       You are free to experiment with format, style, and tone. The storyline, characters, and flow are entirely your choice, as long as your script highlights the essence of the problem statement/theme. Let your imagination lead the way!`
     });
+
+    baseSections.push({
+      id: "creative-expression",
+      title: "Creative Expression (Short Script Writing for Videos or Street Play)",
+      content: `**✓ Do:**
+      • Create original scripts aligned with the suggested topics, reflecting ancient wisdom, unity, and global citizenship
+      • File Format: .docx or .pdf
+      • Word Limit / Duration:
+        - Short Scripts for Video: 1,000–2,000 words (approx. 5–7 min)
+        - Street Plays: 800–1,500 words or 5–10 minute performance
+      • Ensure content is inclusive, positive, and culturally respectful
+      
+      **✗ Don't:**
+      • Submit plagiarized or offensive content
+      • Include political or religious propaganda
+      • Use copyrighted material without permission`
+    });
   } else if (competition.id === 4) { // VK Painting Competition
     baseSections.push({
       id: "painting-requirements",
@@ -114,11 +131,15 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       • Originality: No AI/tracing/copyrighted images
       
       **The 5 Guarantees (Choose Any One):**
-      • Guarantee of Security — Protection and safety of individuals within a community
-      • Guarantee of Basic Necessities — Access to fundamental resources for all individuals
-      • Guarantee of Health and Education of Choice — Freedom to access health and education based on individual preferences
-      • Guarantee of Family Strength — Emotional and social support system provided by the family unit
-      • Guarantee of Equal Access to Common Resources — Ensuring equal opportunity for resources regardless of background
+      • Guarantee of Security — Providing security to all members is the basic ethic of a family, which makes the person stay in the family and sustains the family system. Similarly, at the global level, to give an environment of security to all nations is the core principle of Vasudhaiva Kutumbakam.
+      
+      • Guarantee of Basic Necessities — As in a Indian Joint family, regardless of their capabilities and contributions, each member is guaranteed the equal fulfilment of their basic necessities and equal standard of living. Similarly, in case of family of countries to provide equal basic necessities to all countries without differentiation is also one of the central tenet of Vasudhaiva Kutumbakam.
+      
+      • Guarantee of Health and Education of Choice — The Indian joint family provide equal access to health and education. In times of health crises, family is needed most. Similarly, on the global stage, nations should ensure the freedom to choose their health and education systems, cultivating unity and shared responsibility, thereby embodying the core value of Vasudhaiva Kutumbakam.
+      
+      • Guarantee of Family Bond and Feelings — In the Indian Joint Family System, family bonding and emotional support provide the solidarity needed during times of weakness, regardless of one's power. Similarly, at the international level, this guarantee is essential to strengthen the global community, fostering trust, solidarity, and unity—representing the foundational principle of Vasudhaiva Kutumbakam.
+      
+      • Guarantee of Equal Access to Common Resources — This ethic is a core value of the Indian joint family, ensuring equal opportunities for all members to live, grow, and develop. It helps maintain family bonds and structure. Similarly, on the international stage, guaranteeing equal access to resources for all countries embodies the essence of Vasudhaiva Kutumbakam.
       
       **Artist Statement:**
       • Attach a 100–150 word statement explaining your concept
@@ -148,7 +169,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       id: "prizes",
       title: "Prizes & Recognition",
       content: `**Prize Money:**
-      • 1st Prize: ₹1,00,000
+      • 1st Prize: 1,00,000
       • 2nd Prize: ₹51,000
       • 3rd Prize: ₹25,000
       

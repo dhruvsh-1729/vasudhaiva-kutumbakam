@@ -231,7 +231,7 @@ const Login: React.FC = () => {
                 <h1 className="text-4xl lg:text-5xl font-light leading-tight mb-4">
                   <span className="block text-white/95 mb-2">Continue Your</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-200 via-red-200 to-orange-300">
-                    Sacred Journey
+                    Journey
                   </span>
                 </h1>
                 
@@ -430,7 +430,7 @@ const Login: React.FC = () => {
 
             <div className="text-center">
               <p className="text-xs text-gray-500">
-                Protected by the sacred principles of Vasudhaiva Kutumbakam
+                Protected by the principles of Vasudhaiva Kutumbakam
               </p>
             </div>
           </form>

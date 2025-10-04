@@ -314,7 +314,7 @@ const Register: React.FC = () => {
                   <div className="h-px w-8 bg-orange-400/60"></div>
                   <div className="mx-3 w-1 h-1 bg-orange-400 rounded-full"></div>
                   <span className="text-orange-200 text-xs tracking-[0.2em] uppercase font-light">
-                    Global Celebration of Unity through Creative Expression
+                    Unity through Creative Expression
                   </span>
                   <div className="mx-3 w-1 h-1 bg-orange-400 rounded-full"></div>
                   <div className="h-px w-8 bg-orange-400/60"></div>
@@ -336,7 +336,7 @@ const Register: React.FC = () => {
               <div className="space-y-4 text-left">
                 <p className="text-white/90 text-sm leading-relaxed">
                   Join a global movement celebrating unity through creative expression. 
-                  Express the sacred truth that connects all humanity as one universal family.
+                  Express the truth that connects all humanity as one universal family.
                 </p>
                 
                 <div className="space-y-3">

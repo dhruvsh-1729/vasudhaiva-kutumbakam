@@ -233,7 +233,7 @@ const Footer: React.FC = () => {
             </div>
             
             {/* Competition Stats */}
-            <div className="flex items-center space-x-6 text-sm">
+            {/* <div className="flex items-center space-x-6 text-sm">
               <div className="text-center">
                 <div className="text-orange-400 font-bold">100+</div>
                 <div className="text-gray-500 text-xs">Participants</div>
@@ -250,7 +250,7 @@ const Footer: React.FC = () => {
                 <div className="text-amber-400 font-bold">Weekly</div>
                 <div className="text-gray-500 text-xs">Challenges</div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

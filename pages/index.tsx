@@ -235,7 +235,7 @@ const Home: React.FC = () => {
       icon: "🤖"
     },
     {
-      title: "Cultural Celebration",
+      title: "Cultural Unity",
       description: "Embracing diversity while celebrating our shared human experience",
       icon: "🎭"
     }
@@ -704,7 +704,7 @@ const Home: React.FC = () => {
               Expression Categories
             </h2>
             <p className="text-xl text-gray-700 max-w-4xl mx-auto">
-              Choose your medium to express the sacred truth of universal brotherhood.
+              Choose your medium to express the truth of universal brotherhood.
             </p>
           </div>
           
