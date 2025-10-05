@@ -89,12 +89,11 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       **Technical Specifications:**
 
       •Word Count: 500–1500 words
-      •Language: English or Hindi or Gujarati
+      •Language: English or Hindi 
       •File Size: Max 10MB
       
       **Content Guidelines:**
       •Must align with the weekly theme provided
-      •Can be written in any style – story, satire, poem, play, monologue, or drama
       •Creativity and originality are key (no plagiarized content)
       •Clarity of narrative and strong expression of ideas encouraged
       •Use of AI writing tools is optional, but disclosure is required if used
@@ -191,7 +190,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       • Mastery of chosen medium
       • Overall craftsmanship and presentation`
     });
-  } else {
+  } else if (competition.id === 1) {
     baseSections.push({
       id: "ai-tools",
       title: "Recommended AI Tools (you're free to use any)",
@@ -204,10 +203,22 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       • Luma AI Dream Machine - Text-to-video generation
       
       **Image/Art Generation:**
+      • Grok Imagine- AI image generation tool
+      • Imagegen - Google creative image generation
       • Midjourney - High-quality artistic images
       • DALL-E 3 - Creative image generation
       • Stable Diffusion - Open-source image creation
       • Adobe Firefly - Integrated creative tools`
+    });
+  } else if (competition.id === 2) {
+    baseSections.push({
+      id: "ai-tools",
+      title: "Recommended AI Tools (you're free to use any)",
+      content: `Explore these AI tools to enhance your submission:
+      
+      **AI Writing Assistants:**
+      • ChatGPT - Advanced language model for creative writing
+      • Gemini - Google's AI for content generation and brainstorming`
     });
   }
 
@@ -258,11 +269,10 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • Any inspiration or reference sources
     
     **Evaluation Criteria:**
-    • Creativity and Innovation (30%)
-    • Technical Quality and Execution (25%)
-    • Effective Use of AI Tools (20%)
-    • Adherence to Requirements (15%)
-    • Overall Impact and Engagement (10%)`
+    • Creativity and Originality (30%)
+    • Relevance to the theme(35%)
+    • Clarity of Message (20%)
+    • Aritistic / Technical Quality(15%)`
   });
 
   return baseSections;
