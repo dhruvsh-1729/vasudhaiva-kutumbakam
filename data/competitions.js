@@ -173,10 +173,10 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       
       **Creativity & Originality (30%):**
       • Unique interpretation of the theme
-      • Innovative approach to solving global issues
+      • Innovative approach 
       • Original artistic expression
       
-      **Relevance to Theme (25%):**
+      **Relevance to Theme (35%):**
       • Clear connection to Vasudhaiva Kutumbakam philosophy
       • Effective representation of chosen guarantee
       • Meaningful solution to a global issue
@@ -186,7 +186,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       • Effective visual storytelling
       • Impact and emotional resonance
       
-      **Technical Skill & Finish (25%):**
+      **Technical Skill & Finish (15%):**
       • Quality of execution
       • Mastery of chosen medium
       • Overall craftsmanship and presentation`
