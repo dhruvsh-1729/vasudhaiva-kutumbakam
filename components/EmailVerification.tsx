@@ -340,7 +340,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ token, email }) =
 
           <div className="text-center mt-4">
             <p className="text-xs text-gray-500">
-              Protected by the sacred principles of Vasudhaiva Kutumbakam
+              Protected by the principles of Vasudhaiva Kutumbakam
             </p>
           </div>
         </div>

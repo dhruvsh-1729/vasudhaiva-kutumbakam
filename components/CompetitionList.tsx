@@ -163,12 +163,26 @@ const CompetitionList: React.FC = () => {
 
                       {/* Prize Information */}
                       <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200/50">
-                        <div className="flex items-center justify-center">
-                          <div className="flex items-center gap-1">
-                            <span className="font-inter font-medium text-orange-700">Total Prize Pool:</span>
-                            <span className="-mt-1 font-bold text-lg text-orange-800">
-                              {competition.id === 1 ? '₹6,000' : competition.id === 2 ? '₹4,000' : competition.id === 4 ? '₹2,00,000' : '₹0'}
-                            </span>
+                        {/* <h4 className="font-playfair font-semibold text-orange-800 text-sm mb-2">Competition Prizes</h4> */}
+                        <div className="flex justify-between items-center text-xs">
+                           {/* {(competition.id === 1 ? prizeInfo1 : prizeInfo2).map((prize: PrizeInfo) => (
+                            <div key={prize.position} className="flex items-center gap-1">
+                              <div
+                                className={`w-4 h-4 bg-gradient-to-br from-${prize.color} to-${prize.bgColor} rounded-full flex items-center justify-center`}
+                              >
+                                <span className="text-white text-xs font-bold">{prize.position}</span>
+                              </div>
+                              <span className={`font-inter font-medium text-${prize.textColor}`}>
+                                {prize.amount}
+                              </span>
+                            </div>
+                          ))}  */}
+                          <div className="flex items-center justify-center">
+                            <div className="text-center">
+                              <span className="font-inter font-bold text-orange-800 text-lg">
+                                Total Prize Pool: ₹{competition.id === 1 ? '6,000' : competition.id === 2 ? '4,000' : competition.id === 4 ? '2,00,000' : '3,000'}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>

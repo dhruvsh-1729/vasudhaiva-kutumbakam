@@ -90,7 +90,10 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
               <div className="w-1.5 h-1.5 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full" />
             </div>
             <p className="font-inter text-gray-700 leading-relaxed text-sm">
-              {paragraph.trim().substring(1).trim()}
+              {paragraph.trim().substring(1).trim().replace(/1,00,000/g, '')}
+              {paragraph.includes('1,00,000') && (
+                <span className="text-red-600 font-bold">₹1,00,000</span>
+              )}
             </p>
           </div>
         );
@@ -104,10 +107,18 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
             {parts.map((part: string, partIdx: number) =>
               partIdx % 2 === 1 ? (
                 <span key={partIdx} className="font-playfair font-semibold text-base text-orange-800">
-                  {part}
+                  {part.replace(/1,00,000/g, '')}
+                  {part.includes('1,00,000') && (
+                    <span className="text-red-600 font-bold">₹1,00,000</span>
+                  )}
                 </span>
               ) : (
-                <span key={partIdx}>{part}</span>
+                <span key={partIdx}>
+                  {part.replace(/1,00,000/g, '')}
+                  {part.includes('1,00,000') && (
+                    <span className="text-red-600 font-bold">₹1,00,000</span>
+                  )}
+                </span>
               )
             )}
           </p>
@@ -117,7 +128,10 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
       if (paragraph.trim()) {
         return (
           <p key={idx} className="font-inter text-gray-700 leading-relaxed mb-3 text-sm">
-            {paragraph}
+            {paragraph.replace(/1,00,000/g, '')}
+            {paragraph.includes('1,00,000') && (
+              <span className="text-red-600 font-bold">₹1,00,000</span>
+            )}
           </p>
         );
       }
