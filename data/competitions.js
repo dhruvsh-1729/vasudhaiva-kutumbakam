@@ -4,10 +4,10 @@ import { title } from "process";
 
 // Basic competition data structure
 export const competitions = [ 
+  {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"November 30, 2025"},
   { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "November 20, 2025" }, 
   { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "November 20, 2025" }, 
   // { id: 3, title: "Political Toons", description: "Create a political satire cartoon using AI tools.", icon: "🖼️", color: "from-purple-500 to-purple-600", deadline: "November 20, 2025" },
-  {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"November 30, 2025"}
 ];
 
 // Generate detailed sections dynamically based on competition type
@@ -168,7 +168,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       id: "prizes",
       title: "Prizes & Recognition",
       content: `**Prize Money:**
-      • 1st Prize: 1,00,000
+      • 1st Prize: ₹1,00,000
       • 2nd Prize: ₹51,000
       • 3rd Prize: ₹25,000
       
@@ -259,7 +259,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • Use the submission panel on this page
     • Ensure Google Drive link permissions are set to "Anyone with the link can view"
     
-    **Physical Submission (Optional):**
+    **Physical Submission:**
     • Label the back of your artwork with name, title, and contact details
     • Pack securely to prevent damage during transit
     • Courier to the official address (will be provided upon request)

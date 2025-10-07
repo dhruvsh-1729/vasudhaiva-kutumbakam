@@ -179,8 +179,8 @@ const CompetitionList: React.FC = () => {
                           ))}  */}
                           <div className="flex items-center justify-center">
                             <div className="text-center">
-                              <span className="font-inter font-bold text-orange-800 text-lg">
-                                Total Prize Pool: ₹{competition.id === 1 ? '6,000' : competition.id === 2 ? '4,000' : competition.id === 4 ? '2,00,000' : '3,000'}
+                              <span className={`font-inter font-bold text-lg ${competition.id === 4 ? 'text-green-800 text-xl' : 'text-orange-800'}`}>
+                               Total Prize Pool: {competition.id === 1 ? '6,000' : competition.id === 2 ? '4,000' : competition.id === 4 ? '2,00,000 🎉' : '3,000'}
                               </span>
                             </div>
                           </div>
