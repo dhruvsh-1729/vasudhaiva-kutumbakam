@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth';
 import { toast } from 'sonner';
 
 interface AdminUser {
@@ -24,7 +24,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
   const handleLogout = () => {
     clientAuth.logout();
     toast.success('Logged out successfully');
-    router.push('/login');
+    router.push('/competition/login');
   };
 
   const getUserInitials = (name: string): string => {
@@ -54,7 +54,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
             </button>
 
             {/* Logo */}
-            <Link href="/admin/dashboard" className="flex items-center gap-3">
+            <Link href="/competition/admin/dashboard" className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-sm">
                 <span className="text-white font-bold text-sm">VK</span>
               </div>
@@ -114,7 +114,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
                       {/* Menu items */}
 
                       <Link 
-                        href="/main" 
+                        href="/competition/main" 
                         className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                         onClick={() => setShowUserMenu(false)}
                       >

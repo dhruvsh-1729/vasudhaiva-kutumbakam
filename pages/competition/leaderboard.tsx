@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { clientAuth } from "@/middleware/auth";
+import { clientAuth } from "@/lib/auth";
 import { useRouter } from "next/router";
 
 interface User {
@@ -61,7 +61,7 @@ export default function LeaderboardPage() {
       
       if (!currentUser || !token) {
         // Not authenticated - redirect to login
-        router.push('/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
+        router.push('/competition/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
         return;
       }
       

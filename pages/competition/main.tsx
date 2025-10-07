@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Header from '@/components/Header';
-import CompetitionList from '../components/CompetitionList';
+import CompetitionList from '../../components/CompetitionList';
 import NotificationBanner from '@/components/NotificationBanner';
 import NoticeBoard from '@/components/NoticeBoard';
 import Timeline from '@/components/Timeline';
 import Footer from '@/components/Footer';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../../lib/auth';
 import CompactSubmissions from '@/components/Submissions';
 import CountDown from '@/components/CountDown';
 import { getCompetitionById } from '@/data/competitions';
@@ -49,7 +49,7 @@ const MainPage: React.FC = () => {
     
     if (!currentUser || !token) {
       // Not authenticated - redirect to login
-      router.push('/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
+      router.push('/competition/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
       return;
     }
     

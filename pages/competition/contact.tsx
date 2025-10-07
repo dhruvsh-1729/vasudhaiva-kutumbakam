@@ -109,7 +109,7 @@ const ContactUs: React.FC = () => {
             </div>
 
             {/* Back to Home */}
-            <Link href="/">
+            <Link href="/competition">
               <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Home

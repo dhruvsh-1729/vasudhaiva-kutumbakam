@@ -1,6 +1,6 @@
 // components/profile/ProfileHeader.tsx
 import * as React from 'react';
-import type { User } from '@/pages/profile';
+import type { User } from '@/pages/competition/profile';
 
 interface Props {
   user: User | null;

@@ -135,7 +135,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
       if (data.success) {
         // Redirect to login after successful reset
         setTimeout(() => {
-          router.push('/login?reset=true');
+          router.push('/competition/login?reset=true');
         }, 3000);
       }
 
@@ -175,7 +175,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
           <h2 className="text-2xl font-bold text-red-700 mb-4">Invalid Reset Link</h2>
           <p className="text-gray-600 mb-6">{result.error}</p>
           <Link 
-            href="/forgot-password" 
+            href="/competition/forgot-password" 
             className="inline-block bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 transition-all"
           >
             Request New Reset Link
@@ -375,7 +375,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
           <div className="text-center pt-4 border-t border-gray-200 mt-6">
             <p className="text-sm text-gray-600">
               Remember your password?{' '}
-              <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
+              <Link href="/competition/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
                 Sign In
               </Link>
             </p>

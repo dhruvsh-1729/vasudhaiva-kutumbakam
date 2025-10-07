@@ -160,7 +160,7 @@ const Register: React.FC = () => {
           
           // Redirect to email verification page after 3 seconds
           // setTimeout(() => {
-          //   router.push(`/verify-email?email=${encodeURIComponent(data.user!.email)}`);
+          //   router.push(`/competition/verify-email?email=${encodeURIComponent(data.user!.email)}`);
           // }, 3000);
           
         } else if (data.user && data.token) {
@@ -170,7 +170,7 @@ const Register: React.FC = () => {
           
           // alert("Registration successful! Welcome to the VK Competition community.");
           toast.success("Registration successful! Welcome to the VK Competition community.");
-          router.push("/main");
+          router.push("/competition/main");
         }
       }
     } catch (error) {
@@ -191,7 +191,7 @@ const Register: React.FC = () => {
   };
 
   const handleVerifyEmail = (): void => {
-    router.push(`/verify-email?email=${encodeURIComponent(registeredEmail)}`);
+    router.push(`/competition/verify-email?email=${encodeURIComponent(registeredEmail)}`);
   };
 
   // Feature bullet points data
@@ -250,7 +250,7 @@ const Register: React.FC = () => {
           <div className="mt-6 pt-4 border-t border-gray-200">
             <p className="text-sm text-gray-600">
               Already verified?{' '}
-              <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
+              <Link href="/competition/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
                 Sign In
               </Link>
             </p>
@@ -601,7 +601,7 @@ const Register: React.FC = () => {
             <div className="text-center pt-3 border-t border-gray-200">
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
+                <Link href="/competition/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
                   Sign In
                 </Link>
               </p>

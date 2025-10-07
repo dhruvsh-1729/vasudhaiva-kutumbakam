@@ -1,11 +1,11 @@
-// pages/verify-email.tsx
+// pages/forgot-password.tsx
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import EmailVerification from '../components/EmailVerification';
-import { clientAuth } from '../middleware/auth';
+import ForgotPassword from '../../components/ForgotPassword';
+import { clientAuth } from '../../lib/auth';
 
-const VerifyEmailPage: React.FC = () => {
+const ForgotPasswordPage: React.FC = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,7 +15,7 @@ const VerifyEmailPage: React.FC = () => {
     const token = clientAuth.getToken();
     
     if (user && token) {
-      router.push('/main');
+      router.push('/competition/main');
     } else {
       setIsLoading(false);
     }
@@ -37,23 +37,20 @@ const VerifyEmailPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Email Verification - VK Competition | Vasudhaiva Kutumbakam</title>
+        <title>Forgot Password - VK Competition | Vasudhaiva Kutumbakam</title>
         <meta 
           name="description" 
-          content="Verify your email address to complete your VK Competition registration and join the global creative community." 
+          content="Reset your VK Competition password. Enter your email to receive password reset instructions." 
         />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       
       <main>
-        <EmailVerification 
-          token={router.query.token as string} 
-          email={router.query.email as string}
-        />
+        <ForgotPassword />
       </main>
     </>
   );
 };
 
-export default VerifyEmailPage;
+export default ForgotPasswordPage;

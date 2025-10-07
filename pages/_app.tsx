@@ -16,7 +16,6 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
     <Head>
       {/* Favicon / Head icon */}
-      <link rel="icon" type="image/webp" href="/jyot_logo.webp" />
       <title>Vasudhaiva Kutumbakam</title>
     </Head>
     {isProduction && <SpeedInsights />}

@@ -125,7 +125,7 @@ const Login: React.FC = () => {
         
         // alert("Login successful! Welcome back to VK Competition.");
         toast.success("Login successful! Welcome back to VK Competition.");
-        router.push("/main");
+        router.push("/competition/main");
       } else if (data.requiresEmailVerification && data.user) {
         // Show email verification prompt
         setUnverifiedUser(data.user);
@@ -159,12 +159,12 @@ const Login: React.FC = () => {
   };
 
   const handleForgotPassword = (): void => {
-    router.push('/forgot-password');
+    router.push('/competition/forgot-password');
   };
 
   const handleResendVerification = (): void => {
     if (unverifiedUser?.email) {
-      router.push(`/verify-email?email=${encodeURIComponent(unverifiedUser.email)}`);
+      router.push(`/competition/verify-email?email=${encodeURIComponent(unverifiedUser.email)}`);
     }
   };
 
@@ -411,7 +411,7 @@ const Login: React.FC = () => {
             {/* take me back to / page */}
             <div className="pt-2">
               <Link
-                href="/"
+                href="/competition"
                 className="w-full block text-center font-bold py-3 rounded-lg transition-all duration-300 shadow-lg transform text-sm bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white hover:shadow-xl hover:-translate-y-0.5"
               >
                 Take me back to Home
@@ -422,7 +422,7 @@ const Login: React.FC = () => {
             <div className="text-center pt-3 border-t border-gray-200">
               <p className="text-sm text-gray-600">
                 Don&apos;t have an account?{' '}
-                <Link href="/register" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
+                <Link href="/competition/register" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
                   Join now
                 </Link>
               </p>

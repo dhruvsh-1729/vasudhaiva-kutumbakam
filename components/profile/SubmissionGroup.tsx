@@ -1,7 +1,7 @@
 // components/profile/SubmissionGroup.tsx
 import * as React from 'react';
 import SubmissionCard from './SubmissionCard';
-import type { Submission } from '@/pages/profile';
+import type { Submission } from '@/pages/competition/profile';
 
 export default function SubmissionGroup({
   interval,

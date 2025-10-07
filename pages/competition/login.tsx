@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Login from '../components/Login';
-import { clientAuth } from '../middleware/auth';
+import Login from '../../components/Login';
+import { clientAuth } from '../../lib/auth';
 import { toast } from 'sonner';
 
 const LoginPage: React.FC = () => {
@@ -16,7 +16,7 @@ const LoginPage: React.FC = () => {
     const token = clientAuth.getToken();
     
     if (user && token) {
-      router.push('/main');
+      router.push('/competition/main');
     } else {
       setIsLoading(false);
     }
