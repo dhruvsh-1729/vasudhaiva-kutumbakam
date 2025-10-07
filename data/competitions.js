@@ -28,6 +28,17 @@ Create a painting that solves a modern global issue through one of the Five Guar
 **Your Challenge:**
 Choose one of the Five Guarantees and create an original painting that demonstrates how this guarantee can solve a pressing global issue. Your artwork should bridge ancient wisdom with modern solutions, showing how the philosophy of global unity can address today's challenges.
 
+**The 5 Guarantees (Choose Any One):**
+  • Guarantee of Security — Providing security to all members is the basic ethic of a family, which makes the person stay in the family and sustains the family system. Similarly, at the global level, to give an environment of security to all nations is the core principle of Vasudhaiva Kutumbakam.
+  
+  • Guarantee of Basic Necessities — As in a Indian Joint family, regardless of their capabilities and contributions, each member is guaranteed the equal fulfilment of their basic necessities and equal standard of living. Similarly, in case of family of countries to provide equal basic necessities to all countries without differentiation is also one of the central tenet of Vasudhaiva Kutumbakam.
+  
+  • Guarantee of Health and Education of Choice — The Indian joint family provide equal access to health and education. In times of health crises, family is needed most. Similarly, on the global stage, nations should ensure the freedom to choose their health and education systems, cultivating unity and shared responsibility, thereby embodying the core value of Vasudhaiva Kutumbakam.
+  
+  • Guarantee of Family Bond and Feelings — In the Indian Joint Family System, family bonding and emotional support provide the solidarity needed during times of weakness, regardless of one's power. Similarly, at the international level, this guarantee is essential to strengthen the global community, fostering trust, solidarity, and unity—representing the foundational principle of Vasudhaiva Kutumbakam.
+  
+  • Guarantee of Equal Access to Common Resources — This ethic is a core value of the Indian joint family, ensuring equal opportunities for all members to live, grow, and develop. It helps maintain family bonds and structure. Similarly, on the international stage, guaranteeing equal access to resources for all countries embodies the essence of Vasudhaiva Kutumbakam.
+  
 **Objective:**
 Express through visual art how traditional values and guarantees can provide innovative solutions to modern global problems. Your painting should inspire viewers to think about collective responsibility, universal values, and the interconnectedness of all humanity.
 
@@ -128,17 +139,6 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       • Medium: Charcoal or any color paints; mixed media allowed
       • Orientation: Portrait or Landscape
       • Originality: No AI/tracing/copyrighted images
-      
-      **The 5 Guarantees (Choose Any One):**
-      • Guarantee of Security — Providing security to all members is the basic ethic of a family, which makes the person stay in the family and sustains the family system. Similarly, at the global level, to give an environment of security to all nations is the core principle of Vasudhaiva Kutumbakam.
-      
-      • Guarantee of Basic Necessities — As in a Indian Joint family, regardless of their capabilities and contributions, each member is guaranteed the equal fulfilment of their basic necessities and equal standard of living. Similarly, in case of family of countries to provide equal basic necessities to all countries without differentiation is also one of the central tenet of Vasudhaiva Kutumbakam.
-      
-      • Guarantee of Health and Education of Choice — The Indian joint family provide equal access to health and education. In times of health crises, family is needed most. Similarly, on the global stage, nations should ensure the freedom to choose their health and education systems, cultivating unity and shared responsibility, thereby embodying the core value of Vasudhaiva Kutumbakam.
-      
-      • Guarantee of Family Bond and Feelings — In the Indian Joint Family System, family bonding and emotional support provide the solidarity needed during times of weakness, regardless of one's power. Similarly, at the international level, this guarantee is essential to strengthen the global community, fostering trust, solidarity, and unity—representing the foundational principle of Vasudhaiva Kutumbakam.
-      
-      • Guarantee of Equal Access to Common Resources — This ethic is a core value of the Indian joint family, ensuring equal opportunities for all members to live, grow, and develop. It helps maintain family bonds and structure. Similarly, on the international stage, guaranteeing equal access to resources for all countries embodies the essence of Vasudhaiva Kutumbakam.
       
       **Artist Statement:**
       • Attach a 100–150 word statement explaining your concept
