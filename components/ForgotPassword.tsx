@@ -193,7 +193,7 @@ const ForgotPassword: React.FC = () => {
           <div className="text-center pt-4 border-t border-gray-200 mt-6">
             <p className="text-sm text-gray-600">
               Remember your password?{' '}
-              <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
+              <Link href="/competition/login" className="text-red-600 hover:text-red-700 font-semibold hover:underline">
                 Sign In
               </Link>
             </p>

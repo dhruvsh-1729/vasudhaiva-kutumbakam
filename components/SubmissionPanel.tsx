@@ -104,32 +104,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
-
-  // Check if Google Drive link is accessible
-  const verifyGoogleDriveAccess = async (url: string): Promise<{ success: boolean; error?: string }> => {
-    setIsVerifyingAccess(true);
-    
-    try {
-      const response = await fetch('/api/verify-drive-access', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
-      
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      return {
-        success: false,
-        error: 'Failed to verify access. Please check your internet connection.'
-      };
-    } finally {
-      setIsVerifyingAccess(false);
-    }
-  };
-
+  
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 

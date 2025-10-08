@@ -1,6 +1,6 @@
 // components/profile/SubmissionCard.tsx
 import * as React from 'react';
-import type { Submission } from '@/pages/profile';
+import type { Submission } from '@/pages/competition/profile';
 
 const statusConfig = {
   PENDING: {

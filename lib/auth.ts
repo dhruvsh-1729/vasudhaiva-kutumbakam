@@ -155,7 +155,7 @@ export const clientAuth = {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('vk_token');
       localStorage.removeItem('vk_user');
-      window.location.href = '/login';
+      window.location.href = '/competition/login';
     }
   },
 

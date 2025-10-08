@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import ResetPassword from '../components/ResetPassword';
-import { clientAuth } from '../middleware/auth';
+import ResetPassword from '../../components/ResetPassword';
+import { clientAuth } from '../../lib/auth';
 
 const ResetPasswordPage: React.FC = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const ResetPasswordPage: React.FC = () => {
     const token = clientAuth.getToken();
     
     if (user && token) {
-      router.push('/main');
+      router.push('/competition/main');
     } else {
       setIsLoading(false);
     }
@@ -47,7 +47,7 @@ const ResetPasswordPage: React.FC = () => {
           <h2 className="text-2xl font-bold text-red-700 mb-4">Invalid Access</h2>
           <p className="text-gray-600 mb-6">This page requires a valid password reset token.</p>
           <button 
-            onClick={() => router.push('/forgot-password')}
+            onClick={() => router.push('/competition/forgot-password')}
             className="bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 transition-all"
           >
             Request Password Reset

@@ -1,7 +1,7 @@
 // components/Footer.tsx (Enhanced with Authentication)
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth';
 
 interface FooterLink {
   href: string;
@@ -37,22 +37,18 @@ const Footer: React.FC = () => {
   }, []);
 
   const quickLinks: FooterLink[] = [
-    { href: "/", label: "Home" },
-    // { href: "/about", label: "About VK" },
-    // { href: "/main", label: "Dashboard", requiresAuth: true },
-    // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
-    { href: "/contact", label: "Contact" },
-    // { href: "/privacy", label: "Privacy Policy" }
+    { href: "/competition", label: "Home" },
+    { href: "/competition/contact", label: "Contact" },
   ];
 
   const authLinks: FooterLink[] = isAuthenticated 
     ? [
         // { href: "/profile", label: "Profile" },
-        { href: "/main", label: "Dashboard" }
+        { href: "/competition/main", label: "Dashboard" }
       ]
     : [
-        { href: "/login", label: "Sign In" },
-        { href: "/register", label: "Register" }
+        { href: "/competition/login", label: "Sign In" },
+        { href: "/competition/register", label: "Register" }
       ];
 
   const socialLinks: SocialLink[] = [

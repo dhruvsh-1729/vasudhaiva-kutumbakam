@@ -33,7 +33,7 @@ export class EmailService {
     verificationToken: string
   ): Promise<boolean> {
     try {
-      const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${verificationToken}`;
+      const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/competition/verify-email?token=${verificationToken}`;
       
       const template = this.getVerificationEmailTemplate(userName, verificationUrl);
       
@@ -63,7 +63,7 @@ export class EmailService {
     resetToken: string
   ): Promise<boolean> {
     try {
-      const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${resetToken}`;
+      const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/competition/reset-password?token=${resetToken}`;
       
       const template = this.getPasswordResetEmailTemplate(userName, resetUrl);
       
@@ -333,7 +333,7 @@ export class EmailService {
                 </div>
 
                 <div style="text-align: center; margin: 35px 0;">
-                  <a href="${process.env.NEXT_PUBLIC_BASE_URL}/main" 
+                  <a href="${process.env.NEXT_PUBLIC_BASE_URL}/competition/main" 
                      style="display: inline-block; background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; text-decoration: none; padding: 15px 35px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);">
                     Start Your Journey
                   </a>
@@ -373,7 +373,7 @@ export class EmailService {
         - Connect with artists worldwide
         - Celebrate unity through diversity
 
-        Start your journey: ${process.env.NEXT_PUBLIC_BASE_URL}/main
+        Start your journey: ${process.env.NEXT_PUBLIC_BASE_URL}/competition/main
 
         "वसुधैव कुटुम्बकम् - The World is One Family"
 

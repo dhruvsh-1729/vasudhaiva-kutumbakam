@@ -10,6 +10,7 @@ interface Competition {
   icon: string;
   deadline?: string;
   category?: string;
+  slug?: string;
   status?: 'active' | 'upcoming' | 'completed';
 }
 
@@ -179,8 +180,8 @@ const CompetitionList: React.FC = () => {
                           ))}  */}
                           <div className="flex items-center justify-center">
                             <div className="text-center">
-                              <span className="font-inter font-bold text-orange-800 text-lg">
-                                Total Prize Pool: ₹{competition.id === 1 ? '6,000' : competition.id === 2 ? '4,000' : competition.id === 4 ? '2,00,000' : '3,000'}
+                              <span className={`font-inter font-bold text-lg ${competition.id === 4 ? 'text-green-800 text-xl' : 'text-orange-800'}`}>
+                               Total Prize Pool: {competition.id === 1 ? '6,000' : competition.id === 2 ? '4,000' : competition.id === 4 ? '2,00,000 🎉' : '3,000'}
                               </span>
                             </div>
                           </div>
@@ -190,7 +191,7 @@ const CompetitionList: React.FC = () => {
                       {/* Action Section */}
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
                         <div className="flex flex-col sm:flex-row items-center gap-3">
-                          <Link href={`/competitions/${competition.id}`}>
+                          <Link href={`/competition/${competition.slug}`}>
                             <button className="bg-gradient-to-r cursor-pointer from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-inter font-semibold py-2 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] text-sm">
                               <div className="flex items-center gap-2">
                                 <span>View Details</span>

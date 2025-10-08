@@ -2,8 +2,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Register from '../components/Register';
-import { clientAuth } from '../middleware/auth';
+import Register from '../../components/Register';
+import { clientAuth } from '../../lib/auth';
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();
@@ -14,7 +14,7 @@ const RegisterPage: React.FC = () => {
     const token = clientAuth.getToken();
     
     if (user && token) {
-      router.push('/main');
+      router.push('/competition/main');
     }
   }, [router]);
 

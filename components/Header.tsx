@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import logo from '@/public/main_logo.png';
@@ -41,10 +41,10 @@ const Header: React.FC = () => {
   }, []);
 
   const navigationItems: NavigationItem[] = [
-    { href: "/", label: "Home" },
-    { href: "/main", label: "Dashboard", requiresAuth: true },
-    { href: "/profile", label: "My Profile", requiresAuth: true },
-    { href: "/contact", label: "Contact Us" },  
+    { href: "/competition", label: "Home" },
+    { href: "/competition/main", label: "Dashboard", requiresAuth: true },
+    { href: "/competition/profile", label: "My Profile", requiresAuth: true },
+    { href: "/competition/contact", label: "Contact Us" },  
     // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
     // { href: "/main#timeline", label: "Timeline", requiresAuth: true }
   ];
@@ -74,7 +74,7 @@ const Header: React.FC = () => {
   };
 
   const handleProfileClick = (): void => {
-    router.push('/profile');
+    router.push('/competition/profile');
     setShowUserMenu(false);
   };
 
@@ -102,7 +102,7 @@ const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <Link href="/">
+              <Link href="/competition">
                 <span className="text-2xl font-bold text-red-600 cursor-pointer">VK Competition</span>
               </Link>
             </div>
@@ -120,7 +120,7 @@ const Header: React.FC = () => {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Link href="/">
+              <Link href="/competition">
                 <div className="flex items-center space-x-3 cursor-pointer group">
                   <Image className="w-20 h-20 rounded-full" alt="VK Logo" width={80} height={80}
                   src={logo.src} />
@@ -191,7 +191,7 @@ const Header: React.FC = () => {
                           My Profile
                         </button>
 
-                        <Link href="/main">
+                        <Link href="/competition/main">
                           <span className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer">
                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -200,7 +200,7 @@ const Header: React.FC = () => {
                           </span>
                         </Link>
 
-                        <Link href="/contact">
+                        <Link href="/competition/contact">
                           <span className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer">
                             <Phone className="w-4 h-4 mr-3" />
                             Contact us
@@ -224,12 +224,12 @@ const Header: React.FC = () => {
             ) : (
               // Not authenticated - show login/register buttons
               <div className="flex items-center space-x-3">
-                <Link href="/login">
+                <Link href="/competition/login">
                   <button className="text-gray-700 hover:text-red-600 cursor-pointer font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition-all duration-200">
                     Sign In
                   </button>Sign In
                 </Link>
-                <Link href="/register">
+                <Link href="/competition/register">
                   <button className="bg-gradient-to-r from-red-600 to-red-700 cursor-pointer hover:from-red-700 hover:to-red-800 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                     Register
                   </button>

@@ -11,12 +11,12 @@ import Head from "next/head";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+// analytics and speed insights only in production
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
     <Head>
       {/* Favicon / Head icon */}
-      <link rel="icon" type="image/webp" href="/jyot_logo.webp" />
       <title>Vasudhaiva Kutumbakam</title>
     </Head>
     {isProduction && <SpeedInsights />}

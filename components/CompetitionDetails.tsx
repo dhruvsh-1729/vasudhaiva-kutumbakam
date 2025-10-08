@@ -86,15 +86,27 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
       if (paragraph.trim().startsWith("•")) {
         return (
           <div key={idx} className="flex items-start my-2">
-            <div className="flex-shrink-0 mt-1.5 mr-3">
-              <div className="w-1.5 h-1.5 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full" />
-            </div>
-            <p className="font-inter text-gray-700 leading-relaxed text-sm">
-              {paragraph.trim().substring(1).trim().replace(/1,00,000/g, '')}
-              {paragraph.includes('1,00,000') && (
-                <span className="text-red-600 font-bold">₹1,00,000</span>
-              )}
-            </p>
+        <div className="flex-shrink-0 mt-1.5 mr-3">
+          <div className="w-1.5 h-1.5 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full" />
+        </div>
+        <p className="font-inter text-gray-700 leading-relaxed text-sm">
+          {paragraph.trim().substring(1).trim().replace(/₹1,00,000/g, '').replace(/₹51,000/g, '').replace(/₹25,000/g, '')}
+          {paragraph.includes('₹1,00,000') && (
+            <span className="bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-600 bg-clip-text text-transparent font-bold text-base">
+          ₹1,00,000
+            </span>
+          )}
+          {paragraph.includes('₹51,000') && (
+            <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent font-bold text-base">
+          ₹51,000
+            </span>
+          )}
+          {paragraph.includes('₹25,000') && (
+            <span className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-600 bg-clip-text text-transparent font-bold text-base">
+          ₹25,000
+            </span>
+          )}
+        </p>
           </div>
         );
       }

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import Link from "next/link";
-import jyotimage from '../public/jyot_logo.webp';
+import jyotimage from '@/public/jyot_logo.webp';
 import Image from 'next/image';
 import backgroundImage from "@/public/map.jpg";
 import { useRouter } from 'next/router';
-import NotificationBanner from '../components/NotificationBanner';
+import NotificationBanner from '../../components/NotificationBanner';
 import { ArrowRight, MoveRight } from 'lucide-react';
 import Footer from '@/components/Footer';
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth';
 import logo from '@/public/main_logo.png';
 import CountDown from '@/components/CountDown';
 import { getCompetitionById } from '@/data/competitions';
@@ -148,7 +148,7 @@ const Home: React.FC = () => {
 }, []);
 
   const handleRegisterClick = (): void => {
-    router.push("/register");
+    router.push("/competition/register");
   };
   
   const handleLogout = async () => {
@@ -312,7 +312,7 @@ const Home: React.FC = () => {
             <>
             <button 
           className='hidden lg:block text-base px-5 py-2 bg-gradient-to-r from-red-600 to-orange-800 rounded-md text-white font-medium cursor-pointer hover:from-red-700 hover:to-orange-600' 
-          onClick={() => router.push("/main")}
+          onClick={() => router.push("/competition/main")}
             >
           Dashboard
             </button>
@@ -333,13 +333,13 @@ const Home: React.FC = () => {
             <p className="text-xs text-gray-600">{user.email}</p>
               </div>
               <button
-            onClick={() => router.push("/main")}
+            onClick={() => router.push("/competition/main")}
             className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
               >
             Competitions
               </button>
               <button
-            onClick={() => router.push("/profile")}
+            onClick={() => router.push("/competition/profile")}
             className="block w-full px-4 py-2 text-sm text-zinc-700 hover:bg-gray-50"
               >
             My Profile
@@ -356,12 +356,12 @@ const Home: React.FC = () => {
             </>
           ) : (
             <div className="flex items-center gap-3">
-          <Link href="/login">
+          <Link href="/competition/login">
             <button className="text-gray-700 cursor-pointer hover:text-red-600 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
               Sign In
             </button>
           </Link>
-          <Link href="/register" className="hidden sm:block">
+          <Link href="/competition/register" className="hidden sm:block">
             <button className="bg-gradient-to-r cursor-pointer from-red-600 to-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow hover:shadow-lg transition">
               Register
             </button>

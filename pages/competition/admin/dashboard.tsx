@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { toast } from 'sonner';
 
 // Component imports
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth';
 import CompetitionStats from '@/components/admin/CompetitionStats';
 import SubmissionsManager from '@/components/admin/SubmissionsManager';
 import UsersManager from '@/components/admin/UsersManager';
@@ -36,7 +36,7 @@ const AdminDashboard: React.FC = () => {
     const token = clientAuth.getToken();
     
     if (!currentUser || !token) {
-      router.push('/login?message=' + encodeURIComponent('Please log in to access admin dashboard'));
+      router.push('/competition/login?message=' + encodeURIComponent('Please log in to access admin dashboard'));
       return;
     }
 
@@ -44,7 +44,7 @@ const AdminDashboard: React.FC = () => {
     // For now, we'll assume the user is admin if they reach this page
     // In production, you should validate admin status server-side
     if (!currentUser.isAdmin) {
-      router.push('/main?message=' + encodeURIComponent('Access denied. Admin privileges required.'));
+      router.push('/competition/main?message=' + encodeURIComponent('Access denied. Admin privileges required.'));
       return;
     }
     
