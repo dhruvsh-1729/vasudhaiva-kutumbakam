@@ -11,6 +11,7 @@ import Head from "next/head";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+// analytics and speed insights only in production
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
