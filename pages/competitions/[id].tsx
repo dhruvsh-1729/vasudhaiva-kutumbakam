@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import SidebarNav from '../../components/SidebarNav';
-import { getAllCompetitionIds, getCompetitionById } from '@/data/competitions';
+import { getAllCompetitionIds, getAllCompetitionSlugs, getCompetitionById, getCompetitionBySlug } from '@/data/competitions';
 import CompetitionDetails from '@/components/CompetitionDetails';
 import SubmissionPanel from '@/components/SubmissionPanel';
 import Header from '@/components/Header';
@@ -69,7 +69,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
       
       if (!currentUser || !token) {
         // Not authenticated - redirect to login
-        router.push('/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
+        router.push('/competition/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
         return;
       }
       
@@ -114,7 +114,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
           Sorry, we couldn&apos;t find the competition you&apos;re looking for. It may have been removed or the URL might be incorrect.
         </p>
         <Link 
-          href="/main"
+          href="/competition/main"
           className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@ export default CompetitionDetailPage;
 
 // Static generation functions with proper TypeScript types
 export const getStaticPaths: GetStaticPaths<StaticPathParams> = async () => {
-  const paths = getAllCompetitionIds();
+  const paths = getAllCompetitionSlugs();
   
   return {
     paths,
@@ -196,28 +196,28 @@ export const getStaticProps: GetStaticProps<CompetitionDetailPageProps, StaticPa
     };
   }
 
-  // Convert the ID to integer since our data uses numeric IDs
-  const competitionId = parseInt(params.id, 10);
+  const slug = params.id;  
   
-  // Check if the ID is a valid number
-  if (isNaN(competitionId)) {
+  try {
+    // Get competition by slug only (no ID fallback needed)
+    const competition = getCompetitionBySlug(slug);
+      
+    if (!competition) {
+      return {
+        notFound: true,
+      };
+    }
+    
+    return {
+      props: {
+        competition,
+      },
+      revalidate: 300, // Regenerate the page every 5 minutes if requested
+    };
+  } catch (error) {
+    console.error("Error fetching competition:", error);
     return {
       notFound: true,
     };
   }
-
-  const competition = getCompetitionById(competitionId);
-  
-  if (!competition) {
-    return {
-      notFound: true,
-    };
-  }
-  
-  return {
-    props: {
-      competition,
-    },
-    revalidate: 60, // Regenerate the page every 60 seconds if requested
-  };
 };
