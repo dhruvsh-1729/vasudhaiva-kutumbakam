@@ -43,7 +43,7 @@ Choose one of the Five Guarantees and create an original painting that demonstra
 Express through visual art how traditional values and guarantees can provide innovative solutions to modern global problems. Your painting should inspire viewers to think about collective responsibility, universal values, and the interconnectedness of all humanity.
 
 **More Details:**
-Visit the Jyot app for detailed content about Vasudhaiva Kutumbakam and the Five Guarantees theme.`
+Click on the banner in the dashboard page to know more about Vasudhaiva Kutumbakam and the Five Guarantees theme.`
       : `Welcome to the ${competition.title} competition! ${competition.description}
           
       **📢 Week 1 Challenge – VK Competition**

@@ -55,6 +55,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'submit' | 'history'>('submit');
 
+  // Check if this is competition 4 (non-weekly)
+  const isCompetition4 = Number(competitionId) === 4;
+
   // Fetch admin settings and user submissions on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -183,7 +186,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       return;
     }
 
-    if (!canSubmitMore()) {
+    if (!isCompetition4 && !canSubmitMore()) {
       toast.error(`Maximum ${adminSettings.maxSubmissionsPerInterval} submissions allowed per interval`);
       return;
     }
@@ -375,11 +378,13 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                     </h3>
                   </div>
                   <p className="font-bold text-orange-700/70 text-sm ml-11">Ready to participate? Submit your entry below.</p>
-                  <p className='font-inter text-black-700/70 text-sm ml-11'>Best of 3 submissions will be considered for final evaluation of the competition for the specfic week.</p>
+                  {!isCompetition4 && (
+                    <p className='font-inter text-black-700/70 text-sm ml-11'>Best of 3 submissions will be considered for final evaluation of the competition for the specfic week.</p>
+                  )}
                 </div>
 
-                {/* Submission Status Info */}
-                {adminSettings && (
+                {/* Submission Status Info - Only show for non-competition 4 */}
+                {adminSettings && !isCompetition4 && (
                   <div className="mb-6 p-4 bg-blue-50/80 rounded-xl border border-blue-200/50">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-inter text-sm font-semibold text-blue-800">Current Week: {adminSettings.currentInterval}</span>
@@ -438,7 +443,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                     {errors.fileUrl && <p className="mt-1 text-xs text-red-600 font-inter">{errors.fileUrl}</p>}
                     
                     {/* Access Permission Notice */}
-                    <div className="mt-2 p-3 bg-amber-50/80 border border-amber-200/50 rounded-lg">
+                    <div className="mt-3 p-3 bg-amber-50/80 border border-amber-200/50 rounded-lg">
                       <div className="flex items-start gap-2">
                         <svg className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -471,9 +476,17 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || isVerifyingAccess || !adminSettings?.isSubmissionsOpen || !canSubmitMore()}
+                    disabled={
+                      isSubmitting || 
+                      isVerifyingAccess || 
+                      !adminSettings?.isSubmissionsOpen || 
+                      (!isCompetition4 && !canSubmitMore())
+                    }
                     className={`submit-shimmer w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-300 font-inter relative overflow-hidden ${
-                      isSubmitting || isVerifyingAccess || !adminSettings?.isSubmissionsOpen || !canSubmitMore()
+                      isSubmitting || 
+                      isVerifyingAccess || 
+                      !adminSettings?.isSubmissionsOpen || 
+                      (!isCompetition4 && !canSubmitMore())
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:via-amber-700 hover:to-orange-800 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl'
                     }`}
@@ -496,7 +509,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                       </div>
                     ) : !adminSettings?.isSubmissionsOpen ? (
                       'Submissions Closed'
-                    ) : !canSubmitMore() ? (
+                    ) : (!isCompetition4 && !canSubmitMore()) ? (
                       'Submission Limit Reached'
                     ) : (
                       'Submit Entry'
@@ -508,7 +521,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
               <>
                 {/* History Tab Content */}
                 <div className="mb-6">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2"></div>
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -519,7 +532,6 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                     </h3>
                   </div>
                   <p className="font-inter text-orange-700/70 text-sm ml-11">Track your submitted entries and their status.</p>
-                </div>
 
                 {/* Submissions List */}
                 <div className="space-y-4">
@@ -540,9 +552,11 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                               {submission?.status?.replace('_', ' ')}
                             </span>
                           </div>
-                          <span className="text-xs text-gray-500 font-inter">
-                            Week {submission.interval}
-                          </span>
+                          {!isCompetition4 && (
+                            <span className="text-xs text-gray-500 font-inter">
+                              Week {submission.interval}
+                            </span>
+                          )}
                         </div>
 
                         <h4 className="font-semibold text-md text-gray-800 font-inter mb-1 break-words">{submission.title}</h4>

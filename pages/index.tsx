@@ -253,7 +253,7 @@ const Home: React.FC = () => {
   const competitionCategories: CompetitionCategory[] = [
     { category: "AI Reel Making", icon: "🎬", description: "Craft 1-3 minute stories using AI tools that bring global unity and creativity to life." },
     { category: "Political Toons", icon: "🏛️", description: "Use satire and AI artistry to creatively capture political ideas and principles." },
-    { category: "Creative Expression", icon: "✨", description: "An open category for unique AI-driven script aligned with Vasudhaiva Kutumbakam." },
+    { category: "Creative Expression", icon: "✨", description: "An open category for unique script aligned with Vasudhaiva Kutumbakam." },
     { category: "Painting Competition", icon: "🎨", description: "Express the essence of 'The World is One Family' through traditional and digital painting." }
   ];
 
@@ -795,7 +795,7 @@ const Home: React.FC = () => {
                 {/* CTA */}
                 <div className="pt-4 flex justify-center sm:justify-start">
                   <a
-                    href="https://jyot.in"
+                    href="https://vk.jyot.in"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group inline-flex items-center bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-6 py-3 rounded-full border border-white/20 hover:border-white/40 transition-all duration-300"

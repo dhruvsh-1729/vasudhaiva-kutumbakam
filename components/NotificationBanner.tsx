@@ -5,7 +5,7 @@ const NotificationBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
 
   const handleRedirect = (): void => {
-    window.open('https://jyot.in', '_blank');
+    window.open('https://vk.jyot.in', '_blank');
   };
 
   const handleDismiss = (): void => {

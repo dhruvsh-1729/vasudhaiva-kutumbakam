@@ -89,11 +89,28 @@ export const authenticateToken = async (
         message: 'Authentication failed'
       });
     } else if (error instanceof jwt.TokenExpiredError) {
-      res.status(401).json({
-        success: false,
-        error: 'Token expired',
-        message: 'Please log in again'
-      });
+      // Check if token was used within last 7 days
+      const now = Math.floor(Date.now() / 1000);
+      const sevenDaysAgo = now - (7 * 24 * 60 * 60); // 7 days in seconds
+      
+      // Get the expired token payload without verification
+      const decodedExpired = jwt.decode(req.headers.authorization?.split(' ')[1] || '') as JWTPayload;
+      
+      if (decodedExpired?.iat && decodedExpired.iat >= sevenDaysAgo) {
+        // Token was issued within last 7 days, trigger logout
+        res.status(401).json({
+          success: false,
+          error: 'Token expired',
+          message: 'Please log in again',
+          forceLogout: true
+        });
+      } else {
+        res.status(401).json({
+          success: false,
+          error: 'Token expired',
+          message: 'Please log in again'
+        });
+      }
     } else {
       console.error('Authentication middleware error:', error);
       res.status(500).json({
@@ -163,7 +180,7 @@ export const clientAuth = {
   fetch: async (url: string, options: RequestInit = {}): Promise<Response> => {
     const token = clientAuth.getToken();
     
-    return fetch(url, {
+    const response = await fetch(url, {
       ...options,
       headers: {
         ...options.headers,
@@ -171,5 +188,19 @@ export const clientAuth = {
         ...(token && { 'Authorization': `Bearer ${token}` }),
       },
     });
+
+    // Check if response indicates forced logout is needed
+    if (response.status === 401) {
+      try {
+        const data = await response.clone().json();
+        if (data.forceLogout) {
+          clientAuth.logout();
+        }
+      } catch (e) {
+        // If we can't parse JSON, proceed normally
+      }
+    }
+
+    return response;
   },
 };

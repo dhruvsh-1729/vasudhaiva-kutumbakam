@@ -178,13 +178,13 @@ const CompetitionList: React.FC = () => {
                               </span>
                             </div>
                           ))}  */}
-                          <div className="flex items-center justify-center">
+                            <div className="flex items-center justify-center">
                             <div className="text-center">
                               <span className={`font-inter font-bold text-lg ${competition.id === 4 ? 'text-green-800 text-xl' : 'text-orange-800'}`}>
-                               Total Prize Pool: {competition.id === 1 ? '6,000' : competition.id === 2 ? '4,000' : competition.id === 4 ? '2,00,000 🎉' : '3,000'}
+                               Total Prize Pool: ₹{competition.id === 1 ? '6,000/-' : competition.id === 2 ? '4,000/-' : competition.id === 4 ? '2,00,000/- 🎉' : '3,000/-'}
                               </span>
                             </div>
-                          </div>
+                            </div>
                         </div>
                       </div>
 
@@ -203,13 +203,13 @@ const CompetitionList: React.FC = () => {
                           </Link>
                           
                           {/* Quick Stats */}
-                          <div className="flex items-center gap-2 text-xs">
+                          {/* <div className="flex items-center gap-2 text-xs">
                             {competitionStats.map((stat: CompetitionStats, statIndex: number) => (
                               <div key={statIndex} className={`${stat.bgColor} rounded-lg px-2 py-1`}>
                                 <span className={`font-inter font-bold ${stat.textColor}`}>{stat.value}</span>
                               </div>
                             ))}
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
