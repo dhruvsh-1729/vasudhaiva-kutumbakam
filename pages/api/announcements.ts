@@ -36,6 +36,14 @@ export default async function handler(
       date: 'October 02, 2025',
       createdAt: '2025-10-02T10:00:00Z'
       },
+      {
+      id: 3,
+      type: 'normal',
+      title: 'Submission Deadline for Painting Competition Extended',
+      content: 'The submission deadline for the painting competition has been extended to December 30th. Take advantage of this extra time to perfect your artwork!',
+      date: 'October 16, 2025',
+      createdAt: '2025-10-16T14:30:00Z'
+      },
     ];
 
     res.status(200).json(announcements);
