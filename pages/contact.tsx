@@ -160,8 +160,8 @@ const ContactUs: React.FC = () => {
               <Mail className="h-6 w-6" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Email Us</h3>
-            <a href="mailto:vk4.ki.oar@gmail.com" className="text-red-600 hover:text-red-700 break-all">
-              vk4.ki.oar@gmail.com 
+            <a href="mailto:vk4.ki.oar@gmail.com , vk.ki.oar@gmail.com" className="text-red-600 hover:text-red-700 break-all">
+              vk4.ki.oar@gmail.com , vk.ki.oar@gmail.com
             </a>
             &nbsp;is the official email ID for all queries.
           </div>

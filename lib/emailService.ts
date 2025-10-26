@@ -13,7 +13,7 @@ export class EmailService {
   private fromName: string;
 
   constructor() {
-    this.fromEmail = 'vk4.ki.oar@gmail.com';
+    this.fromEmail = 'vk4.ki.oar@gmail.com', 'vk.ki.oar@gmail.com';
     this.fromName = 'VK Competition';
   }
 
