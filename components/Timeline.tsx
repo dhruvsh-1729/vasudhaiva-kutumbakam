@@ -16,14 +16,14 @@ const Timeline: React.FC = () => {
     {
       id: 1,
       title: 'Competition Launch',
-      date: 'October 2, 2025',
-      status: 'completed'
+      date: 'October 27, 2025',
+      status: 'upcoming'
     },
     {
       id: 2,
       title: 'Week 1 Challenge',
-      date: 'OCtober 5 - November 20, 2025',
-      status: 'current'
+      date: 'November 2 - November 20, 2025',
+      status: 'upcoming'
     },
     {
       id: 3,
