@@ -32,21 +32,21 @@ interface CompetitionStats {
 const CompetitionList: React.FC = () => {
   // Prize information configuration
   const prizeInfo1: PrizeInfo[] = [
-    { position: 1, amount: '₹6,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹4,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹2,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 1, amount: '₹25,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹15,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹10,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
   
   const prizeInfo2: PrizeInfo[] = [
-    { position: 1, amount: '₹4,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹2,500', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹1,500', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 1, amount: '₹25,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹15,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹10,00', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
 
   const prizeInfo4: PrizeInfo[] = [
-    { position: 1, amount: '₹2,00,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹1,00,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹50,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 1, amount: '₹37,500', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹22,5000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹15,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
 
   return (
@@ -87,13 +87,13 @@ const CompetitionList: React.FC = () => {
           </h2>
           
           <p className="font-crimson text-sm text-orange-700/80 max-w-md mx-auto leading-relaxed">
-            Join our weekly challenges and express your creativity through the universal language of art and innovation
+            Join our bi-weekly challenges and express your creativity through the universal language of art and innovation
           </p>
           
           {/* Compact Weekly Badge */}
           <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-orange-200/50 shadow-md">
             <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-            <span className="font-inter font-medium text-orange-700 text-xs">Weekly Challenges • New Problems Every Monday</span>
+            <span className="font-inter font-medium text-orange-700 text-xs">Bi-Weekly Challenges • New Problems Soon</span>
             <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
           </div>
         </div>
@@ -164,29 +164,42 @@ const CompetitionList: React.FC = () => {
 
                       {/* Prize Information */}
                       <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200/50">
-                        {/* <h4 className="font-playfair font-semibold text-orange-800 text-sm mb-2">Competition Prizes</h4> */}
-                        <div className="flex justify-between items-center text-xs">
-                           {/* {(competition.id === 1 ? prizeInfo1 : prizeInfo2).map((prize: PrizeInfo) => (
-                            <div key={prize.position} className="flex items-center gap-1">
-                              <div
-                                className={`w-4 h-4 bg-gradient-to-br from-${prize.color} to-${prize.bgColor} rounded-full flex items-center justify-center`}
-                              >
-                                <span className="text-white text-xs font-bold">{prize.position}</span>
+                        <div className="flex justify-between items-center text-xs flex-wrap gap-2">
+                          {(competition.id === 1
+                            ? prizeInfo1
+                            : competition.id === 2
+                            ? prizeInfo2
+                            : competition.id === 4
+                            ? prizeInfo4
+                            : []
+                          ).map((prize: PrizeInfo) => {
+                            const colorMap: Record<string, { circle: string; text: string }> = {
+                              gold: { circle: "bg-gradient-to-br from-yellow-400 to-amber-500", text: "text-yellow-800" },
+                              silver: { circle: "bg-gradient-to-br from-gray-300 to-gray-400", text: "text-gray-700" },
+                              bronze: { circle: "bg-gradient-to-br from-orange-400 to-orange-600", text: "text-orange-700" },
+                              blue: { circle: "bg-gradient-to-br from-sky-400 to-blue-600", text: "text-blue-700" },
+                              green: { circle: "bg-gradient-to-br from-emerald-400 to-green-600", text: "text-green-700" },
+                              purple: { circle: "bg-gradient-to-br from-fuchsia-400 to-purple-600", text: "text-purple-700" },
+                            };
+
+                            const theme = colorMap[prize.color] || colorMap.gold;
+
+                            return (
+                              <div key={prize.position} className="flex items-center gap-1">
+                                <div className={`w-4 h-4 ${theme.circle} rounded-full flex items-center justify-center`}>
+                                  <span className="text-white text-[10px] leading-none font-bold">{prize.position}</span>
+                                </div>
+                                <span className={`font-inter font-medium ${theme.text}`}>{prize.amount}</span>
                               </div>
-                              <span className={`font-inter font-medium text-${prize.textColor}`}>
-                                {prize.amount}
-                              </span>
-                            </div>
-                          ))}  */}
-                            <div className="flex items-center justify-center">
-                            <div className="text-center">
-                              <span className={`font-inter font-bold text-lg ${competition.id === 4 ? 'text-green-800 text-xl' : 'text-orange-800'}`}>
-                               Total Prize Pool: ₹{competition.id === 1 ? '6,000/-' : competition.id === 2 ? '4,000/-' : competition.id === 4 ? '2,00,000/- 🎉' : '3,000/-'}
-                              </span>
-                            </div>
-                            </div>
+                            );
+                          })}
+
+                          <div className="flex items-center justify-center">
+                            <div className="text-center"></div>
+                          </div>
                         </div>
                       </div>
+
 
                       {/* Action Section */}
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">

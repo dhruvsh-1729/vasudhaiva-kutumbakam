@@ -687,7 +687,7 @@ const Home: React.FC = () => {
           {/* Single Prize Pool Banner */}
           <div className="bg-gradient-to-r from-yellow-400 to-red-500 rounded-2xl shadow-2xl p-10 text-center text-white">
             <h3 className="text-5xl md:text-6xl font-extrabold mb-4">
-              Prize Pool of ₹5,00,000
+              Prize Pool of ₹4,00,000
             </h3>
             <p className="text-lg opacity-90">
               And other exciting opportunities to showcase your work on global platforms in front of dignitaries and industry leaders.
