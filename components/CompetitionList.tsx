@@ -31,16 +31,21 @@ interface CompetitionStats {
 const CompetitionList: React.FC = () => {
   // Prize information configuration
   const prizeInfo1: PrizeInfo[] = [
-    { position: 1, amount: '₹10,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹6,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹4,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 1, amount: '₹37,500', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹22,500', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹15,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
   ]
   const prizeInfo2: PrizeInfo[] = [
-    { position: 1, amount: '₹5,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹3,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹2,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
-  ]
-  ;
+    { position: 1, amount: '₹25,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹15,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹10,00', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+  ];
+
+  const prizeInfo4: PrizeInfo[] = [
+    { position: 1, amount: '₹37,500', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹22,500', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹15,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+  ];
 
   return (
     <section className="w-full relative">

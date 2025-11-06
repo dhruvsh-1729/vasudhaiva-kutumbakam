@@ -86,12 +86,27 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
       if (paragraph.trim().startsWith("•")) {
         return (
           <div key={idx} className="flex items-start my-2">
-            <div className="flex-shrink-0 mt-1.5 mr-3">
-              <div className="w-1.5 h-1.5 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full" />
-            </div>
-            <p className="font-inter text-gray-700 leading-relaxed text-sm">
-              {paragraph.trim().substring(1).trim()}
-            </p>
+        <div className="flex-shrink-0 mt-1.5 mr-3">
+          <div className="w-1.5 h-1.5 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full" />
+        </div>
+        <p className="font-inter text-gray-700 leading-relaxed text-sm">
+          {paragraph.trim().substring(1).trim().replace(/₹1,00,000/g, '').replace(/₹51,000/g, '').replace(/₹25,000/g, '')}
+          {paragraph.includes('₹1,00,000') && (
+            <span className="bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-600 bg-clip-text text-transparent font-bold text-base">
+          ₹1,00,000
+            </span>
+          )}
+          {paragraph.includes('₹51,000') && (
+            <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent font-bold text-base">
+          ₹51,000
+            </span>
+          )}
+          {paragraph.includes('₹25,000') && (
+            <span className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-600 bg-clip-text text-transparent font-bold text-base">
+          ₹25,000
+            </span>
+          )}
+        </p>
           </div>
         );
       }
@@ -104,10 +119,18 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
             {parts.map((part: string, partIdx: number) =>
               partIdx % 2 === 1 ? (
                 <span key={partIdx} className="font-playfair font-semibold text-base text-orange-800">
-                  {part}
+                  {part.replace(/1,00,000/g, '')}
+                  {part.includes('1,00,000') && (
+                    <span className="text-red-600 font-bold">₹1,00,000</span>
+                  )}
                 </span>
               ) : (
-                <span key={partIdx}>{part}</span>
+                <span key={partIdx}>
+                  {part.replace(/1,00,000/g, '')}
+                  {part.includes('1,00,000') && (
+                    <span className="text-red-600 font-bold">₹1,00,000</span>
+                  )}
+                </span>
               )
             )}
           </p>
@@ -117,7 +140,10 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
       if (paragraph.trim()) {
         return (
           <p key={idx} className="font-inter text-gray-700 leading-relaxed mb-3 text-sm">
-            {paragraph}
+            {paragraph.replace(/1,00,000/g, '')}
+            {paragraph.includes('1,00,000') && (
+              <span className="text-red-600 font-bold">₹1,00,000</span>
+            )}
           </p>
         );
       }
