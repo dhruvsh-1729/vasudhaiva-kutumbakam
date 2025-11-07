@@ -45,7 +45,7 @@ const CompetitionList: React.FC = () => {
 
   const prizeInfo4: PrizeInfo[] = [
     { position: 1, amount: '₹37,500', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹22,5000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 2, amount: '₹22,500', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
     { position: 3, amount: '₹15,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
 
@@ -127,9 +127,7 @@ const CompetitionList: React.FC = () => {
                         <h3 className="font-playfair text-xl font-bold text-gray-900 group-hover:text-orange-800 transition-colors duration-300">
                           {competition.title}
                         </h3>
-                        <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-orange-100 to-amber-100 border border-orange-200 rounded-full">
-                          <span className="font-inter text-xs font-bold text-orange-700">#{competition.id}</span>
-                        </div>
+                        
                       </div>
                       
                       <p className="font-inter text-gray-700 text-sm leading-relaxed mb-3">

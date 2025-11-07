@@ -93,17 +93,17 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
           {paragraph.trim().substring(1).trim().replace(/₹1,00,000/g, '').replace(/₹51,000/g, '').replace(/₹25,000/g, '')}
           {paragraph.includes('₹1,00,000') && (
             <span className="bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-600 bg-clip-text text-transparent font-bold text-base">
-          ₹1,00,000
+          ₹37,500
             </span>
           )}
           {paragraph.includes('₹51,000') && (
             <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent font-bold text-base">
-          ₹51,000
+          ₹22,500
             </span>
           )}
           {paragraph.includes('₹25,000') && (
             <span className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-600 bg-clip-text text-transparent font-bold text-base">
-          ₹25,000
+          ₹15,000
             </span>
           )}
         </p>
