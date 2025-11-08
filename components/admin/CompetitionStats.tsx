@@ -107,15 +107,21 @@ const CompetitionStats: React.FC = () => {
             },
             {
               competitionId: 2,
-              title: 'Lextoons',
+              title: 'Creative Expression',
               submissions: 28,
               averageScore: 7.6,
             },
-            {
-              competitionId: 3,
-              title: 'Political Toons',
-              submissions: 16,
-              averageScore: 7.9,
+            // {
+            //   competitionId: 3,
+            //   title: 'Political Toons',
+            //   submissions: 16,
+            //   averageScore: 7.9,
+            // },
+            { 
+              competitionId: 4,
+              title: 'Painting Competition',
+              submissions: 12,
+              averageScore: 8.3,
             },
           ],
           intervalStats: [

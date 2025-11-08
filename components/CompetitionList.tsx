@@ -40,7 +40,7 @@ const CompetitionList: React.FC = () => {
   const prizeInfo2: PrizeInfo[] = [
     { position: 1, amount: '₹25,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
     { position: 2, amount: '₹15,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹10,00', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 3, amount: '₹10,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
 
   const prizeInfo4: PrizeInfo[] = [

@@ -173,8 +173,9 @@ async function getStats(req: NextApiRequest, res: NextApiResponse) {
     // Get competition breakdown
     const competitionTitles: { [key: number]: string } = {
       1: 'AI Short Video',
-      2: 'Lextoons',
-      3: 'Political Toons',
+      2: 'Creative Expression',
+      // 3: 'Political Toons',
+      4: 'Painting Competition',
     };
 
     const competitionBreakdown = await Promise.all(
