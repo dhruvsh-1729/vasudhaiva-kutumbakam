@@ -68,8 +68,9 @@ const SubmissionsManager: React.FC = () => {
   // Competition titles for display
   const competitionTitles: { [key: number]: string } = {
     1: 'AI Short Video',
-    2: 'Lextoons',
+    2: 'Creative Expression',
     3: 'Political Toons',
+    4: 'Painting Competition',
   };
 
   // Fetch submissions with filters and pagination

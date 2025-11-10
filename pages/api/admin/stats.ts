@@ -437,11 +437,12 @@ async function getScoreDistribution(_req: NextApiRequest, res: NextApiResponse) 
 }
 
 async function getCompetitionPerformance(_req: NextApiRequest, res: NextApiResponse) {
-  const competitions = [1, 2, 3];
+  const competitions = [1, 2, 3, 4]; // Assuming 4 competitions
   const competitionTitles: { [key: number]: string } = {
     1: 'AI Short Video',
-    2: 'Lextoons',
+    2: 'Creative Expression',
     3: 'Political Toons',
+    4: 'Painting Competition',
   };
 
   const performance = await Promise.all(
