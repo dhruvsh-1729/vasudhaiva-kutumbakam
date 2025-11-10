@@ -54,6 +54,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const [adminSettings, setAdminSettings] = useState<AdminSettings | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'submit' | 'history'>('submit');
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
 
   // Check if this is competition 4 (non-weekly)
   const isCompetition4 = Number(competitionId) === 4;
@@ -172,9 +173,13 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     return currentSubmissions.length < adminSettings.maxSubmissionsPerInterval;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    
+  const isSubmitDisabled =
+    isSubmitting ||
+    isVerifyingAccess ||
+    !adminSettings?.isSubmissionsOpen ||
+    (!isCompetition4 && !canSubmitMore());
+
+  const handleSubmit = async (): Promise<void> => {
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
@@ -248,6 +253,21 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    if (isSubmitDisabled) return;
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmSubmission = async (): Promise<void> => {
+    setIsConfirmModalOpen(false);
+    await handleSubmit();
+  };
+
+  const cancelSubmission = (): void => {
+    setIsConfirmModalOpen(false);
   };
 
   const getStatusColor = (status: string): string => {
@@ -402,7 +422,65 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="mb-6 p-5 rounded-2xl border border-orange-200/60 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 shadow-inner">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <div>
+                      <p className="font-inter text-base font-semibold text-orange-900">Set your Google Drive link to "Anyone with the link can view".</p>
+                      <p className="text-sm text-orange-700 font-inter">If the judges cannot open your file, the submission is automatically rejected. Double-check the sharing settings before you proceed.</p>
+                    </div>
+                  </div>
+                  <ul className="mt-4 grid gap-2 sm:grid-cols-2 text-sm text-orange-800 font-inter">
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-600 mt-0.5">✓</span>
+                      <span>Open the Share dialog &gt; choose "Anyone with the link".</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-600 mt-0.5">✓</span>
+                      <span>Set the permission to "Viewer" (or higher) so we can access it.</span>
+                    </li>
+                  </ul>
+                    <div className="mt-5">
+                    <p className="text-sm font-semibold text-orange-900 font-inter mb-2">Watch this 2-minute checklist before submitting:</p>
+                    <div className="relative w-full">
+                      {/* Desktop: Show embedded video */}
+                      <div className="hidden sm:block rounded-2xl overflow-hidden shadow-lg border border-orange-200 bg-black/5">
+                        <div className="aspect-video w-full">
+                          <iframe 
+                            className="w-full h-full" 
+                            src="https://www.youtube.com/embed/grjZ9LxL4wc?si=Ti5QZFnN5_S8geTg" 
+                            title="YouTube video player" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            referrerPolicy="strict-origin-when-cross-origin" 
+                            allowFullScreen
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Mobile: Show link that opens in new tab */}
+                      <div className="block sm:hidden">
+                        <a
+                          href="https://www.youtube.com/watch?v=grjZ9LxL4wc"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full p-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl shadow-lg border border-red-200 hover:from-red-600 hover:to-red-700 transition-all duration-300"
+                        >
+                          <div className="flex items-center justify-center gap-3">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                            <span className="font-semibold">Watch 2-min tutorial on YouTube</span>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                    <p className="text-xs text-orange-700 font-inter mt-2 text-center sm:text-left">The video explains exactly how to unlock your file for the judges on any device.</p>
+                    </div>
+                </div>
+
+                <form onSubmit={handleFormSubmit} className="space-y-5">
                   {/* Title Field */}
                   <div>
                     <label htmlFor="title" className="block text-sm font-semibold text-orange-800 mb-2 font-inter">
@@ -476,17 +554,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={
-                      isSubmitting || 
-                      isVerifyingAccess || 
-                      !adminSettings?.isSubmissionsOpen || 
-                      (!isCompetition4 && !canSubmitMore())
-                    }
+                    disabled={isSubmitDisabled}
                     className={`submit-shimmer w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-300 font-inter relative overflow-hidden ${
-                      isSubmitting || 
-                      isVerifyingAccess || 
-                      !adminSettings?.isSubmissionsOpen || 
-                      (!isCompetition4 && !canSubmitMore())
+                      isSubmitDisabled
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:via-amber-700 hover:to-orange-800 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl'
                     }`}
@@ -619,6 +689,50 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
           </div>
         </div>
       </div>
+
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 py-6">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-orange-100 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1010 10A10 10 0 0012 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-lg font-semibold text-orange-900 font-inter">Before you submit...</p>
+                <p className="text-sm text-orange-700 font-inter">Can our judges open your Google Drive file without a request?</p>
+              </div>
+            </div>
+            <ul className="text-sm text-gray-700 font-inter space-y-2 mb-6">
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">✓</span>
+                <span>The link is set to "Anyone with the link can view".</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">✓</span>
+                <span>No login or access requests are required.</span>
+              </li>
+            </ul>
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={cancelSubmission}
+                className="w-full sm:w-auto px-4 py-2 rounded-xl border border-orange-200 text-orange-700 font-semibold hover:bg-orange-50 transition-colors"
+              >
+                Let me fix it
+              </button>
+              <button
+                type="button"
+                onClick={confirmSubmission}
+                className="w-full sm:w-auto px-4 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 shadow-md transition-colors"
+              >
+                Yes, submit now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
