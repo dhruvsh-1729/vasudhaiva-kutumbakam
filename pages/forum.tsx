@@ -121,13 +121,13 @@ export default function ForumPage() {
   };
 
   const reactionTypes = [
-    { key: 'LIKE', label: 'Like' },
-    { key: 'SUPPORT', label: 'Support' },
-    { key: 'LOVE', label: 'Love' },
-    { key: 'CELEBRATE', label: 'Celebrate' },
-    { key: 'FUNNY', label: 'Funny' },
-    { key: 'ANGRY', label: 'Angry' },
-    { key: 'DOWNVOTE', label: 'Downvote' },
+    { key: 'LIKE', label: 'Like', emoji: '👍' },
+    { key: 'SUPPORT', label: 'Support', emoji: '🤝' },
+    { key: 'LOVE', label: 'Love', emoji: '❤️' },
+    { key: 'CELEBRATE', label: 'Celebrate', emoji: '🎉' },
+    { key: 'FUNNY', label: 'Funny', emoji: '😂' },
+    { key: 'ANGRY', label: 'Angry', emoji: '😡' },
+    { key: 'DOWNVOTE', label: 'Downvote', emoji: '👎' },
   ] as const;
 
   const reactToPost = async (postId: string, type: string) => {
@@ -256,9 +256,11 @@ export default function ForumPage() {
                         <button
                           key={r.key}
                           onClick={() => reactToPost(post.id, r.key)}
-                          className="text-xs px-2 py-1 border rounded-lg bg-orange-50 hover:bg-orange-100"
+                          className="text-xs px-3 py-1 border rounded-full bg-orange-50 hover:bg-orange-100 hover:scale-105 transition-transform duration-150 flex items-center gap-1 shadow-sm"
                         >
-                          {r.label} {post.reactionSummary?.[r.key] || 0}
+                          <span>{r.emoji}</span>
+                          <span>{r.label}</span>
+                          <span className="text-[11px] text-gray-600">{post.reactionSummary?.[r.key] || 0}</span>
                         </button>
                       ))}
                     </div>
@@ -294,9 +296,10 @@ export default function ForumPage() {
                               <button
                                 key={r.key}
                                 onClick={() => reactToComment(c.id, post.id, r.key)}
-                                className="text-[11px] px-2 py-1 border rounded-lg bg-white hover:bg-orange-50"
+                                className="text-[11px] px-2 py-1 border rounded-full bg-white hover:bg-orange-50 hover:scale-105 transition-transform duration-150 flex items-center gap-1"
                               >
-                                {r.label} {c.reactionSummary?.[r.key] || 0}
+                                <span>{r.emoji}</span>
+                                <span>{c.reactionSummary?.[r.key] || 0}</span>
                               </button>
                             ))}
                           </div>
