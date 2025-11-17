@@ -13,7 +13,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
 import CountDown from '@/components/CountDown';
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth/clientAuth';
 
 // Type definitions
 interface Competition {

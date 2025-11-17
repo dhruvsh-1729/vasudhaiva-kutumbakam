@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import NotificationBanner from '../components/NotificationBanner';
 import { ArrowRight, MoveRight } from 'lucide-react';
 import Footer from '@/components/Footer';
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth/clientAuth';
 import logo from '@/public/main_logo.png';
 import CountDown from '@/components/CountDown';
 import { getCompetitionById } from '@/data/competitions';
@@ -153,16 +153,11 @@ const Home: React.FC = () => {
   
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${clientAuth.getToken()}`,
-        },
-      });
+      await clientAuth.authFetch("/api/auth/logout", { method: "POST" });
     } catch (err) {
       console.error("Logout error:", err);
     }
-    clientAuth.logout();
+    clientAuth.logout('/logout');
   };
   
   const getInitials = (name: string) =>

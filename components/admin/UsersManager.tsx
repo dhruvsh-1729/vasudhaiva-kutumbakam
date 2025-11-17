@@ -1,6 +1,7 @@
 // components/admin/UsersManager.tsx
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { clientAuth } from '@/lib/auth/clientAuth';
 
 // Type definitions
 interface User {
@@ -60,11 +61,7 @@ const UsersManager: React.FC = () => {
           ),
         });
 
-        const response = await fetch(`/api/admin/users?${queryParams}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
-          },
-        });
+        const response = await clientAuth.authFetch(`/api/admin/users?${queryParams}`);
 
         if (!response.ok) {
           // throw new Error('Failed to fetch users');
@@ -117,11 +114,10 @@ const UsersManager: React.FC = () => {
   // Toggle user active status
   const toggleUserStatus = async (userId: string, newStatus: boolean) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
+      const response = await clientAuth.authFetch(`/api/admin/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
         },
         body: JSON.stringify({ isActive: newStatus }),
       });
@@ -142,11 +138,8 @@ const UsersManager: React.FC = () => {
   // Send verification email
   const sendVerificationEmail = async (userId: string) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}/send-verification`, {
+      const response = await clientAuth.authFetch(`/api/admin/users/${userId}/send-verification`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
-        },
       });
 
       if (!response.ok) {
@@ -168,11 +161,10 @@ const UsersManager: React.FC = () => {
     if (!confirm(confirmMessage)) return;
 
     try {
-      const response = await fetch('/api/admin/users/bulk', {
+      const response = await clientAuth.authFetch('/api/admin/users/bulk', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
         },
         body: JSON.stringify({
           userIds: Array.from(selectedUsers),

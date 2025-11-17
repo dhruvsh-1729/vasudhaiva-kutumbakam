@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Register from '../components/Register';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();

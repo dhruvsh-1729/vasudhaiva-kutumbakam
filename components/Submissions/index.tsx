@@ -1,5 +1,6 @@
 import { getCompetitionById } from "@/data/competitions";
 import React, { useEffect, useState } from "react";
+import { clientAuth } from "@/lib/auth/clientAuth";
 
 type Submission = {
   id: string;
@@ -44,28 +45,28 @@ const CompactSubmissions: React.FC = () => {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("vk_token") || "";
-
   useEffect(() => {
-    fetch("/api/submissions", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        // data.submissions is an object with interval keys and arrays of submissions as values
-        // Flatten all arrays into a single array
-        console.log(data);
-        const allSubmissions = Object.values(data.data).flat() as Submission[];
-        // Sort by createdAt (most recent first)
+    const loadSubmissions = async () => {
+      try {
+        const res = await clientAuth.authFetch("/api/submissions");
+        if (!res.ok) {
+          setLoading(false);
+          return;
+        }
+        const data = await res.json();
+        const allSubmissions = Object.values(data.data || {}).flat() as Submission[];
         const sortedSubmissions = allSubmissions.sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         setSubmissions(sortedSubmissions);
+      } catch (error) {
+        console.error("Failed to load submissions", error);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      }
+    };
+
+    loadSubmissions();
   }, []);
 
   const formatDate = (dateString: string) => {

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import logo from '@/public/main_logo.png';
@@ -54,22 +54,14 @@ const Header: React.FC = () => {
     // if (!confirmLogout) return;
 
     try {
-      // Call logout API to invalidate token on server
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${clientAuth.getToken()}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      await clientAuth.authFetch('/api/auth/logout', { method: 'POST' });
 
       // Clear local storage and redirect regardless of API response
-      clientAuth.logout();
-      toast.success('Logged out successfully');
+      clientAuth.logout('/logout');
     } catch (error) {
       console.error('Logout error:', error);
       // Still logout locally even if API fails
-      clientAuth.logout();
+      clientAuth.logout('/logout');
     }
   };
 

@@ -1,6 +1,7 @@
 // components/SubmissionPanel.tsx
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { clientAuth } from '@/lib/auth/clientAuth';
 
 // Type definitions
 interface FormData {
@@ -66,24 +67,14 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
         setIsLoading(true);
         
         // Fetch admin settings
-        const settingsResponse = await fetch('/api/admin/settings', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('vk_token') || ''}`, // Adjust as needed for auth
-            'Content-Type': 'application/json',
-          }
-        });
+        const settingsResponse = await clientAuth.authFetch('/api/admin/settings');
         if (settingsResponse.ok) {
           const settings = await settingsResponse.json();
           setAdminSettings(settings);
         }
         
         // Fetch user submissions for this competition
-        const submissionsResponse = await fetch(`/api/submissions?competitionId=${competitionId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('vk_token') || ''}`, // Adjust as needed for auth
-            'Content-Type': 'application/json',
-          }
-        });
+        const submissionsResponse = await clientAuth.authFetch(`/api/submissions?competitionId=${competitionId}`);
         if (submissionsResponse.ok) {
           const userSubmissions = await submissionsResponse.json();
           setSubmissions(userSubmissions);
@@ -114,7 +105,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     setIsVerifyingAccess(true);
     
     try {
-      const response = await fetch('/api/verify-drive-access', {
+      const response = await clientAuth.authFetch('/api/verify-drive-access', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -209,12 +200,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       // }
       
       // Submit the entry
-      const response = await fetch('/api/submissions', {
+      const response = await clientAuth.authFetch('/api/submissions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('vk_token') || ''}` // Adjust as needed for auth
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           competitionId: Number(competitionId),
           title: formData.title,

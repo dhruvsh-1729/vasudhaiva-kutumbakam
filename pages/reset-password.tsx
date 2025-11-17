@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import ResetPassword from '../components/ResetPassword';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 
 const ResetPasswordPage: React.FC = () => {
   const router = useRouter();

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Login from '../components/Login';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 import { toast } from 'sonner';
 
 const LoginPage: React.FC = () => {

@@ -1,8 +1,7 @@
 // components/admin/AdminHeader.tsx
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth/clientAuth';
 import { toast } from 'sonner';
 
 interface AdminUser {
@@ -18,13 +17,11 @@ interface AdminHeaderProps {
 }
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
-  const router = useRouter();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = () => {
-    clientAuth.logout();
+    clientAuth.logout('/logout');
     toast.success('Logged out successfully');
-    router.push('/login');
   };
 
   const getUserInitials = (name: string): string => {

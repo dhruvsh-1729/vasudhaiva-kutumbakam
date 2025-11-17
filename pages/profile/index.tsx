@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { getCompetitionById } from '@/data/competitions';
 import Header from '@/components/Header';
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth/clientAuth';
 import { useRouter } from 'next/router';
 
 export type User = {
@@ -70,9 +70,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
       const currentUser = clientAuth.getUser();
-      const token = clientAuth.getToken();
       
-      if (!currentUser || !token) {
+      if (!currentUser || !clientAuth.getToken()) {
         // Not authenticated - redirect to login
         router.push('/login?message=' + encodeURIComponent('Please log in to access the dashboard'));
         return;
@@ -86,10 +85,9 @@ export default function ProfilePage() {
   useEffect(() => {
     (async () => {
       try {
-        const token = localStorage.getItem('vk_token') || '';
         const [uRes, sRes] = await Promise.all([
-          fetch('/api/user/me', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('/api/submissions', { headers: { Authorization: `Bearer ${token}` } }),
+          clientAuth.authFetch('/api/user/me'),
+          clientAuth.authFetch('/api/submissions'),
         ]);
 
         const uJson = await uRes.json();
@@ -116,12 +114,10 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('vk_token') || '';
-      const response = await fetch('/api/user/update', {
+      const response = await clientAuth.authFetch('/api/user/update', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(editForm),
       });

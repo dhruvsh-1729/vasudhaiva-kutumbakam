@@ -1,6 +1,7 @@
 // components/admin/SubmissionsManager.tsx
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { clientAuth } from '@/lib/auth/clientAuth';
 
 // Type definitions
 interface Submission {
@@ -86,11 +87,7 @@ const SubmissionsManager: React.FC = () => {
           ),
         });
 
-        const response = await fetch(`/api/admin/submissions?${queryParams}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
-          },
-        });
+        const response = await clientAuth.authFetch(`/api/admin/submissions?${queryParams}`);
 
         if (!response.ok) {
           // throw new Error('Failed to fetch submissions');
@@ -504,11 +501,10 @@ const ScoreModal: React.FC<ScoreModalProps> = ({ submission, onClose, onSave }) 
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/admin/submissions/${submission.id}`, {
+      const response = await clientAuth.authFetch(`/api/admin/submissions/${submission.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
         },
         body: JSON.stringify({
           ...scores,

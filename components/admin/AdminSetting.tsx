@@ -1,6 +1,7 @@
 // components/admin/AdminSettings.tsx
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { clientAuth } from '@/lib/auth/clientAuth';
 
 interface AdminSettingsState {
   currentInterval: number;
@@ -23,11 +24,7 @@ const AdminSettings: React.FC = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/admin/settings', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
-          },
-        });
+        const response = await clientAuth.authFetch('/api/admin/settings');
 
         if (!response.ok) {
           // throw new Error('Failed to fetch admin settings');
@@ -62,11 +59,10 @@ const AdminSettings: React.FC = () => {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const response = await fetch('/api/admin/settings', {
+      const response = await clientAuth.authFetch('/api/admin/settings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
         },
         body: JSON.stringify(settings),
       });

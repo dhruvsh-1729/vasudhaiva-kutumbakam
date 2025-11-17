@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { toast } from 'sonner';
 
 // Component imports
-import { clientAuth } from '@/middleware/auth';
+import { clientAuth } from '@/lib/auth/clientAuth';
 import CompetitionStats from '@/components/admin/CompetitionStats';
 import SubmissionsManager from '@/components/admin/SubmissionsManager';
 import UsersManager from '@/components/admin/UsersManager';

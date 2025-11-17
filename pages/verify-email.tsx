@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import EmailVerification from '../components/EmailVerification';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 
 const VerifyEmailPage: React.FC = () => {
   const router = useRouter();

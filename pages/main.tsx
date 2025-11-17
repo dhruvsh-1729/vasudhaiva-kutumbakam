@@ -8,7 +8,7 @@ import NotificationBanner from '@/components/NotificationBanner';
 import NoticeBoard from '@/components/NoticeBoard';
 import Timeline from '@/components/Timeline';
 import Footer from '@/components/Footer';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 import CompactSubmissions from '@/components/Submissions';
 import CountDown from '@/components/CountDown';
 import { getCompetitionById } from '@/data/competitions';

@@ -1,7 +1,7 @@
 // components/Footer.tsx (Enhanced with Authentication)
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 
 interface FooterLink {
   href: string;
@@ -171,7 +171,7 @@ const Footer: React.FC = () => {
               {isAuthenticated && (
                 <li>
                   <button
-                    onClick={() => clientAuth.logout()}
+                    onClick={() => clientAuth.logout('/logout')}
                     className="text-red-400 hover:text-red-300 transition-colors text-sm flex items-center group"
                   >
                     <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

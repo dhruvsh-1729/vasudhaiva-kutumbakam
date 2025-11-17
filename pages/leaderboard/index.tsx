@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { clientAuth } from "@/middleware/auth";
+import { clientAuth } from "@/lib/auth/clientAuth";
 import { useRouter } from "next/router";
 
 interface User {

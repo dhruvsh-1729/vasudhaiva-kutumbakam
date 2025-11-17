@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import backgroundImage from "@/public/map.jpg";
 import { toast } from "sonner";
+import { clientAuth } from "@/lib/auth/clientAuth";
 
 // Type definitions
 interface FormData {
@@ -165,8 +166,7 @@ const Register: React.FC = () => {
           
         } else if (data.user && data.token) {
           // Legacy flow - if token is provided (shouldn't happen with new flow)
-          localStorage.setItem('vk_user', JSON.stringify(data.user));
-          localStorage.setItem('vk_token', data.token);
+          clientAuth.setSession(data.user, data.token);
           
           // alert("Registration successful! Welcome to the VK Competition community.");
           toast.success("Registration successful! Welcome to the VK Competition community.");

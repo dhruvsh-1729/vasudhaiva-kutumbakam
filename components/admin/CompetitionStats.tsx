@@ -1,6 +1,7 @@
 // components/admin/CompetitionStats.tsx
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { clientAuth } from '@/lib/auth/clientAuth';
 
 // Type definitions
 interface CompetitionStatsData {
@@ -50,11 +51,7 @@ const CompetitionStats: React.FC = () => {
     const fetchStats = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/admin/stats?timeRange=${timeRange}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('vk_token')}`,
-          },
-        });
+        const response = await clientAuth.authFetch(`/api/admin/stats?timeRange=${timeRange}`);
 
         if (!response.ok) {
           // throw new Error('Failed to fetch statistics');

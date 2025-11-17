@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { clientAuth } from '../middleware/auth';
+import { clientAuth } from '../lib/auth/clientAuth';
 
 interface User {
   id: string;
@@ -32,7 +32,7 @@ const MainDashboard: React.FC = () => {
   const handleLogout = () => {
     const confirmLogout = confirm('Are you sure you want to logout?');
     if (confirmLogout) {
-      clientAuth.logout();
+      clientAuth.logout('/logout');
     }
   };
 
