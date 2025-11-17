@@ -5,6 +5,7 @@ import { getCompetitionById } from '@/data/competitions';
 import Header from '@/components/Header';
 import { clientAuth } from '@/lib/auth/clientAuth';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export type User = {
   id: string;
@@ -311,12 +312,12 @@ export default function ProfilePage() {
                 </div>
                 <h3 className="mt-4 text-base font-medium text-gray-900">No submissions yet</h3>
                 <p className="mt-1 text-sm text-gray-500">Your competition submissions will appear here</p>
-                <a
-                  href="/competitions"
+                <Link
+                  href="/main"
                   className="mt-4 inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
                 >
                   Browse Competitions
-                </a>
+                </Link>
               </div>
             ) : (
               <div className="space-y-3">
