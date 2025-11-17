@@ -4,18 +4,56 @@ import { requireAuth } from '@/lib/auth/serverAuth';
 import { ensureCleanContent } from '@/lib/moderation';
 import { createNotification } from '@/lib/notifications';
 
+const PAGE_SIZE = 50;
+const reactionTypes = ['LIKE', 'SUPPORT', 'LOVE', 'CELEBRATE', 'FUNNY', 'ANGRY', 'DOWNVOTE'] as const;
+type ReactionType = (typeof reactionTypes)[number];
+
+const summarizeReactions = <T extends { type: ReactionType }>(reactions: T[]) => {
+  const summary: Record<ReactionType, number> = {
+    LIKE: 0,
+    SUPPORT: 0,
+    LOVE: 0,
+    CELEBRATE: 0,
+    FUNNY: 0,
+    ANGRY: 0,
+    DOWNVOTE: 0,
+  };
+  reactions.forEach((r) => summary[r.type]++);
+  return summary;
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method === 'GET') {
-      const posts = await prisma.forumPost.findMany({
-        orderBy: { updatedAt: 'desc' },
-        include: {
-          author: { select: { id: true, name: true, institution: true, isAdmin: true } },
-          _count: { select: { comments: true } },
+      const page = Math.max(parseInt(String(req.query.page || '1'), 10) || 1, 1);
+      const skip = (page - 1) * PAGE_SIZE;
+      const [posts, total] = await Promise.all([
+        prisma.forumPost.findMany({
+          orderBy: { updatedAt: 'desc' },
+          skip,
+          take: PAGE_SIZE,
+          include: {
+            author: { select: { id: true, name: true, institution: true, isAdmin: true } },
+            _count: { select: { comments: true } },
+            reactions: { select: { type: true } },
+          },
+        }),
+        prisma.forumPost.count(),
+      ]);
+      const data = posts.map((p) => ({
+        ...p,
+        reactionSummary: summarizeReactions(p.reactions as { type: ReactionType }[]),
+      }));
+      return res.status(200).json({
+        success: true,
+        data,
+        meta: {
+          page,
+          pageSize: PAGE_SIZE,
+          total,
+          totalPages: Math.ceil(total / PAGE_SIZE),
         },
-        take: 50,
       });
-      return res.status(200).json({ success: true, data: posts });
     }
 
     if (req.method === 'POST') {

@@ -4,6 +4,23 @@ import { requireAuth } from '@/lib/auth/serverAuth';
 import { ensureCleanContent } from '@/lib/moderation';
 import { createNotification } from '@/lib/notifications';
 
+const reactionTypes = ['LIKE', 'SUPPORT', 'LOVE', 'CELEBRATE', 'FUNNY', 'ANGRY', 'DOWNVOTE'] as const;
+type ReactionType = (typeof reactionTypes)[number];
+
+const summarizeReactions = <T extends { type: ReactionType }>(reactions: T[]) => {
+  const summary: Record<ReactionType, number> = {
+    LIKE: 0,
+    SUPPORT: 0,
+    LOVE: 0,
+    CELEBRATE: 0,
+    FUNNY: 0,
+    ANGRY: 0,
+    DOWNVOTE: 0,
+  };
+  reactions.forEach((r) => summary[r.type]++);
+  return summary;
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { postId } = req.query;
   if (!postId || typeof postId !== 'string') {
@@ -15,9 +32,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const comments = await prisma.forumComment.findMany({
         where: { postId },
         orderBy: { createdAt: 'asc' },
-        include: { author: { select: { id: true, name: true, isAdmin: true } } },
+        include: { author: { select: { id: true, name: true, isAdmin: true } }, reactions: { select: { type: true } } },
       });
-      return res.status(200).json({ success: true, data: comments });
+      const data = comments.map((c) => ({
+        ...c,
+        reactionSummary: summarizeReactions(c.reactions as { type: ReactionType }[]),
+      }));
+      return res.status(200).json({ success: true, data });
     }
 
     if (req.method === 'POST') {

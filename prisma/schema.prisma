@@ -34,6 +34,8 @@ model User {
   submissionMessages  SubmissionMessage[]
   notificationsCreated Notification[]
   notificationReceipts NotificationReceipt[]
+  forumPostReactions   ForumPostReaction[]
+  forumCommentReactions ForumCommentReaction[]
 }
 
 // Email verification tokens
@@ -141,6 +143,7 @@ model ForumPost {
 
   author   User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments ForumComment[]
+  reactions ForumPostReaction[]
 
   @@index([authorId])
   @@map("forum_posts")
@@ -157,6 +160,7 @@ model ForumComment {
 
   post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   author User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reactions ForumCommentReaction[]
 
   @@index([postId])
   @@index([authorId])
@@ -213,6 +217,36 @@ model NotificationReceipt {
   @@map("notification_receipts")
 }
 
+model ForumPostReaction {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String        @db.ObjectId
+  userId    String        @db.ObjectId
+  type      ReactionType
+  createdAt DateTime      @default(now())
+
+  post ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId])
+  @@map("forum_post_reactions")
+}
+
+model ForumCommentReaction {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  commentId String        @db.ObjectId
+  userId    String        @db.ObjectId
+  type      ReactionType
+  createdAt DateTime      @default(now())
+
+  comment ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([userId])
+  @@map("forum_comment_reactions")
+}
+
 model Inquiry {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -239,4 +273,14 @@ enum SubmissionStatus {
 enum ForumPostStatus {
   OPEN
   RESOLVED
+}
+
+enum ReactionType {
+  LIKE
+  SUPPORT
+  LOVE
+  CELEBRATE
+  FUNNY
+  ANGRY
+  DOWNVOTE
 }
