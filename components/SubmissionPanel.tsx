@@ -77,9 +77,6 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const [messages, setMessages] = useState<Record<string, SubmissionMessage[]>>({});
   const [messageDrafts, setMessageDrafts] = useState<Record<string, string>>({});
   const [loadingMessages, setLoadingMessages] = useState<Record<string, boolean>>({});
-  const [messages, setMessages] = useState<Record<string, SubmissionMessage[]>>({});
-  const [messageDrafts, setMessageDrafts] = useState<Record<string, string>>({});
-  const [loadingMessages, setLoadingMessages] = useState<Record<string, boolean>>({});
 
   // Check if this is competition 4 (non-weekly)
   const isCompetition4 = Number(competitionId) === 4;
@@ -349,47 +346,6 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       case 'WINNER': return '🏆';
       case 'FINALIST': return '🥇';
       default: return '📄';
-    }
-  };
-
-  const loadMessages = async (submissionId: string) => {
-    try {
-      setLoadingMessages(prev => ({ ...prev, [submissionId]: true }));
-      const res = await clientAuth.authFetch(`/api/submissions/${submissionId}/messages`);
-      const data = await res.json();
-      if (res.ok) {
-        setMessages(prev => ({ ...prev, [submissionId]: data.data || [] }));
-      }
-    } catch (error) {
-      console.error('Failed to load submission messages', error);
-    } finally {
-      setLoadingMessages(prev => ({ ...prev, [submissionId]: false }));
-    }
-  };
-
-  const sendMessage = async (submissionId: string) => {
-    const content = messageDrafts[submissionId];
-    if (!content || !content.trim()) {
-      toast.error('Message cannot be empty');
-      return;
-    }
-    try {
-      const res = await clientAuth.authFetch(`/api/submissions/${submissionId}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error || 'Failed to send message');
-        return;
-      }
-      setMessageDrafts(prev => ({ ...prev, [submissionId]: '' }));
-      await loadMessages(submissionId);
-      toast.success('Message sent');
-    } catch (error) {
-      console.error('Failed to send submission message', error);
-      toast.error('Failed to send message');
     }
   };
 

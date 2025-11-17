@@ -35,6 +35,15 @@ interface Submission {
   };
 }
 
+interface SubmissionMessage {
+  id: string;
+  submissionId: string;
+  content: string;
+  isFromAdmin: boolean;
+  createdAt: string;
+  author?: { id: string; name: string; isAdmin?: boolean };
+}
+
 interface PaginationInfo {
   page: number;
   limit: number;
@@ -63,8 +72,12 @@ const SubmissionsManager: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [showScoreModal, setShowScoreModal] = useState<boolean>(false);
+  const [showMessageModal, setShowMessageModal] = useState<boolean>(false);
   const [bulkSelectMode, setBulkSelectMode] = useState<boolean>(false);
   const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
+  const [messages, setMessages] = useState<SubmissionMessage[]>([]);
+  const [messageDraft, setMessageDraft] = useState<string>('');
+  const [loadingMessages, setLoadingMessages] = useState<boolean>(false);
 
   // Competition titles for display
   const competitionTitles: { [key: number]: string } = {
@@ -154,6 +167,52 @@ const SubmissionsManager: React.FC = () => {
   const handleScoreSubmission = (submission: Submission) => {
     setSelectedSubmission(submission);
     setShowScoreModal(true);
+  };
+
+  // Messaging helpers
+  const loadMessages = async (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setShowMessageModal(true);
+    setLoadingMessages(true);
+    try {
+      const res = await clientAuth.authFetch(`/api/submissions/${submission.id}/messages`);
+      const data = await res.json();
+      if (res.ok) {
+        setMessages(data.data || []);
+      } else {
+        toast.error(data.error || 'Failed to load messages');
+      }
+    } catch (error) {
+      console.error('Failed to load messages', error);
+      toast.error('Failed to load messages');
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!selectedSubmission) return;
+    if (!messageDraft.trim()) {
+      toast.error('Message cannot be empty');
+      return;
+    }
+    try {
+      const res = await clientAuth.authFetch(`/api/submissions/${selectedSubmission.id}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: messageDraft }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to send message');
+        return;
+      }
+      setMessageDraft('');
+      await loadMessages(selectedSubmission);
+    } catch (error) {
+      console.error('Failed to send message', error);
+      toast.error('Failed to send message');
+    }
   };
 
   return (
@@ -400,6 +459,15 @@ const SubmissionsManager: React.FC = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                             </svg>
                           </button>
+                          <button
+                            onClick={() => loadMessages(submission)}
+                            className="p-1 text-orange-600 hover:text-orange-800 rounded transition-colors"
+                            title="Conversation"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h6M5 20l2-4h10a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v12z" />
+                            </svg>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -471,6 +539,23 @@ const SubmissionsManager: React.FC = () => {
             setSelectedSubmission(null);
             toast.success('Submission scored successfully');
           }}
+        />
+      )}
+
+      {/* Message Modal */}
+      {showMessageModal && selectedSubmission && (
+        <MessageModal
+          submission={selectedSubmission}
+          messages={messages}
+          loading={loadingMessages}
+          messageDraft={messageDraft}
+          onClose={() => {
+            setShowMessageModal(false);
+            setSelectedSubmission(null);
+          }}
+          onChangeDraft={setMessageDraft}
+          onRefresh={() => loadMessages(selectedSubmission)}
+          onSend={sendMessage}
         />
       )}
     </div>
@@ -663,6 +748,132 @@ const ScoreModal: React.FC<ScoreModalProps> = ({ submission, onClose, onSave }) 
       </div>
     </div>
     );
+};
+
+// Message Modal Component
+interface MessageModalProps {
+  submission: Submission;
+  messages: SubmissionMessage[];
+  loading: boolean;
+  messageDraft: string;
+  onClose: () => void;
+  onChangeDraft: (v: string) => void;
+  onRefresh: () => void;
+  onSend: () => void;
+}
+
+const MessageModal: React.FC<MessageModalProps> = ({
+  submission,
+  messages,
+  loading,
+  messageDraft,
+  onClose,
+  onChangeDraft,
+  onRefresh,
+  onSend,
+}) => {
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50" onClick={onClose}></div>
+        <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[95vh] flex flex-col">
+          <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Submission Conversation</h3>
+              <p className="text-xs text-gray-500">
+                {submission.title} • {competitionTitles[submission.competitionId] || `Competition ${submission.competitionId}`}
+              </p>
+            </div>
+            <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition-colors" title="Close">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="px-4 py-3 border-b border-gray-200 text-xs text-gray-700 space-y-1">
+            <div><span className="font-semibold">User:</span> {submission.user.name} ({submission.user.email})</div>
+            {submission.user.institution && (
+              <div><span className="font-semibold">Institution:</span> {submission.user.institution}</div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">File:</span>
+              <a className="text-blue-600 hover:underline break-all" href={submission.fileUrl} target="_blank" rel="noreferrer">
+                {submission.fileUrl}
+              </a>
+            </div>
+            {submission.description && (
+              <div className="text-gray-700">
+                <span className="font-semibold">Description:</span> {submission.description}
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-semibold text-gray-800">Messages</span>
+              <button
+                onClick={onRefresh}
+                className="text-xs text-blue-600 hover:text-blue-700"
+              >
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
+            </div>
+            {loading ? (
+              <div className="text-sm text-gray-500">Loading messages...</div>
+            ) : messages.length === 0 ? (
+              <div className="text-sm text-gray-500">No messages yet.</div>
+            ) : (
+              messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`text-xs p-3 rounded-lg border ${
+                    m.isFromAdmin ? 'bg-indigo-50 border-indigo-100' : 'bg-white border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`font-semibold ${m.isFromAdmin ? 'text-indigo-700' : 'text-gray-800'}`}>
+                      {m.author?.name || (m.isFromAdmin ? 'Admin' : 'User')}
+                    </span>
+                    {m.isFromAdmin && (
+                      <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px]">Admin</span>
+                    )}
+                    <span className="text-[10px] text-gray-500">{new Date(m.createdAt).toLocaleString()}</span>
+                  </div>
+                  <div className="mt-1 text-gray-700 whitespace-pre-wrap">{m.content}</div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="p-4 border-t border-gray-200 space-y-2">
+            <label className="text-sm font-medium text-gray-800">Send a reply</label>
+            <textarea
+              rows={3}
+              value={messageDraft}
+              onChange={(e) => onChangeDraft(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-sm"
+              placeholder="Write a reply to the participant..."
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={onClose}
+                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onSend}
+                className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm"
+              >
+                Send Reply
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default SubmissionsManager;
