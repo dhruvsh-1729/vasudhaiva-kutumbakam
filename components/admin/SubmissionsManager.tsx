@@ -9,6 +9,7 @@ interface Submission {
   competitionId: number;
   userId: string;
   interval: number;
+  title: string;
   fileUrl: string;
   description?: string;
   overallScore?: number;
