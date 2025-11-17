@@ -32,7 +32,7 @@ export async function createNotification(input: NotificationInput) {
     }));
     await prisma.notificationReceipt.createMany({
       data: receipts,
-      skipDuplicates: true,
+      // skipDuplicates: true,
     });
   }
 
@@ -74,7 +74,7 @@ export async function fetchNotificationsForUser(
   // Ensure receipts exist
   await prisma.notificationReceipt.createMany({
     data: notifications.map((n) => ({ notificationId: n.id, userId })),
-    skipDuplicates: true,
+    // skipDuplicates: true,
   });
 
   const receipts = await prisma.notificationReceipt.findMany({
