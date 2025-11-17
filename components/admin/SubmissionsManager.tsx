@@ -772,6 +772,13 @@ const MessageModal: React.FC<MessageModalProps> = ({
   onRefresh,
   onSend,
 }) => {
+  const competitionTitles: { [key: number]: string } = {
+    1: 'AI Short Video',
+    2: 'Creative Expression',
+    3: 'Political Toons',
+    4: 'Painting Competition',
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen p-4">
