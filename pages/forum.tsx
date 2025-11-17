@@ -32,12 +32,15 @@ export default function ForumPage() {
   const [commentDraft, setCommentDraft] = useState<Record<string, string>>({});
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState('');
   const currentUser = useMemo(() => clientAuth.getUser(), []);
 
-  const fetchPosts = async (pageNum = 1) => {
+  const fetchPosts = async (pageNum = 1, searchTerm = '') => {
     setLoading(true);
     try {
-      const res = await clientAuth.authFetch(`/api/forum?page=${pageNum}`);
+      const params = new URLSearchParams({ page: String(pageNum) });
+      if (searchTerm.trim()) params.set('search', searchTerm.trim());
+      const res = await clientAuth.authFetch(`/api/forum?${params.toString()}`);
       const data = await res.json();
       if (res.ok) {
         setPosts(data.data || []);
@@ -53,8 +56,8 @@ export default function ForumPage() {
   };
 
   useEffect(() => {
-    fetchPosts(page);
-  }, [page]);
+    fetchPosts(page, search);
+  }, [page, search]);
 
   const handleCreatePost = async () => {
     if (!newPost.title.trim() || !newPost.content.trim()) {
@@ -204,6 +207,25 @@ export default function ForumPage() {
           <div className="px-3 py-1 bg-white border rounded-lg shadow-sm">
             {posts.length} discussion{posts.length !== 1 && 's'}
           </div>
+        </div>
+
+        {/* Search */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-3">
+          <input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search by title or description..."
+            className="flex-1 border rounded-lg px-3 py-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+          />
+          <button
+            onClick={() => fetchPosts(1, search)}
+            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
+          >
+            Search
+          </button>
         </div>
 
         {/* New post form */}

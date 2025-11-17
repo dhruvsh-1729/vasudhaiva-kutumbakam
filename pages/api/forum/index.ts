@@ -27,8 +27,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'GET') {
       const page = Math.max(parseInt(String(req.query.page || '1'), 10) || 1, 1);
       const skip = (page - 1) * PAGE_SIZE;
+      const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+      const where = search
+        ? {
+            OR: [
+              { title: { contains: search, mode: 'insensitive' } },
+              { content: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : undefined;
       const [posts, total] = await Promise.all([
         prisma.forumPost.findMany({
+          where,
           orderBy: { updatedAt: 'desc' },
           skip,
           take: PAGE_SIZE,
@@ -38,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             reactions: { select: { type: true } },
           },
         }),
-        prisma.forumPost.count(),
+        prisma.forumPost.count({ where }),
       ]);
       const data = posts.map((p) => ({
         ...p,
