@@ -2,6 +2,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth/serverAuth';
+import { createNotification } from '@/lib/notifications';
+import { EmailService } from '@/lib/emailService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -79,7 +81,10 @@ async function updateSubmission(req: NextApiRequest, res: NextApiResponse, userI
 
     // Check if submission exists and user has permission
     const whereClause = isAdmin ? { id: submissionId } : { id: submissionId, userId };
-    const existingSubmission = await prisma.submission.findUnique({ where: whereClause });
+    const existingSubmission = await prisma.submission.findUnique({
+      where: whereClause,
+      include: { user: { select: { id: true, email: true, name: true } } },
+    });
 
     if (!existingSubmission) {
       return res.status(404).json({ error: 'Submission not found' });
@@ -145,6 +150,44 @@ async function updateSubmission(req: NextApiRequest, res: NextApiResponse, userI
         },
       },
     });
+
+    // Notify participant when admin evaluates or comments
+    if (isAdmin && updatedSubmission.user?.email) {
+      const changedScores =
+        updateData.overallScore !== undefined ||
+        updateData.creativityScore !== undefined ||
+        updateData.technicalScore !== undefined ||
+        updateData.aiToolUsageScore !== undefined ||
+        updateData.adherenceScore !== undefined ||
+        updateData.impactScore !== undefined;
+
+      const messages: string[] = [];
+      if (updateData.judgeComments) {
+        messages.push(`Judge comments: ${updateData.judgeComments}`);
+      }
+      if (changedScores) {
+        messages.push('Your submission has been evaluated and scores were updated.');
+      }
+
+      if (messages.length > 0) {
+        const msg = messages.join(' ');
+        await Promise.all([
+          createNotification({
+            title: 'Submission update',
+            body: msg,
+            targetAll: false,
+            targetUserIds: [updatedSubmission.user.id],
+            createdById: userId,
+          }),
+          EmailService.getInstance().sendSubmissionUpdateEmail(
+            updatedSubmission.user.email,
+            updatedSubmission.user.name || 'Participant',
+            'Your submission was updated',
+            msg
+          ),
+        ]);
+      }
+    }
 
     return res.status(200).json({
       ...updatedSubmission,

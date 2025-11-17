@@ -118,6 +118,38 @@ export class EmailService {
     }
   }
 
+  /**
+   * Send a plain submission update email (status / comment)
+   */
+  async sendSubmissionUpdateEmail(
+    toEmail: string,
+    userName: string,
+    subject: string,
+    message: string
+  ): Promise<boolean> {
+    try {
+      const template: EmailTemplate = {
+        subject,
+        htmlContent: `<p>Hi ${userName || 'there'},</p><p>${message}</p><p>- VK Competition Team</p>`,
+        textContent: `Hi ${userName || 'there'},\n\n${message}\n\n- VK Competition Team`,
+      };
+
+      const sendSmtpEmail = {
+        sender: { email: this.fromEmail, name: this.fromName },
+        to: [{ email: toEmail, name: userName }],
+        subject: template.subject,
+        htmlContent: template.htmlContent,
+        textContent: template.textContent,
+      };
+
+      await apiInstance.sendTransacEmail(sendSmtpEmail);
+      return true;
+    } catch (error) {
+      console.error('Error sending submission update email:', error);
+      return false;
+    }
+  }
+
    /**
    * Event / deadline reminder email template
    */

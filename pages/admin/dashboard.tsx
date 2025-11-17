@@ -12,6 +12,7 @@ import UsersManager from '@/components/admin/UsersManager';
 import AdminSettings from '@/components/admin/AdminSetting';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminMessages from '@/components/admin/AdminMessages';
 
 // Type definitions
 interface AdminUser {
@@ -21,7 +22,7 @@ interface AdminUser {
   isAdmin: boolean;
 }
 
-type ActiveTab = 'overview' | 'submissions' | 'users' | 'settings';
+type ActiveTab = 'overview' | 'submissions' | 'users' | 'settings' | 'messages';
 
 const AdminDashboard: React.FC = () => {
   const router = useRouter();
@@ -91,6 +92,8 @@ const AdminDashboard: React.FC = () => {
         return <UsersManager />;
       case 'settings':
         return <AdminSettings />;
+      case 'messages':
+        return <AdminMessages />;
       default:
         return <CompetitionStats />;
     }

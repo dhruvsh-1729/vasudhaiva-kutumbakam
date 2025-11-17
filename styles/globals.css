@@ -5,6 +5,23 @@
 /* Optional: keep this if you want :dark variant in CSS files */
 @custom-variant dark (&:is(.dark *));
 
+/* Make interactive elements feel clickable everywhere */
+button,
+[type='button'],
+[type='submit'],
+[type='reset'],
+a,
+[role='button'],
+[aria-haspopup],
+summary,
+label,
+input[type='checkbox'],
+input[type='radio'],
+.clickable,
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* ------------------------------------------------------------------ */
 /* 1) Design tokens (light mode)                                       */
 /* ------------------------------------------------------------------ */
