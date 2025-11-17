@@ -44,6 +44,7 @@ const Header: React.FC = () => {
     { href: "/", label: "Home" },
     { href: "/main", label: "Dashboard", requiresAuth: true },
     { href: "/profile", label: "My Profile", requiresAuth: true },
+    { href: "/forum", label: "Discussion" },
     { href: "/contact", label: "Contact Us" },  
     // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
     // { href: "/main#timeline", label: "Timeline", requiresAuth: true }

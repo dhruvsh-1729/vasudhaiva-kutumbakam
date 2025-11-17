@@ -1,0 +1,248 @@
+import { useEffect, useMemo, useState } from 'react';
+import { clientAuth } from '@/lib/auth/clientAuth';
+import { toast } from 'sonner';
+
+type ForumPost = {
+  id: string;
+  title: string;
+  content: string;
+  isResolved: boolean;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  author: { id: string; name: string; isAdmin: boolean };
+  _count: { comments: number };
+};
+
+type ForumComment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  author: { id: string; name: string; isAdmin: boolean };
+};
+
+export default function ForumPage() {
+  const [posts, setPosts] = useState<ForumPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newPost, setNewPost] = useState({ title: '', content: '' });
+  const [activeComments, setActiveComments] = useState<Record<string, ForumComment[]>>({});
+  const [commentDraft, setCommentDraft] = useState<Record<string, string>>({});
+  const currentUser = useMemo(() => clientAuth.getUser(), []);
+
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const res = await clientAuth.authFetch('/api/forum');
+      const data = await res.json();
+      if (res.ok) {
+        setPosts(data.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load forum posts', error);
+      toast.error('Failed to load forum');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const handleCreatePost = async () => {
+    if (!newPost.title.trim() || !newPost.content.trim()) {
+      toast.error('Title and content are required');
+      return;
+    }
+    try {
+      const res = await clientAuth.authFetch('/api/forum', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPost),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Unable to post');
+        return;
+      }
+      toast.success('Posted!');
+      setNewPost({ title: '', content: '' });
+      fetchPosts();
+    } catch (error) {
+      console.error('Post create error', error);
+      toast.error('Unable to create post');
+    }
+  };
+
+  const loadComments = async (postId: string) => {
+    try {
+      const res = await clientAuth.authFetch(`/api/forum/${postId}/comments`);
+      const data = await res.json();
+      if (res.ok) {
+        setActiveComments((prev) => ({ ...prev, [postId]: data.data || [] }));
+      }
+    } catch (error) {
+      console.error('Load comments error', error);
+    }
+  };
+
+  const handleComment = async (postId: string) => {
+    const content = commentDraft[postId];
+    if (!content || !content.trim()) {
+      toast.error('Comment cannot be empty');
+      return;
+    }
+    try {
+      const res = await clientAuth.authFetch(`/api/forum/${postId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Unable to comment');
+        return;
+      }
+      setCommentDraft((prev) => ({ ...prev, [postId]: '' }));
+      await loadComments(postId);
+      fetchPosts();
+    } catch (error) {
+      console.error('Comment error', error);
+      toast.error('Unable to comment');
+    }
+  };
+
+  const handleResolve = async (postId: string, isResolved: boolean) => {
+    try {
+      const res = await clientAuth.authFetch(`/api/forum/${postId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isResolved }),
+      });
+      if (res.ok) {
+        toast.success(isResolved ? 'Marked resolved' : 'Marked open');
+        fetchPosts();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Unable to update status');
+      }
+    } catch (error) {
+      console.error('Resolve error', error);
+      toast.error('Unable to update status');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50">
+      <div className="max-w-5xl mx-auto px-4 py-10">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Discussion Forum</h1>
+            <p className="text-gray-600">Ask questions, get answers, and collaborate with the community.</p>
+          </div>
+          <div className="px-3 py-1 bg-white border rounded-lg shadow-sm">
+            {posts.length} discussion{posts.length !== 1 && 's'}
+          </div>
+        </div>
+
+        {/* New post form */}
+        <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-6 mb-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Start a new discussion</h2>
+          <input
+            value={newPost.title}
+            onChange={(e) => setNewPost((p) => ({ ...p, title: e.target.value }))}
+            placeholder="Title"
+            className="w-full border rounded-lg px-3 py-2 mb-3"
+          />
+          <textarea
+            value={newPost.content}
+            onChange={(e) => setNewPost((p) => ({ ...p, content: e.target.value }))}
+            placeholder="Describe your question or idea..."
+            className="w-full border rounded-lg px-3 py-2 mb-4"
+            rows={3}
+          />
+          <button
+            onClick={handleCreatePost}
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md shadow hover:from-orange-600 hover:to-red-600"
+          >
+            Post
+          </button>
+        </div>
+
+        {/* Posts list */}
+        {loading ? (
+          <div className="text-center text-gray-500">Loading discussions...</div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <div key={post.id} className="bg-white border rounded-lg shadow-sm p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
+                      {post.isResolved && (
+                        <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full border border-green-200">
+                          Resolved
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{post.content}</p>
+                    <div className="text-xs text-gray-500 mt-2">
+                      By {post.author?.name || 'User'} • {post._count?.comments || 0} comment(s)
+                    </div>
+                  </div>
+                  {currentUser?.isAdmin && (
+                    <button
+                      onClick={() => handleResolve(post.id, !post.isResolved)}
+                      className="text-xs px-3 py-1 border rounded-lg hover:bg-gray-50"
+                    >
+                      Mark {post.isResolved ? 'Open' : 'Resolved'}
+                    </button>
+                  )}
+                </div>
+
+                {/* Comments */}
+                <div className="mt-4">
+                  <button
+                    onClick={() => loadComments(post.id)}
+                    className="text-sm text-orange-600 hover:underline"
+                  >
+                    View thread
+                  </button>
+                  {activeComments[post.id] && (
+                    <div className="mt-3 space-y-3">
+                      {activeComments[post.id].map((c) => (
+                        <div key={c.id} className="text-sm bg-orange-50 border border-orange-100 rounded p-2">
+                          <div className="font-medium text-gray-800 flex items-center gap-2">
+                            {c.author?.name || 'User'} {c.author?.isAdmin && <span className="text-xs px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">Admin</span>}
+                          </div>
+                          <div className="text-gray-700">{c.content}</div>
+                        </div>
+                      ))}
+                      <div className="flex gap-2">
+                        <input
+                          value={commentDraft[post.id] || ''}
+                          onChange={(e) =>
+                            setCommentDraft((prev) => ({ ...prev, [post.id]: e.target.value }))
+                          }
+                          placeholder="Write a reply"
+                          className="flex-1 border rounded-lg px-3 py-2 text-sm"
+                        />
+                        <button
+                          onClick={() => handleComment(post.id)}
+                          className="px-3 py-2 bg-orange-500 text-white rounded-md text-sm"
+                        >
+                          Reply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

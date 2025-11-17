@@ -1,5 +1,5 @@
 // components/admin/AdminHeader.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { clientAuth } from '@/lib/auth/clientAuth';
 import { toast } from 'sonner';
@@ -18,6 +18,25 @@ interface AdminHeaderProps {
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await clientAuth.authFetch('/api/admin/notifications');
+        const data = await res.json();
+        if (res.ok) {
+          setNotificationCount(data.data?.total || 0);
+        }
+      } catch (error) {
+        console.error('Failed to fetch admin notifications', error);
+      }
+    };
+
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     clientAuth.logout('/logout');
@@ -69,8 +88,11 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM12 18.5A2.5 2.5 0 1014.5 16H12v2.5z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              {/* Notification badge */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+              {notificationCount > 0 && (
+                <div className="absolute -top-1 -right-2 min-w-[18px] h-5 px-1 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                  {notificationCount}
+                </div>
+              )}
             </button>
 
             {/* User menu */}

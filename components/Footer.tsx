@@ -41,6 +41,7 @@ const Footer: React.FC = () => {
     // { href: "/about", label: "About VK" },
     // { href: "/main", label: "Dashboard", requiresAuth: true },
     // { href: "/main#competitions", label: "Competitions", requiresAuth: true },
+    { href: "/forum", label: "Discussion Forum" },
     { href: "/contact", label: "Contact" },
     // { href: "/privacy", label: "Privacy Policy" }
   ];

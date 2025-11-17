@@ -29,6 +29,11 @@ model User {
   verificationTokens  VerificationToken[]
   passwordResetTokens PasswordResetToken[]
   submissions         Submission[]
+  forumPosts          ForumPost[]
+  forumComments       ForumComment[]
+  submissionMessages  SubmissionMessage[]
+  notificationsCreated Notification[]
+  notificationReceipts NotificationReceipt[]
 }
 
 // Email verification tokens
@@ -114,6 +119,7 @@ model Submission {
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages SubmissionMessage[]
 
   // Composite indexes for efficient queries
   @@index([competitionId, userId, interval])
@@ -121,6 +127,90 @@ model Submission {
   @@index([userId, competitionId])
   @@index([status])
   @@map("submissions")
+}
+
+model ForumPost {
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
+  authorId   String          @db.ObjectId
+  title      String
+  content    String
+  isResolved Boolean         @default(false)
+  status     ForumPostStatus @default(OPEN)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  author   User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments ForumComment[]
+
+  @@index([authorId])
+  @@map("forum_posts")
+}
+
+model ForumComment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  authorId  String   @db.ObjectId
+  content   String
+  parentId  String?  @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("forum_comments")
+}
+
+model SubmissionMessage {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  submissionId String   @db.ObjectId
+  authorId     String   @db.ObjectId
+  content      String
+  isFromAdmin  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@index([authorId])
+  @@map("submission_messages")
+}
+
+model Notification {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  title              String
+  body               String
+  targetAll          Boolean  @default(true)
+  targetAdminOnly    Boolean  @default(false)
+  targetInstitutions String[]
+  targetUserIds      String[]
+  createdById        String?  @db.ObjectId
+  createdAt          DateTime @default(now())
+
+  createdBy User? @relation(fields: [createdById], references: [id])
+  receipts  NotificationReceipt[]
+
+  @@index([createdById])
+  @@map("notifications")
+}
+
+model NotificationReceipt {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  notificationId String   @db.ObjectId
+  userId         String   @db.ObjectId
+  isRead         Boolean  @default(false)
+  readAt         DateTime?
+  createdAt      DateTime @default(now())
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId])
+  @@map("notification_receipts")
 }
 
 model Inquiry {
@@ -144,4 +234,9 @@ enum SubmissionStatus {
   REJECTED // Doesn't meet criteria
   WINNER // Competition winner
   FINALIST // Top submissions
+}
+
+enum ForumPostStatus {
+  OPEN
+  RESOLVED
 }
