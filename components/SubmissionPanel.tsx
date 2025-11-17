@@ -31,6 +31,15 @@ interface Submission {
   updatedAt: string;
 }
 
+interface SubmissionMessage {
+  id: string;
+  submissionId: string;
+  content: string;
+  isFromAdmin: boolean;
+  createdAt: string;
+  author?: { id: string; name: string; isAdmin?: boolean };
+}
+
 interface SubmissionPanelProps {
   competitionId: number | string;
 }
@@ -39,6 +48,15 @@ interface AdminSettings {
   currentInterval: number;
   isSubmissionsOpen: boolean;
   maxSubmissionsPerInterval: number;
+}
+
+interface SubmissionMessage {
+  id: string;
+  submissionId: string;
+  content: string;
+  isFromAdmin: boolean;
+  createdAt: string;
+  author?: { id: string; name: string; isAdmin?: boolean };
 }
 
 const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
@@ -56,6 +74,12 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'submit' | 'history'>('submit');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Record<string, SubmissionMessage[]>>({});
+  const [messageDrafts, setMessageDrafts] = useState<Record<string, string>>({});
+  const [loadingMessages, setLoadingMessages] = useState<Record<string, boolean>>({});
+  const [messages, setMessages] = useState<Record<string, SubmissionMessage[]>>({});
+  const [messageDrafts, setMessageDrafts] = useState<Record<string, string>>({});
+  const [loadingMessages, setLoadingMessages] = useState<Record<string, boolean>>({});
 
   // Check if this is competition 4 (non-weekly)
   const isCompetition4 = Number(competitionId) === 4;
@@ -78,6 +102,11 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
         if (submissionsResponse.ok) {
           const userSubmissions = await submissionsResponse.json();
           setSubmissions(userSubmissions);
+          // Preload messages for each submission so the user can converse with admins
+          const subsArray = Array.isArray(userSubmissions) ? userSubmissions : [];
+          subsArray.forEach((s: Submission) => {
+            loadMessages(s.id);
+          });
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -97,6 +126,47 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const loadMessages = async (submissionId: string) => {
+    try {
+      setLoadingMessages((prev) => ({ ...prev, [submissionId]: true }));
+      const res = await clientAuth.authFetch(`/api/submissions/${submissionId}/messages`);
+      const data = await res.json();
+      if (res.ok) {
+        setMessages((prev) => ({ ...prev, [submissionId]: data.data || [] }));
+      }
+    } catch (error) {
+      console.error('Failed to load submission messages', error);
+    } finally {
+      setLoadingMessages((prev) => ({ ...prev, [submissionId]: false }));
+    }
+  };
+
+  const sendMessage = async (submissionId: string) => {
+    const content = messageDrafts[submissionId];
+    if (!content || !content.trim()) {
+      toast.error('Message cannot be empty');
+      return;
+    }
+    try {
+      const res = await clientAuth.authFetch(`/api/submissions/${submissionId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to send message');
+        return;
+      }
+      setMessageDrafts((prev) => ({ ...prev, [submissionId]: '' }));
+      loadMessages(submissionId);
+      toast.success('Message sent');
+    } catch (error) {
+      console.error('Failed to send submission message', error);
+      toast.error('Failed to send message');
     }
   };
 
@@ -279,6 +349,47 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       case 'WINNER': return '🏆';
       case 'FINALIST': return '🥇';
       default: return '📄';
+    }
+  };
+
+  const loadMessages = async (submissionId: string) => {
+    try {
+      setLoadingMessages(prev => ({ ...prev, [submissionId]: true }));
+      const res = await clientAuth.authFetch(`/api/submissions/${submissionId}/messages`);
+      const data = await res.json();
+      if (res.ok) {
+        setMessages(prev => ({ ...prev, [submissionId]: data.data || [] }));
+      }
+    } catch (error) {
+      console.error('Failed to load submission messages', error);
+    } finally {
+      setLoadingMessages(prev => ({ ...prev, [submissionId]: false }));
+    }
+  };
+
+  const sendMessage = async (submissionId: string) => {
+    const content = messageDrafts[submissionId];
+    if (!content || !content.trim()) {
+      toast.error('Message cannot be empty');
+      return;
+    }
+    try {
+      const res = await clientAuth.authFetch(`/api/submissions/${submissionId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to send message');
+        return;
+      }
+      setMessageDrafts(prev => ({ ...prev, [submissionId]: '' }));
+      await loadMessages(submissionId);
+      toast.success('Message sent');
+    } catch (error) {
+      console.error('Failed to send submission message', error);
+      toast.error('Failed to send message');
     }
   };
 
@@ -661,12 +772,59 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                             </p>
                           </div>
                         )}
-                        
+
                         <div className="flex justify-between items-center text-xs text-gray-500 font-inter mt-3 pt-2 border-t border-gray-200/50">
                           <span>Submitted: {new Date(submission.createdAt).toLocaleDateString()}</span>
                           {submission.isAccessVerified && (
                             <span className="text-green-600">✓ Verified</span>
                           )}
+                        </div>
+
+                        {/* Conversation with admins */}
+                        <div className="mt-4 bg-white border border-orange-100 rounded-lg p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-gray-800">Conversation</span>
+                            <button
+                              onClick={() => loadMessages(submission.id)}
+                              className="text-xs text-orange-600 hover:text-orange-700"
+                            >
+                              {loadingMessages[submission.id] ? 'Loading...' : 'Refresh'}
+                            </button>
+                          </div>
+                          <div className="max-h-44 overflow-y-auto space-y-2">
+                            {(messages[submission.id] || []).length === 0 && (
+                              <div className="text-xs text-gray-500">No messages yet. Ask a question to your judges.</div>
+                            )}
+                            {(messages[submission.id] || []).map((m) => (
+                              <div key={m.id} className="text-xs bg-orange-50 border border-orange-100 rounded p-2">
+                                <div className="flex items-center gap-2">
+                                  <span className={`font-semibold ${m.isFromAdmin ? 'text-indigo-700' : 'text-gray-800'}`}>
+                                    {m.author?.name || (m.isFromAdmin ? 'Admin' : 'You')}
+                                  </span>
+                                  {m.isFromAdmin && (
+                                    <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px]">Admin</span>
+                                  )}
+                                  <span className="text-[10px] text-gray-500">{new Date(m.createdAt).toLocaleString()}</span>
+                                </div>
+                                <div className="text-gray-700 whitespace-pre-wrap mt-1">{m.content}</div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex gap-2">
+                            <textarea
+                              value={messageDrafts[submission.id] || ''}
+                              onChange={(e) => setMessageDrafts(prev => ({ ...prev, [submission.id]: e.target.value }))}
+                              placeholder="Ask a question or reply..."
+                              className="flex-1 border border-orange-200 rounded-lg px-3 py-2 text-xs focus:ring-orange-500 focus:border-orange-500"
+                              rows={2}
+                            />
+                            <button
+                              onClick={() => sendMessage(submission.id)}
+                              className="px-3 py-2 bg-orange-500 text-white rounded-md text-xs hover:bg-orange-600"
+                            >
+                              Send
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))
