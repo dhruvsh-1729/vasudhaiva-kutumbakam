@@ -41,6 +41,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, data });
     }
 
+    if (req.method === 'DELETE') {
+      const auth = await requireAuth(req, res, { requireAdmin: true });
+      if (!auth) return;
+      const { commentId } = req.query;
+      if (!commentId || typeof commentId !== 'string') {
+        return res.status(400).json({ success: false, error: 'commentId is required' });
+      }
+      await prisma.forumComment.delete({ where: { id: commentId } });
+      return res.status(200).json({ success: true });
+    }
+
     if (req.method === 'POST') {
       const auth = await requireAuth(req, res);
       if (!auth) return;

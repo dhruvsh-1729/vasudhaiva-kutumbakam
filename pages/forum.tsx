@@ -237,7 +237,7 @@ export default function ForumPage() {
           <div className="space-y-4">
             {posts.map((post) => (
               <div key={post.id} className="bg-white border rounded-lg shadow-sm p-4">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
@@ -265,14 +265,32 @@ export default function ForumPage() {
                       ))}
                     </div>
                   </div>
-                  {currentUser?.isAdmin && (
-                    <button
-                      onClick={() => handleResolve(post.id, !post.isResolved)}
-                      className="text-xs px-3 py-1 border rounded-lg hover:bg-gray-50"
-                    >
-                      Mark {post.isResolved ? 'Open' : 'Resolved'}
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {currentUser?.isAdmin && (
+                      <button
+                        onClick={() => handleResolve(post.id, !post.isResolved)}
+                        className="text-xs px-3 py-1 border rounded-lg hover:bg-gray-50"
+                      >
+                        Mark {post.isResolved ? 'Open' : 'Resolved'}
+                      </button>
+                    )}
+                    {currentUser?.isAdmin && (
+                      <button
+                        onClick={async () => {
+                          try {
+                            await clientAuth.authFetch(`/api/forum/${post.id}`, { method: 'DELETE' });
+                            toast.success('Post removed');
+                            fetchPosts(page);
+                          } catch (error) {
+                            toast.error('Failed to remove post');
+                          }
+                        }}
+                        className="text-xs px-3 py-1 border rounded-lg hover:bg-red-50 text-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Comments */}
@@ -291,6 +309,24 @@ export default function ForumPage() {
                             {c.author?.name || 'User'} {c.author?.isAdmin && <span className="text-xs px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">Admin</span>}
                           </div>
                           <div className="text-gray-700">{c.content}</div>
+                          {currentUser?.isAdmin && (
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await clientAuth.authFetch(`/api/forum/${post.id}/comments?commentId=${c.id}`, {
+                                    method: 'DELETE',
+                                  });
+                                  toast.success('Comment removed');
+                                  loadComments(post.id);
+                                } catch (error) {
+                                  toast.error('Failed to remove comment');
+                                }
+                              }}
+                              className="text-[11px] text-red-600 hover:underline"
+                            >
+                              Remove
+                            </button>
+                          )}
                           <div className="flex flex-wrap gap-2 mt-2">
                             {reactionTypes.map((r) => (
                               <button

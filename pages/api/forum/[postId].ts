@@ -38,6 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, data: post });
     }
 
+    if (req.method === 'DELETE') {
+      const auth = await requireAuth(req, res, { requireAdmin: true });
+      if (!auth) return;
+      await prisma.forumPost.delete({ where: { id: postId } });
+      return res.status(200).json({ success: true });
+    }
+
     res.setHeader('Allow', ['GET', 'PATCH']);
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   } catch (error) {
