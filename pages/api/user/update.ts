@@ -1,17 +1,7 @@
 // pages/api/profile/update.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { verify } from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-// Type for JWT payload
-interface JWTPayload {
-  userId: string;
-  email: string;
-  iat?: number;
-  exp?: number;
-}
+import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth/serverAuth';
 
 // Type for update request body
 interface UpdateProfileBody {
@@ -40,27 +30,8 @@ export default async function handler(
   }
 
   try {
-    // Extract token from Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Unauthorized - No valid token provided',
-      });
-    }
-
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // Verify JWT token
-    let decoded: JWTPayload;
-    try {
-      decoded = verify(token, process.env.JWT_SECRET || 'your-secret-key') as JWTPayload;
-    } catch (error) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid or expired token',
-      });
-    }
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
 
     // Extract and validate request body
     const { phone, institution }: UpdateProfileBody = req.body;
@@ -114,7 +85,7 @@ export default async function handler(
     // Update user in database
     const updatedUser = await prisma.user.update({
       where: {
-        id: decoded.userId,
+        id: auth.user.id,
       },
       data: {
         ...updates,
@@ -167,8 +138,6 @@ export default async function handler(
       success: false,
       error: 'Internal server error while updating profile',
     });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

@@ -1,30 +1,12 @@
 // pages/api/verify-drive-access.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import jwt from 'jsonwebtoken';
-
-// Helper function to extract user from JWT token (for authentication)
-function getUserFromToken(req: NextApiRequest): { userId: string } | null {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
-    }
-
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-    return { userId: decoded.userId };
-  } catch (error) {
-    return null;
-  }
-}
+import { requireAuth } from '@/lib/auth/serverAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // Check authentication
-    const user = getUserFromToken(req);
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized. Please log in.' });
-    }
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
 
     if (req.method !== 'POST') {
       res.setHeader('Allow', ['POST']);

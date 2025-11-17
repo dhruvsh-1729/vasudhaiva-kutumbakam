@@ -1,34 +1,17 @@
 // pages/api/user/me.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
-
-type TokenPayload = { userId: string; isAdmin?: boolean; iat?: number; exp?: number };
-
-function getUserFromToken(req: NextApiRequest): TokenPayload | null {
-  try {
-    const auth = req.headers.authorization;
-    if (!auth?.startsWith('Bearer ')) return null;
-    const token = auth.slice(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as TokenPayload;
-    return decoded;
-  } catch {
-    return null;
-  }
-}
+import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth/serverAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ message: 'Method not allowed' });
 
   try {
-    const payload = getUserFromToken(req);
-    console.log('Token payload:', payload);
-    if (!payload?.userId) return res.status(401).json({ message: 'Unauthorized' });
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
 
     const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
+      where: { id: auth.user.id },
       select: {
         id: true,
         name: true,
@@ -50,7 +33,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (e) {
     console.error('Error /api/user/me:', e);
     return res.status(500).json({ success: false, message: 'Internal server error' });
-  } finally {
-    await prisma.$disconnect();
   }
 }

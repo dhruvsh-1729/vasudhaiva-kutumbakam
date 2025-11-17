@@ -1,32 +1,12 @@
 // pages/api/submissions/[submissionId].ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
-
-// Helper function to extract user from JWT token
-function getUserFromToken(req: NextApiRequest): { userId: string; isAdmin?: boolean } | null {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
-    }
-
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-    return { userId: decoded.userId, isAdmin: decoded.isAdmin || false };
-  } catch (error) {
-    return null;
-  }
-}
+import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth/serverAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const user = getUserFromToken(req);
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized. Please log in.' });
-    }
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
 
     const { submissionId } = req.query;
     if (!submissionId || typeof submissionId !== 'string') {
@@ -35,11 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (req.method) {
       case 'GET':
-        return await getSubmission(req, res, user.userId, submissionId, user.isAdmin);
+        return await getSubmission(req, res, auth.user.id, submissionId, !!auth.user.isAdmin);
       case 'PUT':
-        return await updateSubmission(req, res, user.userId, submissionId, user.isAdmin);
+        return await updateSubmission(req, res, auth.user.id, submissionId, !!auth.user.isAdmin);
       case 'DELETE':
-        return await deleteSubmission(req, res, user.userId, submissionId, user.isAdmin);
+        return await deleteSubmission(req, res, auth.user.id, submissionId, !!auth.user.isAdmin);
       default:
         res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
         return res.status(405).json({ error: 'Method not allowed' });
@@ -47,8 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     console.error('Submission management API error:', error);
     return res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

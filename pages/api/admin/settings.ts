@@ -1,8 +1,7 @@
 // pages/api/admin/settings.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth/serverAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -10,7 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'GET':
         return await getAdminSettings(req, res);
       case 'POST':
+        {
+          const admin = await requireAuth(req, res, { requireAdmin: true });
+          if (!admin) return;
         return await updateAdminSettings(req, res);
+        }
       default:
         res.setHeader('Allow', ['GET', 'POST']);
         return res.status(405).json({ error: 'Method not allowed' });
@@ -18,8 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     console.error('Admin settings API error:', error);
     return res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

@@ -1,38 +1,12 @@
 // pages/api/admin/submissions.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
-
-// Helper function to check admin status
-function getAdminFromToken(req: NextApiRequest): { userId: string; isAdmin: boolean } | null {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
-    }
-
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-    
-    // In production, you should check admin status from the database
-    if (!decoded.isAdmin) {
-      return null;
-    }
-    
-    return { userId: decoded.userId, isAdmin: decoded.isAdmin };
-  } catch (error) {
-    return null;
-  }
-}
+import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth/serverAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const admin = getAdminFromToken(req);
-    if (!admin) {
-      return res.status(401).json({ error: 'Unauthorized. Admin access required.' });
-    }
+    const admin = await requireAuth(req, res, { requireAdmin: true });
+    if (!admin) return;
 
     switch (req.method) {
       case 'GET':
@@ -46,8 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     console.error('Admin submissions API error:', error);
     return res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
