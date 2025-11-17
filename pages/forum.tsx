@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { clientAuth } from '@/lib/auth/clientAuth';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
@@ -33,6 +33,7 @@ export default function ForumPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
   const currentUser = useMemo(() => clientAuth.getUser(), []);
 
   const fetchPosts = async (pageNum = 1, searchTerm = '') => {
@@ -40,6 +41,7 @@ export default function ForumPage() {
     try {
       const params = new URLSearchParams({ page: String(pageNum) });
       if (searchTerm.trim()) params.set('search', searchTerm.trim());
+      // Always search globally; server counts total across all posts
       const res = await clientAuth.authFetch(`/api/forum?${params.toString()}`);
       const data = await res.json();
       if (res.ok) {
@@ -56,7 +58,13 @@ export default function ForumPage() {
   };
 
   useEffect(() => {
-    fetchPosts(page, search);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      fetchPosts(page, search);
+    }, 300);
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
   }, [page, search]);
 
   const handleCreatePost = async () => {
