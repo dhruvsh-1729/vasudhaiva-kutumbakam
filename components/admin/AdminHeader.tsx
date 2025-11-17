@@ -1,5 +1,5 @@
 // components/admin/AdminHeader.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { clientAuth } from '@/lib/auth/clientAuth';
 import { toast } from 'sonner';
@@ -16,31 +16,81 @@ interface AdminHeaderProps {
   onMenuToggle: () => void;
 }
 
+interface NotificationItem {
+  id: string;
+  notificationId?: string;
+  isRead?: boolean;
+  notification: {
+    title: string;
+    body: string;
+    createdAt?: string;
+  };
+}
+
 const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const notificationRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const res = await clientAuth.authFetch('/api/admin/notifications');
-        const data = await res.json();
-        if (res.ok) {
-          setNotificationCount(data.data?.total || 0);
-        }
-      } catch (error) {
-        console.error('Failed to fetch admin notifications', error);
-      }
-    };
-
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000);
+    loadNotifications();
+    const interval = setInterval(loadNotifications, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
+      setShowUserMenu(false);
+    };
+    if (showNotifications || showUserMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showNotifications, showUserMenu]);
 
   const handleLogout = () => {
     clientAuth.logout('/logout');
     toast.success('Logged out successfully');
+  };
+
+  const loadNotifications = async () => {
+    setLoadingNotifications(true);
+    try {
+      const res = await clientAuth.authFetch('/api/notifications');
+      const data = await res.json();
+      if (res.ok) {
+        setNotifications(data.data || []);
+        setNotificationCount((data.data || []).filter((n: NotificationItem) => !n.isRead).length);
+      }
+    } catch (error) {
+      console.error('Failed to fetch admin notifications', error);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await clientAuth.authFetch('/api/notifications/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationId }),
+      });
+      setNotifications((prev) =>
+        prev.map((n) =>
+          (n.notificationId || n.id) === notificationId ? { ...n, isRead: true } : n
+        )
+      );
+      setNotificationCount((prev) => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Failed to mark notification read', error);
+    }
   };
 
   const getUserInitials = (name: string): string => {
@@ -81,19 +131,73 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onMenuToggle }) => {
           </div>
 
           {/* Right section - User menu */}
-          <div className="flex items-center gap-4">
-            {/* Notifications */}
-            <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors relative">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM12 18.5A2.5 2.5 0 1014.5 16H12v2.5z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              {notificationCount > 0 && (
-                <div className="absolute -top-1 -right-2 min-w-[18px] h-5 px-1 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
-                  {notificationCount}
+            <div className="flex items-center gap-4">
+              {/* Notifications */}
+            <div className="relative" ref={notificationRef}>
+              <button
+                className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors relative"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowNotifications(!showNotifications);
+                }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM12 18.5A2.5 2.5 0 1014.5 16H12v2.5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                {notificationCount > 0 && (
+                  <div className="absolute -top-1 -right-2 min-w-[18px] h-5 px-1 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                    {notificationCount > 99 ? '99+' : notificationCount}
+                  </div>
+                )}
+              </button>
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-96 overflow-y-auto custom-scrollbar">
+                  <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-gray-800">Notifications</span>
+                    <button
+                      className="text-xs text-blue-600 hover:text-blue-700"
+                      onClick={() => {
+                        setShowNotifications(true);
+                        loadNotifications();
+                      }}
+                    >
+                      {loadingNotifications ? 'Refreshing...' : 'Refresh'}
+                    </button>
+                  </div>
+                  <div className="divide-y divide-gray-100">
+                    {notifications.length === 0 ? (
+                      <div className="p-4 text-sm text-gray-500 text-center">No notifications</div>
+                    ) : (
+                      notifications.map((n) => (
+                        <button
+                          key={n.id}
+                          onClick={() => markAsRead(n.notificationId || n.id)}
+                          className={`w-full text-left p-3 hover:bg-indigo-50 transition-colors ${
+                            n.isRead ? 'bg-white' : 'bg-indigo-50'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-gray-800 truncate">
+                                {n.notification.title}
+                              </p>
+                              <p className="text-xs text-gray-600 whitespace-pre-wrap">
+                                {n.notification.body}
+                              </p>
+                              <p className="text-[11px] text-gray-400 mt-1">
+                                {n.notification.createdAt ? new Date(n.notification.createdAt).toLocaleString() : ''}
+                              </p>
+                            </div>
+                            {!n.isRead && <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 mt-1"></span>}
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
-            </button>
+            </div>
 
             {/* User menu */}
             <div className="relative">
