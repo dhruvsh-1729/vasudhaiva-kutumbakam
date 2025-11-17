@@ -31,8 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const where = search
         ? {
             OR: [
-              { title: { contains: search, mode: 'insensitive' } },
-              { content: { contains: search, mode: 'insensitive' } },
+              { title: { contains: search, mode: 'insensitive' as const } },
+              { content: { contains: search, mode: 'insensitive' as const } },
             ],
           }
         : undefined;
