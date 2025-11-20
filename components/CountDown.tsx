@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { getNextDeadline } from '@/lib/deadlineManager';
 
 interface CountDownProps {
-  deadline: string;
+  deadline?: string; // Made optional - will use dynamic deadline if not provided
 }
 
 interface TimeLeft {
@@ -11,20 +12,41 @@ interface TimeLeft {
   seconds: number;
 }
 
-const CountDown: React.FC<CountDownProps> = ({ deadline }) => {
+const CountDown: React.FC<CountDownProps> = ({ deadline: propDeadline }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
+  const [currentDeadline, setCurrentDeadline] = useState<string>('');
+  const [intervalTitle, setIntervalTitle] = useState<string>('');
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const deadlineDate = new Date(deadline);
-      deadlineDate.setHours(23, 59, 59, 999);
+      // Use prop deadline if provided, otherwise get dynamic deadline
+      let deadlineToUse: string;
+      let title: string;
+      
+      if (propDeadline) {
+        deadlineToUse = propDeadline;
+        title = 'Competition deadline';
+      } else {
+        const nextDeadlineInfo = getNextDeadline();
+        deadlineToUse = nextDeadlineInfo.deadline;
+        title = nextDeadlineInfo.title;
+        
+        // Update current deadline and title if they've changed
+        if (deadlineToUse !== currentDeadline) {
+          setCurrentDeadline(deadlineToUse);
+          setIntervalTitle(title);
+        }
+      }
 
-      const now = new Date();
+      // Parse deadline in IST timezone
+      const deadlineDate = new Date(deadlineToUse);
+      // Get current time in IST
+      const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
       const difference = deadlineDate.getTime() - now.getTime();
 
       if (difference > 0) {
@@ -42,14 +64,20 @@ const CountDown: React.FC<CountDownProps> = ({ deadline }) => {
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [deadline]);
+  }, [propDeadline, currentDeadline]);
 
   const isTimeUp = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
+  
+  // Display interval title if available and not using prop deadline
+  const displayTitle = !propDeadline && intervalTitle ? intervalTitle : 'Competitions';
 
   return (
     <div className="flex flex-col sm:flex-row items-center gap-4 justify-center bg-slate-900 p-4 border border-slate-700 min-h-[80px]">
       <span className='text-base sm:text-lg font-bold text-slate-100 text-center'>
-        Competitions are {isTimeUp ? 'over' : 'live'} now{!isTimeUp && ' till'}
+        {!propDeadline && intervalTitle && (
+          <span className="block text-sm text-slate-400 mb-1">{intervalTitle}</span>
+        )}
+        {isTimeUp ? 'Event concluded' : `Time remaining`}
       </span>
       {isTimeUp ? (
         <div className="text-center">

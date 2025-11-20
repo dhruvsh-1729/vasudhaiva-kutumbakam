@@ -370,7 +370,7 @@ const Home: React.FC = () => {
 
       <NotificationBanner />
       <div className='hidden sm:block relative top-0 z-10 w-full'>
-        <CountDown deadline={getCompetitionById(1)?.deadline as string} />
+        <CountDown />
       </div>
   
       {/* Hero Section */}

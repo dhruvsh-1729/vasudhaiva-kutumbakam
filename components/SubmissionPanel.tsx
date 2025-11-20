@@ -474,6 +474,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                     <div className="text-sm text-blue-700 font-inter">
                       <span>Submissions: {getCurrentIntervalSubmissions().length}/{adminSettings.maxSubmissionsPerInterval}</span>
                     </div>
+                    <div className="text-xs text-blue-600 font-inter mt-2">
+                      💡 Deadlines automatically advance to the next week when current week ends
+                    </div>
                   </div>
                 )}
 

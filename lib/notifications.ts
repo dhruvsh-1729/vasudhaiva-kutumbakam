@@ -26,14 +26,28 @@ export async function createNotification(input: NotificationInput) {
 
   // Pre-create receipts for targeted users if provided
   if (input.targetUserIds && input.targetUserIds.length > 0) {
-    const receipts = input.targetUserIds.map((userId) => ({
-      notificationId: notification.id,
-      userId,
-    }));
-    await prisma.notificationReceipt.createMany({
-      data: receipts,
-      // skipDuplicates: true,
+    // Check which receipts already exist
+    const existingReceipts = await prisma.notificationReceipt.findMany({
+      where: {
+        notificationId: notification.id,
+        userId: { in: input.targetUserIds },
+      },
+      select: { userId: true },
     });
+    
+    const existingUserIds = new Set(existingReceipts.map(r => r.userId));
+    const newReceipts = input.targetUserIds
+      .filter(userId => !existingUserIds.has(userId))
+      .map((userId) => ({
+        notificationId: notification.id,
+        userId,
+      }));
+    
+    if (newReceipts.length > 0) {
+      await prisma.notificationReceipt.createMany({
+        data: newReceipts,
+      });
+    }
   }
 
   return notification;
@@ -44,20 +58,39 @@ export async function fetchNotificationsForUser(
   institution?: string | null,
   isAdmin = false
 ): Promise<Array<NotificationReceipt & { notification: { title: string; body: string } }>> {
+  // Build the query conditions based on user type
+  const orConditions: any[] = [];
+
+  // 1. Notifications for everyone (not admin-only)
+  orConditions.push({
+    targetAll: true,
+    targetAdminOnly: false,
+  });
+
+  // 2. Notifications specifically for admins (only if user is admin)
+  if (isAdmin) {
+    orConditions.push({
+      targetAdminOnly: true,
+    });
+  }
+
+  // 3. Notifications targeted to this specific user
+  orConditions.push({
+    targetUserIds: { has: userId },
+    targetAdminOnly: false, // Exclude admin-only notifications unless user is admin
+  });
+
+  // 4. Notifications targeted to user's institution (if they have one)
+  if (institution) {
+    orConditions.push({
+      targetInstitutions: { has: institution },
+      targetAdminOnly: false, // Exclude admin-only notifications unless user is admin
+    });
+  }
+
   const notifications = await prisma.notification.findMany({
     where: {
-      OR: [
-        { targetAll: true, targetAdminOnly: false },
-        { targetAdminOnly: isAdmin },
-        { targetUserIds: { has: userId } },
-        institution
-          ? {
-              targetInstitutions: {
-                has: institution,
-              },
-            }
-          : undefined,
-      ].filter(Boolean) as any,
+      OR: orConditions,
     },
     orderBy: { createdAt: 'desc' },
     take: 50,
@@ -71,11 +104,26 @@ export async function fetchNotificationsForUser(
     },
   });
 
-  // Ensure receipts exist
-  await prisma.notificationReceipt.createMany({
-    data: notifications.map((n) => ({ notificationId: n.id, userId })),
-    // skipDuplicates: true,
+  // Ensure receipts exist - check which ones are missing first
+  const notificationIds = notifications.map((n) => n.id);
+  const existingReceipts = await prisma.notificationReceipt.findMany({
+    where: {
+      userId,
+      notificationId: { in: notificationIds },
+    },
+    select: { notificationId: true },
   });
+
+  const existingNotificationIds = new Set(existingReceipts.map(r => r.notificationId));
+  const missingReceipts = notifications
+    .filter(n => !existingNotificationIds.has(n.id))
+    .map((n) => ({ notificationId: n.id, userId }));
+
+  if (missingReceipts.length > 0) {
+    await prisma.notificationReceipt.createMany({
+      data: missingReceipts,
+    });
+  }
 
   const receipts = await prisma.notificationReceipt.findMany({
     where: { userId, notificationId: { in: notifications.map((n) => n.id) } },

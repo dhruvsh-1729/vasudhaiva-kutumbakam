@@ -1,4 +1,7 @@
 // components/Timeline.tsx
+import { useState, useEffect } from 'react';
+import { getIntervalsWithStatus, formatDateRange, getCompetitionProgress, getCurrentWeekLabel } from '@/lib/deadlineManager';
+
 interface TimelineEvent {
   id: number;
   title: string;
@@ -12,38 +15,34 @@ interface TimelineIconProps {
 }
 
 const Timeline: React.FC = () => {
-  const timelineEvents: TimelineEvent[] = [
-    {
-      id: 1,
-      title: 'Competition Launch',
-      date: 'October 27, 2025',
-      status: 'completed'
-    },
-    {
-      id: 2,
-      title: 'Week 1 Challenge',
-      date: 'November 2 - November 20, 2025',
-      status: 'current'
-    },
-    {
-      id: 3,
-      title: 'Week 2 Challenge',
-      date: 'November 20 - December 4, 2025',
-      status: 'upcoming'
-    },
-    {
-      id: 4,
-      title: 'Week 3 Challenge',
-      date: 'December 4 - December 18, 2025',
-      status: 'upcoming'
-    },
-    {
-      id: 5,
-      title: 'Final Results',
-      date: 'December 20, 2025',
-      status: 'upcoming'
-    }
-  ];
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
+  const [progress, setProgress] = useState<number>(0);
+  const [currentWeekLabel, setCurrentWeekLabel] = useState<string>('');
+
+  useEffect(() => {
+    // Function to update timeline data
+    const updateTimeline = () => {
+      const intervals = getIntervalsWithStatus();
+      const events = intervals.map(interval => ({
+        id: interval.id,
+        title: interval.title,
+        date: formatDateRange(interval.startDate, interval.endDate),
+        status: interval.status
+      }));
+      
+      setTimelineEvents(events);
+      setProgress(getCompetitionProgress());
+      setCurrentWeekLabel(getCurrentWeekLabel());
+    };
+
+    // Initial update
+    updateTimeline();
+
+    // Update every minute to keep timeline current
+    const timer = setInterval(updateTimeline, 60000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
   // Custom icons as SVG components
   const TimelineIcon: React.FC<TimelineIconProps> = ({ status, index }) => {
@@ -113,7 +112,7 @@ const Timeline: React.FC = () => {
         <div className="flex-1 bg-white/95 backdrop-blur-sm rounded-xl p-4 border border-orange-100/50 shadow-lg">
           {/* Enhanced timeline line */}
           <div className="relative">
-            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-400 via-orange-400 via-amber-400 to-gray-300 rounded-full"></div>
+            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-400 via-orange-400 to-gray-300 rounded-full"></div>
             
             {/* Enhanced timeline events */}
             <div className="space-y-4">
@@ -209,10 +208,10 @@ const Timeline: React.FC = () => {
           <div className="mt-6 pt-4 border-t border-orange-100">
             <div className="flex items-center justify-between text-xs mb-3">
               <span className="font-inter text-gray-600 font-medium">Progress</span>
-              <span className="font-inter text-orange-600 font-semibold">Week 1 of 5</span>
+              <span className="font-inter text-orange-600 font-semibold">{currentWeekLabel || 'Loading...'}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden shadow-inner">
-              <div className="bg-gradient-to-r from-emerald-500 via-orange-500 to-amber-500 h-2 rounded-full transition-all duration-1000 ease-out shadow-sm" style={{width: '40%'}}></div>
+              <div className="bg-gradient-to-r from-emerald-500 via-orange-500 to-amber-500 h-2 rounded-full transition-all duration-1000 ease-out shadow-sm" style={{width: `${progress}%`}}></div>
             </div>
             <div className="flex justify-between text-xs mt-2 text-gray-500">
               <span className="font-inter">Started</span>

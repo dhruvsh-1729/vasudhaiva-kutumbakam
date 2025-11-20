@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth/serverAuth';
+import { getCurrentSubmissionInterval, areSubmissionsOpen } from '@/lib/deadlineManager';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -171,30 +172,45 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
       return res.status(400).json({ error: 'Invalid Google Drive URL format' });
     }
 
-    // Get current admin settings
-    const adminSettings = await prisma.adminSettings.findFirst();
-    if (!adminSettings) {
-      return res.status(500).json({ error: 'Admin settings not found' });
+    // Get dynamically calculated interval and submission status
+    const currentInterval = getCurrentSubmissionInterval();
+    const isOpen = areSubmissionsOpen();
+
+    // Check if submissions are open based on timeline
+    if (!isOpen) {
+      return res.status(403).json({ error: 'Submissions are currently closed for this interval' });
     }
 
-    // Check if submissions are open
-    if (!adminSettings.isSubmissionsOpen) {
-      return res.status(403).json({ error: 'Submissions are currently closed' });
+    // Get admin settings for max submissions limit
+    const adminSettings = await prisma.adminSettings.findFirst();
+    const maxSubmissions = adminSettings?.maxSubmissionsPerInterval || 3;
+
+    // Auto-sync admin settings if they exist but are out of date
+    if (adminSettings && 
+        (adminSettings.currentInterval !== currentInterval || adminSettings.isSubmissionsOpen !== isOpen)) {
+      await prisma.adminSettings.update({
+        where: { id: adminSettings.id },
+        data: {
+          currentInterval: currentInterval,
+          isSubmissionsOpen: isOpen,
+        },
+      });
     }
-    console.log(userId, compId, adminSettings.currentInterval);
+
+    console.log(userId, compId, currentInterval);
     
     // Check submission limit for current interval
     const existingCount = await prisma.submission.count({
       where: {
         userId,
         competitionId: compId,
-        interval: adminSettings.currentInterval,
+        interval: currentInterval,
       },
     });
 
-    if (existingCount >= adminSettings.maxSubmissionsPerInterval) {
+    if (existingCount >= maxSubmissions) {
       return res.status(403).json({
-        error: `Maximum ${adminSettings.maxSubmissionsPerInterval} submissions allowed per interval`,
+        error: `Maximum ${maxSubmissions} submissions allowed per interval`,
       });
     }
 
@@ -206,7 +222,7 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
         title: title.trim(),
         competitionId: compId,
         userId,
-        interval: adminSettings.currentInterval,
+        interval: currentInterval, // Use dynamically calculated interval
         fileUrl,
         description: description?.trim() || null,
 

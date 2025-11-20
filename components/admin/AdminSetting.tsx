@@ -9,6 +9,12 @@ interface AdminSettingsState {
   maxSubmissionsPerInterval: number;
 }
 
+interface IntervalStat {
+  interval: number;
+  submissions: number;
+  avgScore: number;
+}
+
 const AdminSettings: React.FC = () => {
   const [settings, setSettings] = useState<AdminSettingsState>({
     currentInterval: 1,
@@ -17,8 +23,11 @@ const AdminSettings: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isLoadingStats, setIsLoadingStats] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [originalSettings, setOriginalSettings] = useState<AdminSettingsState>(settings);
+  const [intervalStats, setIntervalStats] = useState<IntervalStat[]>([]);
+  const [intervalSubmissionCount, setIntervalSubmissionCount] = useState<number | null>(null);
 
   // Fetch current settings
   useEffect(() => {
@@ -44,6 +53,11 @@ const AdminSettings: React.FC = () => {
     fetchSettings();
   }, []);
 
+  // Fetch interval stats
+  useEffect(() => {
+    fetchIntervalStats({ skipToast: true });
+  }, []);
+
   // Check for changes
   useEffect(() => {
     const changed = JSON.stringify(settings) !== JSON.stringify(originalSettings);
@@ -55,8 +69,31 @@ const AdminSettings: React.FC = () => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  // Save settings
-  const handleSave = async () => {
+  const fetchIntervalStats = async ({ skipToast = false }: { skipToast?: boolean } = {}) => {
+    try {
+      setIsLoadingStats(true);
+      const res = await clientAuth.authFetch('/api/admin/stats');
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to load interval stats');
+      }
+
+      setIntervalStats(Array.isArray(data.intervalStats) ? data.intervalStats : []);
+      setIntervalSubmissionCount(
+        typeof data.submissionsThisInterval === 'number' ? data.submissionsThisInterval : null
+      );
+    } catch (error) {
+      console.error('Error fetching interval stats:', error);
+      if (!skipToast) {
+        toast.error(error instanceof Error ? error.message : 'Failed to load interval stats');
+      }
+    } finally {
+      setIsLoadingStats(false);
+    }
+  };
+
+  const persistSettings = async (nextSettings: AdminSettingsState) => {
     try {
       setIsSaving(true);
       const response = await clientAuth.authFetch('/api/admin/settings', {
@@ -64,23 +101,50 @@ const AdminSettings: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(nextSettings),
       });
 
+      const updatedSettings = await response.json();
+
       if (!response.ok) {
-        // throw new Error('Failed to save settings');
+        throw new Error(updatedSettings?.error || 'Failed to save settings');
       }
 
-      const updatedSettings = await response.json();
       setSettings(updatedSettings);
       setOriginalSettings(updatedSettings);
       setHasChanges(false);
       toast.success('Settings saved successfully');
+      fetchIntervalStats({ skipToast: true });
+      return updatedSettings;
     } catch (error) {
       console.error('Error saving settings:', error);
-      toast.error('Failed to save settings');
+      toast.error(error instanceof Error ? error.message : 'Failed to save settings');
+      throw error;
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Save settings
+  const handleSave = async () => {
+    try {
+      await persistSettings(settings);
+    } catch {
+      // Error already handled in persistSettings
+    }
+  };
+
+  const handleAdvanceInterval = async () => {
+    if (isSaving) return;
+    const previousSettings = settings;
+    const nextSettings = { ...settings, currentInterval: settings.currentInterval + 1 };
+    setSettings(nextSettings); // Optimistic update so UI reflects change immediately
+
+    try {
+      await persistSettings(nextSettings);
+    } catch (error) {
+      // Revert optimistic update on failure
+      setSettings(previousSettings);
     }
   };
 
@@ -106,6 +170,10 @@ const AdminSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {isLoadingStats && (
+        <div className="text-sm text-gray-500">Refreshing interval stats…</div>
+      )}
+
       {/* Competition Settings */}
       <div className="admin-card rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
@@ -260,7 +328,11 @@ const AdminSettings: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-medium text-green-900">Total Submissions</h3>
-                <p className="text-green-700 text-sm">This interval</p>
+                <p className="text-green-700 text-sm">
+                  {isLoadingStats
+                    ? 'Loading...'
+                    : `${intervalSubmissionCount ?? 0} submission${(intervalSubmissionCount ?? 0) === 1 ? '' : 's'}`}
+                </p>
               </div>
             </div>
           </div>
@@ -270,12 +342,13 @@ const AdminSettings: React.FC = () => {
             <div className="text-center">
               <button
                 onClick={() => {
+                  if (isSaving) return;
                   if (confirm('Are you sure you want to advance to the next interval? This action cannot be undone.')) {
-                    handleSettingChange('currentInterval', settings.currentInterval + 1);
-                    handleSave();
+                    handleAdvanceInterval();
                   }
                 }}
-                className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm"
+                disabled={isSaving}
+                className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 Advance to Interval {settings.currentInterval + 1}
               </button>
@@ -293,6 +366,9 @@ const AdminSettings: React.FC = () => {
             {Array.from({ length: Math.min(5, settings.currentInterval) }, (_, i) => {
               const intervalNum = settings.currentInterval - i;
               const isCurrent = intervalNum === settings.currentInterval;
+              const submissionsForInterval =
+                intervalStats.find(stat => stat.interval === intervalNum)?.submissions ??
+                (isCurrent && intervalSubmissionCount !== null ? intervalSubmissionCount : 0);
               return (
                 <div
                   key={intervalNum}
@@ -316,8 +392,9 @@ const AdminSettings: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-sm text-gray-500">
-                    {/* Placeholder for submission count */}
-                    0 submissions
+                    {isLoadingStats
+                      ? 'Loading...'
+                      : `${submissionsForInterval} submission${submissionsForInterval === 1 ? '' : 's'}`}
                   </div>
                 </div>
               );

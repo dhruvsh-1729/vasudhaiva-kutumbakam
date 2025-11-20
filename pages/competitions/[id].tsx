@@ -154,7 +154,12 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
         {/* Header/Breadcrumb */}
         <Header />
         <NotificationBanner />
-        <CountDown deadline={getCompetitionById(competition.id)?.deadline as string} />
+        {/* Use specific deadline for competition 4, dynamic for others */}
+        {competition.id === 4 ? (
+          <CountDown deadline={getCompetitionById(competition.id)?.deadline as string} />
+        ) : (
+          <CountDown />
+        )}
         {/* Main Content */}
         <main className="px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

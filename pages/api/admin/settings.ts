@@ -2,6 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth/serverAuth';
+import { getCurrentSubmissionInterval, areSubmissionsOpen } from '@/lib/deadlineManager';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -26,6 +27,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function getAdminSettings(req: NextApiRequest, res: NextApiResponse) {
   try {
+    // Get dynamically calculated values from deadline manager
+    const currentInterval = getCurrentSubmissionInterval();
+    const isOpen = areSubmissionsOpen();
+    
     // Get or create admin settings
     let settings = await prisma.adminSettings.findFirst();
     
@@ -33,11 +38,22 @@ async function getAdminSettings(req: NextApiRequest, res: NextApiResponse) {
       // Create default settings if none exist
       settings = await prisma.adminSettings.create({
         data: {
-          currentInterval: 1,
-          isSubmissionsOpen: true,
+          currentInterval: currentInterval,
+          isSubmissionsOpen: isOpen,
           maxSubmissionsPerInterval: 3,
         },
       });
+    } else {
+      // Auto-update the settings based on timeline if they're out of sync
+      if (settings.currentInterval !== currentInterval || settings.isSubmissionsOpen !== isOpen) {
+        settings = await prisma.adminSettings.update({
+          where: { id: settings.id },
+          data: {
+            currentInterval: currentInterval,
+            isSubmissionsOpen: isOpen,
+          },
+        });
+      }
     }
 
     return res.status(200).json({

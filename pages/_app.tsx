@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Head from "next/head";
 import { useEffect } from "react";
 import { clientAuth } from "@/lib/auth/clientAuth";
+import { useIntervalSync } from "@/lib/hooks/useIntervalSync";
 
 // In your main app initialization
 // import { initializeCleanupScheduler } from '../lib/scheduledCleanup';
@@ -14,6 +15,9 @@ import { clientAuth } from "@/lib/auth/clientAuth";
 const isProduction = process.env.NODE_ENV === "production";
 
 export default function App({ Component, pageProps }: AppProps) {
+  // Automatically sync intervals with timeline
+  useIntervalSync();
+
   useEffect(() => {
     clientAuth.attachInterceptor();
   }, []);

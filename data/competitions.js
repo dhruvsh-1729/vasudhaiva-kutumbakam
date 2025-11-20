@@ -2,6 +2,112 @@
 
 import { title } from "process";
 
+// Timeline intervals configuration for automatic deadline progression
+// All dates are in IST (Indian Standard Time - UTC+5:30)
+export const timelineIntervals = [
+  {
+    id: 1,
+    title: 'Competition Launch',
+    startDate: '2025-10-27T00:00:00+05:30', // IST
+    endDate: '2025-11-02T23:59:59+05:30',   // IST
+    status: 'completed',
+    isSubmissionInterval: false
+  },
+  {
+    id: 2,
+    title: 'Week 1 Challenge',
+    startDate: '2025-11-02T00:00:00+05:30', // IST
+    endDate: '2025-11-20T23:59:59+05:30',   // IST (11:59:59 PM IST on Nov 20)
+    status: 'current',
+    isSubmissionInterval: true,
+    weekNumber: 1
+  },
+  {
+    id: 3,
+    title: 'Week 2 Challenge',
+    startDate: '2025-11-20T00:00:00+05:30', // IST (Midnight IST on Nov 20/21)
+    endDate: '2025-12-04T23:59:59+05:30',   // IST
+    status: 'upcoming',
+    isSubmissionInterval: true,
+    weekNumber: 2
+  },
+  {
+    id: 4,
+    title: 'Week 3 Challenge',
+    startDate: '2025-12-04T00:00:00+05:30', // IST
+    endDate: '2025-12-18T23:59:59+05:30',   // IST
+    status: 'upcoming',
+    isSubmissionInterval: true,
+    weekNumber: 3
+  },
+  {
+    id: 5,
+    title: 'Final Results',
+    startDate: '2025-12-18T00:00:00+05:30', // IST
+    endDate: '2025-12-20T23:59:59+05:30',   // IST
+    status: 'upcoming',
+    isSubmissionInterval: false
+  }
+];
+
+// Helper function to get current active interval based on current date in IST
+export const getCurrentInterval = () => {
+  // Get current time in IST
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  
+  // Find the interval that matches current date
+  for (const interval of timelineIntervals) {
+    const start = new Date(interval.startDate);
+    const end = new Date(interval.endDate);
+    
+    if (now >= start && now <= end) {
+      return interval;
+    }
+  }
+  
+  // If no current interval found (after all intervals), return the last one
+  return timelineIntervals[timelineIntervals.length - 1];
+};
+
+// Helper function to get the next deadline in IST
+export const getNextDeadline = () => {
+  // Get current time in IST
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  
+  // Find the next interval that hasn't ended yet
+  for (const interval of timelineIntervals) {
+    const end = new Date(interval.endDate);
+    
+    if (now <= end) {
+      return {
+        deadline: interval.endDate,
+        interval: interval,
+        weekNumber: interval.weekNumber || null
+      };
+    }
+  }
+  
+  // If all intervals have passed, return the last interval's end date
+  const lastInterval = timelineIntervals[timelineIntervals.length - 1];
+  return {
+    deadline: lastInterval.endDate,
+    interval: lastInterval,
+    weekNumber: lastInterval.weekNumber || null
+  };
+};
+
+// Helper function to get current submission interval number (for database)
+export const getCurrentSubmissionInterval = () => {
+  const currentInterval = getCurrentInterval();
+  return currentInterval.weekNumber || 1;
+};
+
+// Helper function to check if submissions are open based on timeline
+export const areSubmissionsOpen = () => {
+  const currentInterval = getCurrentInterval();
+  return currentInterval.isSubmissionInterval === true;
+};
+
 // Basic competition data structure
 export const competitions = [ 
   {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"December 30, 2025",slug:"painting"},
