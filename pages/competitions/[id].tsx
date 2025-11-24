@@ -3,10 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { GetStaticPaths, GetStaticProps } from 'next';
-import { ParsedUrlQuery } from 'querystring';
-import SidebarNav from '../../components/SidebarNav';
-import { getAllCompetitionIds, getAllCompetitionSlugs, getCompetitionById, getCompetitionBySlug } from '@/data/competitions';
+import { getCompetitionBySlug, getAllCompetitionSlugs } from '@/data/competitions';
 import CompetitionDetails from '@/components/CompetitionDetails';
 import SubmissionPanel from '@/components/SubmissionPanel';
 import Header from '@/components/Header';
@@ -14,6 +11,7 @@ import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
 import CountDown from '@/components/CountDown';
 import { clientAuth } from '@/lib/auth/clientAuth';
+import { prisma } from '@/lib/prisma';
 
 // Type definitions
 interface Competition {
@@ -32,9 +30,6 @@ interface CompetitionSection {
 
 interface CompetitionDetailPageProps {
   competition: Competition | null;
-}
-interface StaticPathParams extends ParsedUrlQuery {
-  id: string;
 }
 
 interface BreadcrumbItem {
@@ -155,11 +150,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
         <Header />
         <NotificationBanner />
         {/* Use specific deadline for competition 4, dynamic for others */}
-        {competition.id === 4 ? (
-          <CountDown deadline={getCompetitionById(competition.id)?.deadline as string} />
-        ) : (
-          <CountDown />
-        )}
+        <CountDown deadline={competition.deadline} />
         {/* Main Content */}
         <main className="px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -184,45 +175,61 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
 
 export default CompetitionDetailPage;
 
-// Static generation functions with proper TypeScript types
-export const getStaticPaths: GetStaticPaths<StaticPathParams> = async () => {
-  const paths = getAllCompetitionSlugs();
-  
-  return {
-    paths,
-    fallback: false // Set to 'blocking' or true if you want to generate pages on-demand
-  };
-};
+export async function getStaticPaths() {
+  const dbComps = await prisma.competition.findMany({ where: { isPublished: true }, select: { slug: true, legacyId: true } });
+  const staticPaths = getAllCompetitionSlugs();
+  const dbPaths = dbComps.map((c) => ({ params: { id: c.slug } }));
+  const legacyPaths = dbComps.filter((c) => c.legacyId).map((c) => ({ params: { id: c.legacyId.toString() } }));
 
-export const getStaticProps: GetStaticProps<CompetitionDetailPageProps, StaticPathParams> = async ({ params }) => {
-  if (!params?.id) {
-    return {
-      notFound: true,
-    };
+  const seen = new Set();
+  const paths = [...staticPaths, ...dbPaths, ...legacyPaths].filter((p) => {
+    const key = p.params.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return { paths, fallback: 'blocking' };
+}
+
+export async function getStaticProps({ params }: { params?: { id?: string } }) {
+  const slug = params?.id;
+  if (!slug) {
+    return { notFound: true, revalidate: 60 };
   }
 
-  const slug = params.id;  
-  
   try {
-    // Get competition by slug only (no ID fallback needed)
-    const competition = getCompetitionBySlug(slug);
-      
-    if (!competition) {
-      return {
-        notFound: true,
-      };
+    const numeric = Number(slug);
+    const or: any[] = [{ slug }];
+    if (!Number.isNaN(numeric)) or.push({ legacyId: numeric });
+
+    const dbComp = await prisma.competition.findFirst({ where: { AND: [{ isPublished: true }, { OR: or }] } });
+
+    let competition: Competition | null = null;
+
+    if (dbComp) {
+      const fallbackStatic = getCompetitionBySlug(slug) || (Number.isInteger(numeric) ? getCompetitionBySlug(String(dbComp.slug)) : null);
+      competition = {
+        id: dbComp.legacyId,
+        title: dbComp.title,
+        icon: dbComp.icon || '✨',
+        deadline: dbComp.deadline
+          ? new Date(dbComp.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+          : 'TBD',
+        slug: dbComp.slug,
+        sections: Array.isArray(dbComp.sections) && dbComp.sections.length
+          ? dbComp.sections as any
+          : fallbackStatic?.sections || [],
+      } as any;
+    } else {
+      competition = getCompetitionBySlug(slug);
     }
-    
-    return {
-      props: {
-        competition,
-      },
-      revalidate: 300, // Regenerate the page every 5 minutes if requested
-    };
+
+    if (!competition) return { notFound: true, revalidate: 60 };
+
+    return { props: { competition }, revalidate: 60 };
   } catch (error) {
-    console.error("Error fetching competition:", error);
-    return {
-      notFound: true,
-    };
+    console.error('Error fetching competition:', error);
+    return { notFound: true, revalidate: 60 };
   }
-};
+}

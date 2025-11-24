@@ -81,15 +81,35 @@ const SubmissionsManager: React.FC = () => {
   const [loadingMessages, setLoadingMessages] = useState<boolean>(false);
 
   // Competition titles for display
-  const competitionTitles: { [key: number]: string } = {
+  const [competitionTitles, setCompetitionTitles] = useState<{ [key: number]: string }>({
     1: 'AI Short Video',
     2: 'Creative Expression',
     3: 'LexToons (AI Comics / Legal Satire)',
     4: 'Painting Competition',
     5: 'Blog Writing / AI-Assisted Essay',
-  };
+  });
 
   // Fetch submissions with filters and pagination
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      try {
+        const res = await fetch('/api/competitions');
+        if (!res.ok) return;
+        const data = await res.json();
+        const map: Record<number, string> = {};
+        (data || []).forEach((c: any) => {
+          if (c?.legacyId) map[c.legacyId] = c.title;
+        });
+        if (Object.keys(map).length > 0) {
+          setCompetitionTitles(map);
+        }
+      } catch (error) {
+        console.error('Failed to load competition titles', error);
+      }
+    };
+    fetchCompetitions();
+  }, []);
+
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -588,6 +608,7 @@ const SubmissionsManager: React.FC = () => {
           messages={messages}
           loading={loadingMessages}
           messageDraft={messageDraft}
+          competitionTitles={competitionTitles}
           onClose={() => {
             setShowMessageModal(false);
             setSelectedSubmission(null);
@@ -795,6 +816,7 @@ interface MessageModalProps {
   messages: SubmissionMessage[];
   loading: boolean;
   messageDraft: string;
+  competitionTitles: Record<number, string>;
   onClose: () => void;
   onChangeDraft: (v: string) => void;
   onRefresh: () => void;
@@ -806,19 +828,12 @@ const MessageModal: React.FC<MessageModalProps> = ({
   messages,
   loading,
   messageDraft,
+  competitionTitles,
   onClose,
   onChangeDraft,
   onRefresh,
   onSend,
 }) => {
-  const competitionTitles: { [key: number]: string } = {
-    1: 'AI Short Video',
-    2: 'Creative Expression',
-    3: 'LexToons (AI Comics / Legal Satire)',
-    4: 'Painting Competition',
-    5: 'Blog Writing / AI-Assisted Essay',
-  };
-
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen p-4">

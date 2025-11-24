@@ -1,6 +1,7 @@
 // components/CompetitionList.tsx
 import Link from 'next/link';
-import { competitions } from '../data/competitions';
+import { useEffect, useState } from 'react';
+import { competitions as staticCompetitions } from '../data/competitions';
 
 // Type definitions
 interface Competition {
@@ -12,6 +13,8 @@ interface Competition {
   category?: string;
   slug?: string;
   status?: 'active' | 'upcoming' | 'completed';
+   prizes?: Record<string, string>;
+   prizePool?: string | null;
 }
 
 interface PrizeInfo {
@@ -30,43 +33,84 @@ interface CompetitionStats {
 }
 
 const CompetitionList: React.FC = () => {
+  const [liveCompetitions, setLiveCompetitions] = useState<Competition[]>(staticCompetitions);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/competitions');
+        if (!res.ok) throw new Error('failed');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) {
+          const mapped = data
+            .filter((c: any) => c.isPublished !== false)
+            .map((c: any) => ({
+              id: c.legacyId,
+              title: c.title,
+              description: c.description,
+              icon: c.icon || '✨',
+              color: c.color || 'from-orange-500 to-red-600',
+              deadline: c.deadline ? new Date(c.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined,
+              slug: c.slug,
+              prizes: c.prizes || null,
+              prizePool: c.prizePool || null,
+            }));
+          setLiveCompetitions(mapped);
+        }
+      } catch (error) {
+        console.error('Failed to load competitions from API, using static data', error);
+        setLiveCompetitions(staticCompetitions);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCompetitions();
+  }, []);
+
   // Prize information configuration
-  const prizeInfo1: PrizeInfo[] = [
-    { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
-  ];
-  
-  const prizeInfo2: PrizeInfo[] = [
-    { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
-  ];
-
-  const prizeInfo3: PrizeInfo[] = [
-    { position: 1, amount: '₹18,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹12,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹9,600', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
-  ];
-
-  const prizeInfo4: PrizeInfo[] = [
-    { position: 1, amount: '₹37,500', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹22,500', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹15,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
-  ];
-
-  const prizeInfo5: PrizeInfo[] = [
-    { position: 1, amount: '₹12,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹8,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹6,400', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
-  ];
-
   const prizeMap: Record<number, PrizeInfo[]> = {
-    1: prizeInfo1,
-    2: prizeInfo2,
-    3: prizeInfo3,
-    4: prizeInfo4,
-    5: prizeInfo5,
+    1: [
+      { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+    2: [
+      { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+    3: [
+      { position: 1, amount: '₹18,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹12,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹9,600', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+    4: [
+      { position: 1, amount: '₹1,00,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹51,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹25,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+    5: [
+      { position: 1, amount: '₹12,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹8,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹6,400', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+  };
+
+  const prizeObjectToInfo = (prizes?: Record<string, string>): PrizeInfo[] => {
+    if (!prizes) return [];
+    const map: Record<string, number> = { first: 1, second: 2, third: 3 };
+    return Object.entries(prizes)
+      .filter(([k]) => map[k] !== undefined)
+      .map(([k, v]) => ({
+        position: map[k],
+        amount: v,
+        color: map[k] === 1 ? 'gold' : map[k] === 2 ? 'silver' : 'bronze',
+        bgColor: '',
+        textColor: ''
+      }))
+      .sort((a, b) => a.position - b.position);
   };
 
   return (
@@ -119,14 +163,15 @@ const CompetitionList: React.FC = () => {
         </div>
 
         {/* Compact Competition Cards */}
-        <div className="space-y-6">
-          {competitions.map((competition: Competition, index: number) => {
-            // Generate competition stats for each competition
-            const competitionStats: CompetitionStats[] = [
-              { label: 'Week 1', value: 'Week 1', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
-              // { label: '7 Days Left', value: '7 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
-            ];
-            const prizes = prizeMap[competition.id] || [];
+          <div className="space-y-6">
+            {liveCompetitions.map((competition: Competition, index: number) => {
+              // Generate competition stats for each competition
+              const competitionStats: CompetitionStats[] = [
+                { label: 'Week 1', value: 'Week 1', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
+                // { label: '7 Days Left', value: '7 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
+              ];
+            const dynamicPrizes = prizeObjectToInfo(competition.prizes);
+            const prizes = (dynamicPrizes.length ? dynamicPrizes : prizeMap[competition.id]) || [];
 
             return (
               <div
@@ -184,6 +229,9 @@ const CompetitionList: React.FC = () => {
                       {/* Prize Information */}
                       <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200/50">
                         <div className="flex justify-between items-center text-xs flex-wrap gap-2">
+                          {competition.prizePool && (
+                            <span className="text-amber-700 font-semibold mr-2">Prize Pool: {competition.prizePool}</span>
+                          )}
                           {prizes.map((prize: PrizeInfo) => {
                             const colorMap: Record<string, { circle: string; text: string }> = {
                               gold: { circle: "bg-gradient-to-br from-yellow-400 to-amber-500", text: "text-yellow-800" },

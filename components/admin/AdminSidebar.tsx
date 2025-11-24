@@ -1,7 +1,7 @@
 // components/admin/AdminSidebar.tsx
 import { useEffect, useState } from 'react';
 
-type ActiveTab = 'overview' | 'submissions' | 'users' | 'settings' | 'messages';
+type ActiveTab = 'overview' | 'submissions' | 'users' | 'settings' | 'messages' | 'competitions';
 
 interface AdminSidebarProps {
   activeTab: ActiveTab;
@@ -30,6 +30,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      ),
+    },
+    {
+      id: 'competitions',
+      label: 'Competitions',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zM5 10c0 3.866 3.134 7 7 7a7 7 0 007-7M5 10V6m14 4V6M9 4h6" />
         </svg>
       ),
     },

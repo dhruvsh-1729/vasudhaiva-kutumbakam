@@ -81,6 +81,17 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
 
   // Process content function with proper typing
   const processContent = (content: string, index: number) => {
+    const looksHtml = content.trim().includes('<');
+    if (looksHtml) {
+      return (
+        <div
+          key={`html-${index}`}
+          className="font-inter text-gray-700 leading-relaxed mb-3 text-sm space-y-2"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
+    }
+
     return content.split("\n").map((paragraph: string, idx: number) => {
       // bullets
       if (paragraph.trim().startsWith("•")) {
