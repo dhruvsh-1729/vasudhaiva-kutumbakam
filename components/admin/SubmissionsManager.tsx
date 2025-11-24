@@ -216,6 +216,37 @@ const SubmissionsManager: React.FC = () => {
     }
   };
 
+  // Handle CSV export
+  const handleExportCSV = async () => {
+    try {
+      const response = await clientAuth.authFetch('/api/admin/submissions/export');
+      
+      if (!response.ok) {
+        throw new Error('Failed to export submissions');
+      }
+
+      // Get the CSV content
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `submissions-export-${Date.now()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Submissions exported successfully');
+    } catch (error) {
+      console.error('Error exporting submissions:', error);
+      toast.error('Failed to export submissions');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Filters and Controls */}
@@ -227,6 +258,12 @@ const SubmissionsManager: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleExportCSV}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
+            >
+              Export CSV
+            </button>
             <button
               onClick={() => setBulkSelectMode(!bulkSelectMode)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
