@@ -176,6 +176,12 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
     const currentInterval = getCurrentSubmissionInterval();
     const isOpen = areSubmissionsOpen();
 
+    // Map to competition document if present
+    const competitionDoc = await prisma.competition.findFirst({
+      where: { legacyId: compId },
+      select: { id: true },
+    });
+
     // Check if submissions are open based on timeline
     if (!isOpen) {
       return res.status(403).json({ error: 'Submissions are currently closed for this interval' });
@@ -221,6 +227,7 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
       data: {
         title: title.trim(),
         competitionId: compId,
+        competitionDbId: competitionDoc?.id,
         userId,
         interval: currentInterval, // Use dynamically calculated interval
         fileUrl,

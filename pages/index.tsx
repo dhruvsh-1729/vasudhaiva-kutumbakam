@@ -244,16 +244,44 @@ const Home: React.FC = () => {
     { category: "Everyone", description: "All hearts that beat as one", icon: "❤️" }
   ];
 
-  // Competition categories data
-  const competitionCategories: CompetitionCategory[] = [
+  const [competitionCategories, setCompetitionCategories] = useState<CompetitionCategory[]>([
     { category: "AI Short Video", icon: "🎬", description: "Create 1–3 minute AI-powered reels on the weekly topics. Deadline: Dec 10, 2025." },
     { category: "Creative Expression (Scripts)", icon: "✨", description: "Original scripts for videos or street plays aligned to Vasudhaiva Kutumbakam. Deadline: Dec 10, 2025." },
     { category: "LexToons (AI Comics / Legal Satire)", icon: "🖍️", description: "Illustrated comics or satire strips using AI visuals and text on the given topics. Deadline: Dec 10, 2025." },
     { category: "Blog Writing / AI-Assisted Essay", icon: "📝", description: "500–800 word original blogs or essays focused on the listed topics. Deadline: Dec 10, 2025." },
     { category: "Painting Competition", icon: "🎨", description: "Express the essence of 'The World is One Family' through traditional painting. Deadline: Dec 30, 2025." }
-  ];
+  ]);
   const firstRowCategories = competitionCategories.slice(0, 3);
   const secondRowCategories = competitionCategories.slice(3);
+
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      try {
+        const res = await fetch('/api/competitions');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) {
+          const mapped = data
+            .filter((c: any) => c.isPublished !== false)
+            .map((c: any) => {
+              const deadlineText = c.deadline
+                ? `Deadline: ${new Date(c.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}.`
+                : '';
+              const prizeText = c.prizePool ? `Prize Pool: ${c.prizePool}.` : '';
+              return {
+                category: c.title,
+                icon: c.icon || '✨',
+                description: `${c.description} ${prizeText} ${deadlineText}`.trim(),
+              };
+            });
+          setCompetitionCategories(mapped);
+        }
+      } catch (error) {
+        console.error('Failed to load competitions for homepage categories', error);
+      }
+    };
+    fetchCompetitions();
+  }, []);
 
   // Return statement for the main component
   return (
