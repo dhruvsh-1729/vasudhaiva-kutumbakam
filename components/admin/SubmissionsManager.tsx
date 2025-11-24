@@ -84,8 +84,9 @@ const SubmissionsManager: React.FC = () => {
   const competitionTitles: { [key: number]: string } = {
     1: 'AI Short Video',
     2: 'Creative Expression',
-    3: 'Political Toons',
+    3: 'LexToons (AI Comics / Legal Satire)',
     4: 'Painting Competition',
+    5: 'Blog Writing / AI-Assisted Essay',
   };
 
   // Fetch submissions with filters and pagination
@@ -813,8 +814,9 @@ const MessageModal: React.FC<MessageModalProps> = ({
   const competitionTitles: { [key: number]: string } = {
     1: 'AI Short Video',
     2: 'Creative Expression',
-    3: 'Political Toons',
+    3: 'LexToons (AI Comics / Legal Satire)',
     4: 'Painting Competition',
+    5: 'Blog Writing / AI-Assisted Essay',
   };
 
   return (

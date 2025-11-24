@@ -24,20 +24,20 @@ export const timelineIntervals = [
   },
   {
     id: 3,
-    title: 'Week 2 Challenge',
+    title: 'Final Submission Window',
     startDate: '2025-11-20T00:00:00+05:30', // IST (Midnight IST on Nov 20/21)
-    endDate: '2025-12-04T23:59:59+05:30',   // IST
+    endDate: '2025-12-10T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: true,
     weekNumber: 2
   },
   {
     id: 4,
-    title: 'Week 3 Challenge',
-    startDate: '2025-12-04T00:00:00+05:30', // IST
+    title: 'Jury Review',
+    startDate: '2025-12-10T00:00:00+05:30', // IST
     endDate: '2025-12-18T23:59:59+05:30',   // IST
     status: 'upcoming',
-    isSubmissionInterval: true,
+    isSubmissionInterval: false,
     weekNumber: 3
   },
   {
@@ -110,9 +110,11 @@ export const areSubmissionsOpen = () => {
 
 // Basic competition data structure
 export const competitions = [ 
+  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "December 10, 2025", slug:"videos" }, 
+  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "December 10, 2025", slug:"writing" }, 
+  { id: 3, title: "LexToons (AI Comics / Legal Satire)", description: "Create illustrated comics or satire strips using AI + text on the given topics.", icon: "🖍️", color: "from-purple-500 to-purple-600", deadline: "December 10, 2025", slug:"lextoons" },
+  { id: 5, title: "Blog Writing / AI-Assisted Essay", description: "Write engaging 500–800 word blog posts or essays on the weekly topics.", icon: "📝", color: "from-orange-500 to-red-600", deadline: "December 10, 2025", slug:"blogs" },
   {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"December 30, 2025",slug:"painting"},
-  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "November 20, 2025", slug:"videos" }, 
-  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "November 20, 2025", slug:"writing" }, 
   // { id: 3, title: "Political Toons", description: "Create a political satire cartoon using AI tools.", icon: "🖼️", color: "from-purple-500 to-purple-600", deadline: "November 20, 2025" },
 ];
 
@@ -234,6 +236,52 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       • Submit plagiarized or offensive content
       • Include political or religious propaganda
       • Use copyrighted material without permission`
+    });
+  } else if (competition.id === 3) { // LexToons (AI Comics / Legal Satire)
+    baseSections.push({
+      id: "lextoons-guidelines",
+      title: "LexToons / Illustrated Comics",
+      content: `Creative comic strips or cartoons made with text.
+
+**✓ Do:**
+• Create comics illustrating the topics given
+• Format: JPEG, PNG, or PDF | Keep visuals clear and readable
+• Ensure storytelling is simple, creative, and theme-aligned
+
+**✗ Don't:**
+• Avoid offensive, violent, or unrelated visuals`
+    });
+
+    baseSections.push({
+      id: "lextoons-prizes",
+      title: "Prizes",
+      content: `Total Prize Pool: ₹39,600
+• 1st: ₹18,000
+• 2nd: ₹12,000
+• 3rd: ₹9,600`
+    });
+  } else if (competition.id === 5) { // Blog Writing / AI-Assisted Essay
+    baseSections.push({
+      id: "blog-guidelines",
+      title: "Blog Writing / AI-Assisted Essay",
+      content: `Writing engaging blog posts on the given topics.
+
+**✓ Do:**
+• Focus on the given topics and align your content to them
+• Word Count: 500–800 words | Format: PDF or DOCX
+• Ensure content is original, structured, and readable
+
+**✗ Don't:**
+• Avoid plagiarism, irrelevant topics, or offensive language`
+    });
+
+    baseSections.push({
+      id: "blog-prizes",
+      title: "Prizes",
+      content: `Total Prize Pool: ₹26,400
+• 1st: ₹12,000
+• 2nd: ₹8,000
+• 3rd: ₹6,400`
     });
   } else if (competition.id === 4) { // VK Painting Competition
     baseSections.push({

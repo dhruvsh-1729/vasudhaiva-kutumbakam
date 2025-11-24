@@ -101,7 +101,7 @@ function getSimpleEmailTemplate(userName) {
         
         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
         <small style="color: #666;">
-          VK Competition Team | Contact: +91 9137828829<br>
+          VK Competition Team | Contact: vk4.ki.oar@gmail.com<br>
           This is a reminder email regarding your competition participation.
         </small>
       </body>
@@ -151,7 +151,7 @@ Dhruv Shah
 VK Competition Team
 
 ---
-VK Competition Team | Contact: +91 9137828829
+VK Competition Team | Contact: vk4.ki.oar@gmail.com
 This is a reminder email regarding your competition participation.
   `;
 

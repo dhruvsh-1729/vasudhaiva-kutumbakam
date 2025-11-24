@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import backgroundImage from "@/public/map.jpg";
-import { Mail, Phone, MapPin, Send, ArrowLeft, Clock, Globe } from 'lucide-react';
+import { Mail, Send, ArrowLeft, Clock, Globe } from 'lucide-react';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 
@@ -149,7 +149,7 @@ const ContactUs: React.FC = () => {
       {/* Contact Information Cards */}
       <section className="pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-6 mb-16">
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
         {/* Email Card */}
         <div className="group relative">
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/10 via-rose-500/10 to-orange-500/10 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100" />
@@ -164,27 +164,6 @@ const ContactUs: React.FC = () => {
               vk4.ki.oar@gmail.com 
             </a>
             &nbsp;is the official email ID for all queries.
-          </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Phone Card */}
-        <div className="group relative">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/10 via-rose-500/10 to-orange-500/10 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100" />
-          <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-red-500/20 via-rose-500/20 to-orange-500/20">
-            <div className="rounded-2xl h-full bg-white/80 backdrop-blur-xl border border-white/60 shadow-sm transition-all duration-300 group-hover:shadow-xl">
-          <div className="p-6 text-center">
-            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-red-50 to-orange-50 text-red-600 ring-1 ring-red-100">
-              <Phone className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Call Us</h3>
-            <a href="tel:+919137828829" className="text-red-600 hover:text-red-700 block">
-              +91 91378 28829
-            </a>
-            <a href="tel:+919892221754" className="text-red-600 hover:text-red-700 block">
-              +91 98922 21754
-            </a>
           </div>
             </div>
           </div>

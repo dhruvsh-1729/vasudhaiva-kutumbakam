@@ -108,12 +108,18 @@ const CompetitionStats: React.FC = () => {
               submissions: 28,
               averageScore: 7.6,
             },
-            // {
-            //   competitionId: 3,
-            //   title: 'Political Toons',
-            //   submissions: 16,
-            //   averageScore: 7.9,
-            // },
+            {
+              competitionId: 3,
+              title: 'LexToons (AI Comics / Legal Satire)',
+              submissions: 16,
+              averageScore: 7.9,
+            },
+            {
+              competitionId: 5,
+              title: 'Blog Writing / AI-Assisted Essay',
+              submissions: 22,
+              averageScore: 7.7,
+            },
             { 
               competitionId: 4,
               title: 'Painting Competition',

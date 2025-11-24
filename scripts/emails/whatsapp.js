@@ -107,7 +107,7 @@ function getWeekTwoEmailTemplate(userName) {
         <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
 
         <p style="margin: 0; font-size: 12px; color: #666;">
-          VK Competition Team · Contact: +91 9137828829<br />
+          VK Competition Team · Contact: vk4.ki.oar@gmail.com<br />
           Vasudhaiva Kutumbakam – The World is One Family
         </p>
       </body>
@@ -143,9 +143,8 @@ If you have any issue related to your participation, submissions, or categories,
 Best regards,
 Dhruv Shah
 VK Competition Team
-+91 9137828829
 
-VK Competition Team | Contact: +91 9137828829
+VK Competition Team | Contact: vk4.ki.oar@gmail.com
 Vasudhaiva Kutumbakam – The World is One Family`;
 
   return { subject, htmlContent, textContent };

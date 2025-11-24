@@ -32,22 +32,42 @@ interface CompetitionStats {
 const CompetitionList: React.FC = () => {
   // Prize information configuration
   const prizeInfo1: PrizeInfo[] = [
-    { position: 1, amount: '₹25,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹15,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹10,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
   
   const prizeInfo2: PrizeInfo[] = [
-    { position: 1, amount: '₹25,000', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹15,000', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹10,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+  ];
+
+  const prizeInfo3: PrizeInfo[] = [
+    { position: 1, amount: '₹18,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹12,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹9,600', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
 
   const prizeInfo4: PrizeInfo[] = [
-    { position: 1, amount: '₹37,500', color: 'yellow-400', bgColor: 'yellow-600', textColor: 'yellow-700' },
-    { position: 2, amount: '₹22,500', color: 'gray-400', bgColor: 'gray-600', textColor: 'gray-700' },
-    { position: 3, amount: '₹15,000', color: 'amber-600', bgColor: 'orange-700', textColor: 'amber-700' }
+    { position: 1, amount: '₹37,500', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹22,500', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹15,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
   ];
+
+  const prizeInfo5: PrizeInfo[] = [
+    { position: 1, amount: '₹12,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+    { position: 2, amount: '₹8,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+    { position: 3, amount: '₹6,400', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+  ];
+
+  const prizeMap: Record<number, PrizeInfo[]> = {
+    1: prizeInfo1,
+    2: prizeInfo2,
+    3: prizeInfo3,
+    4: prizeInfo4,
+    5: prizeInfo5,
+  };
 
   return (
     <section className="w-full relative">
@@ -106,6 +126,7 @@ const CompetitionList: React.FC = () => {
               { label: 'Week 1', value: 'Week 1', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
               // { label: '7 Days Left', value: '7 Days Left', bgColor: 'bg-amber-100', textColor: 'text-amber-700' }
             ];
+            const prizes = prizeMap[competition.id] || [];
 
             return (
               <div
@@ -163,14 +184,7 @@ const CompetitionList: React.FC = () => {
                       {/* Prize Information */}
                       <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200/50">
                         <div className="flex justify-between items-center text-xs flex-wrap gap-2">
-                          {(competition.id === 1
-                            ? prizeInfo1
-                            : competition.id === 2
-                            ? prizeInfo2
-                            : competition.id === 4
-                            ? prizeInfo4
-                            : []
-                          ).map((prize: PrizeInfo) => {
+                          {prizes.map((prize: PrizeInfo) => {
                             const colorMap: Record<string, { circle: string; text: string }> = {
                               gold: { circle: "bg-gradient-to-br from-yellow-400 to-amber-500", text: "text-yellow-800" },
                               silver: { circle: "bg-gradient-to-br from-gray-300 to-gray-400", text: "text-gray-700" },

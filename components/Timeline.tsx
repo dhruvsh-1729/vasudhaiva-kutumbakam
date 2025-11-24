@@ -106,7 +106,7 @@ const Timeline: React.FC = () => {
               Competition Timeline
             </h2>
           </div>
-          <p className="font-inter text-orange-700/70 text-xs ml-8">Weekly challenges • 7 days per round</p>
+          <p className="font-inter text-orange-700/70 text-xs ml-8">Submissions due 10 Dec 2025 for all AI/video/writing/comic categories</p>
         </div>
         
         <div className="flex-1 bg-white/95 backdrop-blur-sm rounded-xl p-4 border border-orange-100/50 shadow-lg">
@@ -214,9 +214,9 @@ const Timeline: React.FC = () => {
               <div className="bg-gradient-to-r from-emerald-500 via-orange-500 to-amber-500 h-2 rounded-full transition-all duration-1000 ease-out shadow-sm" style={{width: `${progress}%`}}></div>
             </div>
             <div className="flex justify-between text-xs mt-2 text-gray-500">
-              <span className="font-inter">Started</span>
-              <span className="font-inter">Week 2</span>
-              <span className="font-inter">Final</span>
+              <span className="font-inter">Launch</span>
+              <span className="font-inter">Dec 10 Deadline</span>
+              <span className="font-inter">Results</span>
             </div>
           </div>
 

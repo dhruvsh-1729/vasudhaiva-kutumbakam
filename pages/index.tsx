@@ -246,11 +246,14 @@ const Home: React.FC = () => {
 
   // Competition categories data
   const competitionCategories: CompetitionCategory[] = [
-    { category: "AI Reel Making", icon: "🎬", description: "Craft 1-3 minute stories using AI tools that bring global unity and creativity to life." },
-    { category: "Political Toons", icon: "🏛️", description: "Use satire and AI artistry to creatively capture political ideas and principles." },
-    { category: "Creative Expression", icon: "✨", description: "An open category for unique script aligned with Vasudhaiva Kutumbakam." },
-    { category: "Painting Competition", icon: "🎨", description: "Express the essence of 'The World is One Family' through traditional and digital painting." }
+    { category: "AI Short Video", icon: "🎬", description: "Create 1–3 minute AI-powered reels on the weekly topics. Deadline: Dec 10, 2025." },
+    { category: "Creative Expression (Scripts)", icon: "✨", description: "Original scripts for videos or street plays aligned to Vasudhaiva Kutumbakam. Deadline: Dec 10, 2025." },
+    { category: "LexToons (AI Comics / Legal Satire)", icon: "🖍️", description: "Illustrated comics or satire strips using AI visuals and text on the given topics. Deadline: Dec 10, 2025." },
+    { category: "Blog Writing / AI-Assisted Essay", icon: "📝", description: "500–800 word original blogs or essays focused on the listed topics. Deadline: Dec 10, 2025." },
+    { category: "Painting Competition", icon: "🎨", description: "Express the essence of 'The World is One Family' through traditional painting. Deadline: Dec 30, 2025." }
   ];
+  const firstRowCategories = competitionCategories.slice(0, 3);
+  const secondRowCategories = competitionCategories.slice(3);
 
   // Return statement for the main component
   return (
@@ -703,8 +706,23 @@ const Home: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {competitionCategories.map((category: CompetitionCategory, index: number) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            {firstRowCategories.map((category: CompetitionCategory, index: number) => (
+              <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-red-100 hover:border-red-300">
+                <div className="text-3xl mb-3">{category.icon}</div>
+                <h3 className="text-xl font-bold text-red-700 mb-2">{category.category}</h3>
+                <p className="text-gray-600 text-sm mb-4">{category.description}</p>
+                <button 
+                  onClick={handleRegisterClick}
+                  className="text-red-600 hover:text-red-800 font-medium text-sm"
+                >
+                  Register for this category →
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 lg:max-w-5xl mx-auto">
+            {secondRowCategories.map((category: CompetitionCategory, index: number) => (
               <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-red-100 hover:border-red-300">
                 <div className="text-3xl mb-3">{category.icon}</div>
                 <h3 className="text-xl font-bold text-red-700 mb-2">{category.category}</h3>
