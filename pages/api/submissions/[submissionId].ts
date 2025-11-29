@@ -93,6 +93,8 @@ async function updateSubmission(req: NextApiRequest, res: NextApiResponse, userI
     // Prepare update data based on user permissions
     const updateData: any = {};
 
+    const isVideoSubmission = existingSubmission.competitionId === 1;
+
     if (isAdmin) {
       // Admins can update scoring and evaluation fields
       if (overallScore !== undefined) updateData.overallScore = overallScore;
@@ -118,17 +120,24 @@ async function updateSubmission(req: NextApiRequest, res: NextApiResponse, userI
       }
 
       if (fileUrl !== undefined) {
-        // Validate Google Drive URL
-        if (!isValidGoogleDriveUrl(fileUrl)) {
-          return res.status(400).json({ error: 'Invalid Google Drive URL format' });
-        }
-        updateData.fileUrl = fileUrl;
+        if (isVideoSubmission) {
+          if (!isValidGoogleDriveUrl(fileUrl)) {
+            return res.status(400).json({ error: 'Invalid Google Drive URL format' });
+          }
+          updateData.fileUrl = fileUrl;
 
-        // Re-verify access if URL changed
-        if (fileUrl !== existingSubmission.fileUrl) {
-          const accessCheck = await verifyGoogleDriveAccess(fileUrl);
-          updateData.isAccessVerified = accessCheck.success;
-          updateData.accessCheckError = accessCheck.error || null;
+          if (fileUrl !== existingSubmission.fileUrl) {
+            const accessCheck = await verifyGoogleDriveAccess(fileUrl);
+            updateData.isAccessVerified = accessCheck.success;
+            updateData.accessCheckError = accessCheck.error || null;
+          }
+        } else {
+          if (!isValidUploadThingUrl(fileUrl)) {
+            return res.status(400).json({ error: 'Please upload your file using the uploader.' });
+          }
+          updateData.fileUrl = fileUrl;
+          updateData.isAccessVerified = true;
+          updateData.accessCheckError = null;
         }
       }
 
@@ -237,6 +246,15 @@ function isValidGoogleDriveUrl(url: string): boolean {
   ];
   
   return drivePatterns.some(pattern => pattern.test(url));
+}
+
+function isValidUploadThingUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ['utfs.io', 'uploadthing.com'].some((host) => parsed.host.includes(host));
+  } catch {
+    return false;
+  }
 }
 
 // Helper function to verify Google Drive access
