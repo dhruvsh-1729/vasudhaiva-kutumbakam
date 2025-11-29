@@ -81,10 +81,32 @@ model AdminSettings {
   @@map("admin_settings")
 }
 
+model Competition {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  legacyId        Int      @unique
+  title           String
+  description     String
+  slug            String   @unique
+  icon            String?
+  color           String?
+  deadline        DateTime?
+  prizePool       String?
+  prizes          Json?
+  sections        Json?    // guidelines, problem statements etc.
+  isPublished     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  submissions Submission[]
+
+  @@map("competitions")
+}
+
 // Submissions for competitions
 model Submission {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
-  competitionId Int // References the static competition data
+  competitionId Int // legacy/static numeric ID for backwards compatibility
+  competitionDbId String? @db.ObjectId
   userId        String @db.ObjectId
   interval      Int // Current interval when submission was made
 
@@ -121,12 +143,14 @@ model Submission {
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  competition Competition? @relation(fields: [competitionDbId], references: [id])
   messages SubmissionMessage[]
 
   // Composite indexes for efficient queries
   @@index([competitionId, userId, interval])
   @@index([competitionId, interval])
   @@index([userId, competitionId])
+  @@index([competitionDbId])
   @@index([status])
   @@map("submissions")
 }
