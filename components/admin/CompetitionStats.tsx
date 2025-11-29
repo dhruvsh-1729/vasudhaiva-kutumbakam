@@ -44,7 +44,7 @@ interface CompetitionStatsData {
 const CompetitionStats: React.FC = () => {
   const [stats, setStats] = useState<CompetitionStatsData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('all');
 
   // Fetch competition statistics
   useEffect(() => {

@@ -171,7 +171,8 @@ const MainPage: React.FC = () => {
           background-size: 30px 30px, 40px 40px, 100% 100%;
           position: relative;
           overflow-x: hidden;
-          overflow-y: auto;
+          min-height: 100vh;
+          -webkit-overflow-scrolling: touch;
         }
         
         /* Multi-layered Atmospheric Effects */
@@ -362,6 +363,22 @@ const MainPage: React.FC = () => {
           height: 180px;
           background: radial-gradient(circle, rgba(205, 133, 63, 0.06) 0%, transparent 70%);
           border-radius: 50%;
+        }
+
+        /* Simplify and disable fixed decorative layers on mobile to prevent scroll flicker */
+        @media (max-width: 768px) {
+          .ancient-background {
+            background: linear-gradient(135deg, #8B4513 0%, #B8860B 50%, #8B4513 100%);
+            overflow-y: auto;
+          }
+          .ancient-background::before,
+          .ancient-background::after,
+          .floating-mandala,
+          .sacred-particle,
+          .sacred-pattern,
+          .ambient-light {
+            display: none;
+          }
         }
       `}</style>
 
