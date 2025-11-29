@@ -167,9 +167,14 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
       return res.status(400).json({ error: 'File URL is required' });
     }
 
-    // Validate Google Drive URL format
-    if (!isValidGoogleDriveUrl(fileUrl)) {
-      return res.status(400).json({ error: 'Invalid Google Drive URL format' });
+    const isVideoCompetition = compId === 1;
+
+    if (isVideoCompetition) {
+      if (!isValidGoogleDriveUrl(fileUrl)) {
+        return res.status(400).json({ error: 'Video entries must be shared via a Google Drive link.' });
+      }
+    } else if (!isValidUploadThingUrl(fileUrl)) {
+      return res.status(400).json({ error: 'Please upload your file through the submission uploader.' });
     }
 
     // Get dynamically calculated interval and submission status
@@ -233,8 +238,6 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
         fileUrl,
         description: description?.trim() || null,
 
-        // isAccessVerified: accessCheck.success,
-        // accessCheckError: accessCheck.error || null,
         isAccessVerified: true,
         accessCheckError: null,
 
@@ -282,6 +285,15 @@ function isValidGoogleDriveUrl(url: string): boolean {
     /^https:\/\/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/[a-zA-Z0-9_-]+/i,
   ];
   return patterns.some((p) => p.test(url));
+}
+
+function isValidUploadThingUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ['utfs.io', 'uploadthing.com'].some((host) => parsed.host.includes(host));
+  } catch {
+    return false;
+  }
 }
 
 function extractDirectCheckUrl(url: string): string {

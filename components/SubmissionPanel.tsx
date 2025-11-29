@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { clientAuth } from '@/lib/auth/clientAuth';
+import { UploadButton } from '@/utils/uploadthing';
 
 // Type definitions
 interface FormData {
@@ -77,9 +78,13 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const [messages, setMessages] = useState<Record<string, SubmissionMessage[]>>({});
   const [messageDrafts, setMessageDrafts] = useState<Record<string, string>>({});
   const [loadingMessages, setLoadingMessages] = useState<Record<string, boolean>>({});
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string>('');
 
   // Check if this is competition 4 (non-weekly)
   const isCompetition4 = Number(competitionId) === 4;
+  const isVideoCompetition = Number(competitionId) === 1;
+  const usesUploadThing = !isVideoCompetition;
 
   // Fetch admin settings and user submissions on component mount
   useEffect(() => {
@@ -139,6 +144,23 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     } finally {
       setLoadingMessages((prev) => ({ ...prev, [submissionId]: false }));
     }
+  };
+
+  const handleUploadComplete = (files: Array<{ url: string; name?: string }>) => {
+    setUploading(false);
+    if (!files || files.length === 0) {
+      toast.error('Upload failed. Please try again.');
+      return;
+    }
+    const uploaded = files[0];
+    setFormData((prev) => ({ ...prev, fileUrl: uploaded.url }));
+    setUploadedFileName(uploaded.name || 'Uploaded file');
+    toast.success('File uploaded successfully. You can now submit.');
+  };
+
+  const handleUploadError = (error: Error) => {
+    setUploading(false);
+    toast.error(error?.message || 'Upload failed. Please try again.');
   };
 
   const sendMessage = async (submissionId: string) => {
@@ -202,8 +224,8 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     }
     
     if (!formData.fileUrl.trim()) {
-      newErrors.fileUrl = 'Google Drive link is required';
-    } else if (!isValidGoogleDriveUrl(formData.fileUrl)) {
+      newErrors.fileUrl = usesUploadThing ? 'Please upload your file.' : 'Google Drive link is required';
+    } else if (!usesUploadThing && !isValidGoogleDriveUrl(formData.fileUrl)) {
       newErrors.fileUrl = 'Please enter a valid Google Drive sharing link';
     }
     
@@ -234,6 +256,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const isSubmitDisabled =
     isSubmitting ||
     isVerifyingAccess ||
+    uploading ||
     !adminSettings?.isSubmissionsOpen ||
     (!isCompetition4 && !canSubmitMore());
 
@@ -266,7 +289,6 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       //   return;
       // }
       
-      // Submit the entry
       const response = await clientAuth.authFetch('/api/submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -278,28 +300,28 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
         }),
       });
       
+      const result = await response.json();
       if (!response.ok) {
-        toast.error('Failed to submit entry. Please try again.');
+        toast.error(result?.error || 'Failed to submit entry. Please try again.');
         return;
       }
       
-      const newSubmission = await response.json();
-      if (!newSubmission) {
+      const createdSubmission = result?.data || result;
+      if (!createdSubmission?.id) {
         toast.error('Failed to submit entry. Please try again.');
         return;
       }
+
+      setSubmissions((prev) => [createdSubmission as Submission, ...prev]);
       
-      toast.success('Submission successful! Your entry has been received and will be reviewed by our panel of judges.');
-      window.location.reload(); // Reload to fetch updated submissions
+      toast.success(result?.message || 'Submission successful! Your entry has been received and will be reviewed by our panel of judges.');
       
-      // Reset form
       setFormData({
         title: '',
         fileUrl: '',
         description: ''
       });
-      
-      // Switch to history tab to show the new submission
+      setUploadedFileName('');
       setActiveTab('history');
       
     } catch (error) {
@@ -480,63 +502,80 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                   </div>
                 )}
 
-                <div className="mb-6 p-5 rounded-2xl border border-orange-200/60 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 shadow-inner">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <div>
-                      <p className="font-inter text-base font-semibold text-orange-900">Set your Google Drive link to "Anyone with the link can view".</p>
-                      <p className="text-sm text-orange-700 font-inter">If the judges cannot open your file, the submission is automatically rejected. Double-check the sharing settings before you proceed.</p>
+                {isVideoCompetition ? (
+                  <div className="mb-6 p-5 rounded-2xl border border-orange-200/60 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 shadow-inner">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                      <div>
+                        <p className="font-inter text-base font-semibold text-orange-900">Set your Google Drive link to "Anyone with the link can view".</p>
+                        <p className="text-sm text-orange-700 font-inter">If the judges cannot open your file, the submission is automatically rejected. Double-check the sharing settings before you proceed.</p>
+                      </div>
                     </div>
-                  </div>
-                  <ul className="mt-4 grid gap-2 sm:grid-cols-2 text-sm text-orange-800 font-inter">
-                    <li className="flex items-start gap-2">
-                      <span className="text-green-600 mt-0.5">✓</span>
-                      <span>Open the Share dialog &gt; choose "Anyone with the link".</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-green-600 mt-0.5">✓</span>
-                      <span>Set the permission to "Viewer" (or higher) so we can access it.</span>
-                    </li>
-                  </ul>
-                    <div className="mt-5">
-                    <p className="text-sm font-semibold text-orange-900 font-inter mb-2">Watch this 2-minute checklist before submitting:</p>
-                    <div className="relative w-full">
-                      {/* Desktop: Show embedded video */}
-                      <div className="hidden sm:block rounded-2xl overflow-hidden shadow-lg border border-orange-200 bg-black/5">
-                        <div className="aspect-video w-full">
-                          <iframe 
-                            className="w-full h-full" 
-                            src="https://www.youtube.com/embed/grjZ9LxL4wc?si=Ti5QZFnN5_S8geTg" 
-                            title="YouTube video player" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                          />
+                    <ul className="mt-4 grid gap-2 sm:grid-cols-2 text-sm text-orange-800 font-inter">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Open the Share dialog &gt; choose "Anyone with the link".</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Set the permission to "Viewer" (or higher) so we can access it.</span>
+                      </li>
+                    </ul>
+                      <div className="mt-5">
+                      <p className="text-sm font-semibold text-orange-900 font-inter mb-2">Watch this 2-minute checklist before submitting:</p>
+                      <div className="relative w-full">
+                        {/* Desktop: Show embedded video */}
+                        <div className="hidden sm:block rounded-2xl overflow-hidden shadow-lg border border-orange-200 bg-black/5">
+                          <div className="aspect-video w-full">
+                            <iframe 
+                              className="w-full h-full" 
+                              src="https://www.youtube.com/embed/grjZ9LxL4wc?si=Ti5QZFnN5_S8geTg" 
+                              title="YouTube video player" 
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                              referrerPolicy="strict-origin-when-cross-origin" 
+                              allowFullScreen
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Mobile: Show link that opens in new tab */}
+                        <div className="block sm:hidden">
+                          <a
+                            href="https://www.youtube.com/watch?v=grjZ9LxL4wc"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full p-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl shadow-lg border border-red-200 hover:from-red-600 hover:to-red-700 transition-all duration-300"
+                          >
+                            <div className="flex items-center justify-center gap-3">
+                              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                              </svg>
+                              <span className="font-semibold">Watch 2-min tutorial on YouTube</span>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </div>
+                          </a>
                         </div>
                       </div>
-                      
-                      {/* Mobile: Show link that opens in new tab */}
-                      <div className="block sm:hidden">
-                        <a
-                          href="https://www.youtube.com/watch?v=grjZ9LxL4wc"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full p-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl shadow-lg border border-red-200 hover:from-red-600 hover:to-red-700 transition-all duration-300"
-                        >
-                          <div className="flex items-center justify-center gap-3">
-                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                            </svg>
-                            <span className="font-semibold">Watch 2-min tutorial on YouTube</span>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </div>
-                        </a>
+                      <p className="text-xs text-orange-700 font-inter mt-2 text-center sm:text-left">The video explains exactly how to unlock your file for the judges on any device.</p>
                       </div>
-                    </div>
-                    <p className="text-xs text-orange-700 font-inter mt-2 text-center sm:text-left">The video explains exactly how to unlock your file for the judges on any device.</p>
-                    </div>
-                </div>
+                  </div>
+                ) : (
+                  <div className="mb-6 p-5 rounded-2xl border border-orange-200/60 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 shadow-inner">
+                    <p className="font-inter text-base font-semibold text-orange-900">Upload your work directly here.</p>
+                    <p className="text-sm text-orange-700 font-inter">We accept images, PDFs, documents, slides, and zipped assets. Videos should still be shared via Google Drive in the video category.</p>
+                    <ul className="mt-3 text-sm text-orange-800 font-inter space-y-1">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>One file per submission. Max size ~32MB (zips up to 64MB).</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Ensure the file clearly shows your name/title in the content.</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
 
                 <form onSubmit={handleFormSubmit} className="space-y-5">
                   {/* Title Field */}
@@ -560,36 +599,104 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                     <p className="text-xs text-orange-600/70 mt-1 font-inter">{formData.title.length}/100 characters</p>
                   </div>
 
-                  {/* Google Drive Link Field */}
-                  <div>
-                    <label htmlFor="fileUrl" className="block text-sm font-semibold text-orange-800 mb-2 font-inter">
-                      Google Drive Link *
-                    </label>
-                    <input
-                      type="url"
-                      id="fileUrl"
-                      name="fileUrl"
-                      value={formData.fileUrl}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 font-inter text-sm backdrop-blur-sm ${
-                        errors.fileUrl ? 'border-red-400 bg-red-50/50' : 'border-orange-200/50 bg-white/80 hover:border-orange-300'
-                      }`}
-                      placeholder="https://drive.google.com/file/d/your-file-id"
-                    />
-                    {errors.fileUrl && <p className="mt-1 text-xs text-red-600 font-inter">{errors.fileUrl}</p>}
-                    
-                    {/* Access Permission Notice */}
-                    <div className="mt-3 p-3 bg-amber-50/80 border border-amber-200/50 rounded-lg">
-                      <div className="flex items-start gap-2">
-                        <svg className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                        </svg>
-                        <div className="text-xs text-amber-800 font-inter">
-                          <span className="font-semibold">Important:</span> Ensure your Google Drive file/folder is set to &quot;Anyone with the link can view&quot; for successful submission.
+                  {/* File Upload Field */}
+                  {isVideoCompetition ? (
+                    <div>
+                      <label htmlFor="fileUrl" className="block text-sm font-semibold text-orange-800 mb-2 font-inter">
+                        Google Drive Link *
+                      </label>
+                      <input
+                        type="url"
+                        id="fileUrl"
+                        name="fileUrl"
+                        value={formData.fileUrl}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 font-inter text-sm backdrop-blur-sm ${
+                          errors.fileUrl ? 'border-red-400 bg-red-50/50' : 'border-orange-200/50 bg-white/80 hover:border-orange-300'
+                        }`}
+                        placeholder="https://drive.google.com/file/d/your-video"
+                      />
+                      {errors.fileUrl && <p className="mt-1 text-xs text-red-600 font-inter">{errors.fileUrl}</p>}
+                      
+                      {/* Access Permission Notice */}
+                      <div className="mt-3 p-3 bg-amber-50/80 border border-amber-200/50 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <svg className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                          </svg>
+                          <div className="text-xs text-amber-800 font-inter">
+                            <span className="font-semibold">Important:</span> Set your Google Drive video to &quot;Anyone with the link can view&quot; so judges can access it.
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-semibold text-orange-800">Upload your file</div>
+                        <span className="text-xs text-gray-600">Max 1 file • no videos</span>
+                      </div>
+                      <UploadButton
+                        endpoint="submissionUploader"
+                        disabled={uploading}
+                        onUploadBegin={() => {
+                          setUploading(true);
+                          setErrors((prev) => ({ ...prev, fileUrl: '' }));
+                        }}
+                        onClientUploadComplete={handleUploadComplete}
+                        onUploadError={handleUploadError}
+                        onBeforeUploadBegin={(files) => {
+                          // Enforce single file client-side even if browser tries to send more
+                          return files.slice(0, 1);
+                        }}
+                        headers={() => ({
+                          Authorization: `Bearer ${clientAuth.getToken() || ''}`,
+                        })}
+                        config={{ mode: 'auto' }}
+                        appearance={{
+                          button: 'bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow hover:from-orange-700 hover:to-amber-700',
+                          allowedContent: 'text-xs text-gray-600',
+                        }}
+                        content={{
+                          button: ({ isUploading, uploadProgress }) =>
+                            isUploading ? (
+                              <div className="flex items-center gap-2">
+                                <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Uploading {Math.round(uploadProgress ?? 0)}%</span>
+                              </div>
+                            ) : (
+                              'Choose file'
+                            ),
+                          allowedContent: () => '1 file • images, pdf, docs, slides, zip',
+                        }}
+                      />
+                      {uploading && (
+                        <div className="flex items-center gap-2 text-sm text-orange-800 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">
+                          <svg className="animate-spin h-4 w-4 text-orange-600" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Uploading your file... please keep this tab open.</span>
+                        </div>
+                      )}
+                      {!uploading && uploadedFileName && (
+                        <div className="flex items-center gap-2 text-sm text-green-700 font-semibold bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                          <svg className="h-4 w-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>File uploaded. You&apos;re ready to submit now.</span>
+                        </div>
+                      )}
+                      <input type="hidden" name="fileUrl" value={formData.fileUrl} />
+                      {errors.fileUrl && <p className="mt-1 text-xs text-red-600 font-inter">{errors.fileUrl}</p>}
+                      <div className="mt-2 text-xs text-gray-700 bg-amber-50/60 border border-amber-100 rounded-lg p-3">
+                        Allowed: images, pdf, docs, slides, zip (no video). Files are stored securely and linked to your submission automatically.
+                      </div>
+                    </div>
+                  )}
 
                   {/* Description Field */}
                   <div>
@@ -806,18 +913,31 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
               </div>
               <div>
                 <p className="text-lg font-semibold text-orange-900 font-inter">Before you submit...</p>
-                <p className="text-sm text-orange-700 font-inter">Can our judges open your Google Drive file without a request?</p>
+                <p className="text-sm text-orange-700 font-inter">
+                  {isVideoCompetition
+                    ? 'Can our judges open your Google Drive video without a request?'
+                    : 'Confirm that your uploaded file is final and correct.'}
+                </p>
               </div>
             </div>
             <ul className="text-sm text-gray-700 font-inter space-y-2 mb-6">
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-0.5">✓</span>
-                <span>The link is set to "Anyone with the link can view".</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-0.5">✓</span>
-                <span>No login or access requests are required.</span>
-              </li>
+              {isVideoCompetition ? (
+                <>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>The link is set to "Anyone with the link can view".</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>No login or access requests are required.</span>
+                  </li>
+                </>
+              ) : (
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600 mt-0.5">✓</span>
+                  <span>Your upload is the correct file for this submission.</span>
+                </li>
+              )}
             </ul>
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
