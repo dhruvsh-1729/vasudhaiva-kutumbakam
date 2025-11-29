@@ -398,11 +398,8 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
   }
 
   // Submission Guidelines
-  baseSections.push({
-    id: "submission-guidelines",
-    title: "Submission Guidelines",
-    content: competition.id === 4
-      ? `Follow these guidelines for a successful submission:
+  const submissionGuidelinesContent = competition.id === 4
+    ? `Follow these guidelines for a successful submission:
     
     **Online Submission:**
     • Upload 1 full artwork photo + 2 detail photos
@@ -411,7 +408,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • File Size: Maximum 15MB per image
     • File Naming: Lastname_Firstname_Title_Size_Medium_Year.jpg
     • Use the submission panel on this page
-    • Ensure Google Drive link permissions are set to "Anyone with the link can view"
+    • Double-check your uploaded images open correctly after upload
     
     **Physical Submission:**
     • Label the back of your artwork with name, title, and contact details
@@ -428,12 +425,13 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     
     **Important Deadline:**
     • Submit before: ${competition.deadline} (11:59 PM IST)`
-      : `Follow these guidelines for a successful submission:
+    : competition.id === 1
+      ? `Follow these guidelines for a successful submission:
     
     **Submission Process:**
     • Use the submission panel on this page
     • Provide your name and email address
-    • Only Google drive links accepted
+    • Share your Google Drive video link
     • Ensure link permissions are set to "Anyone with the link can view"
     • Include a brief description of your approach
     • Submit before the deadline: ${competition.deadline}
@@ -448,6 +446,29 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • Relevance to the theme(35%)
     • Clarity of Message (20%)
     • Aritistic / Technical Quality(15%)`
+      : `Follow these guidelines for a successful submission:
+    
+    **Submission Process:**
+    • Use the submission panel on this page to upload your file directly (no Drive link needed)
+    • Provide your name and email address
+    • Include a brief description of your approach
+    • Submit before the deadline: ${competition.deadline}
+    
+    **Required Information:**
+    • List all AI tools used in creation
+    • Brief explanation of your creative process
+    • Any inspiration or reference sources
+    
+    **Evaluation Criteria:**
+    • Creativity and Originality (30%)
+    • Relevance to the theme(35%)
+    • Clarity of Message (20%)
+    • Aritistic / Technical Quality(15%)`;
+
+  baseSections.push({
+    id: "submission-guidelines",
+    title: "Submission Guidelines",
+    content: submissionGuidelinesContent
   });
 
   return baseSections;
