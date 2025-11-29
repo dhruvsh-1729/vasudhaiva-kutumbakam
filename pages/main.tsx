@@ -153,216 +153,31 @@ const MainPage: React.FC = () => {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
         
-        /* Enhanced Ancient Background with Texture */
+        /* Simplified background to avoid repaint/flicker on scroll */
         .ancient-background {
-          background: 
-            /* Texture Layer */
-            radial-gradient(circle at 25% 25%, rgba(139, 69, 19, 0.3) 1px, transparent 1px),
-            radial-gradient(circle at 75% 75%, rgba(218, 165, 32, 0.2) 1px, transparent 1px),
-            /* Main Gradient */
-            linear-gradient(135deg, 
-              #8B4513 0%,     /* Saddle Brown */
-              #A0522D 15%,    /* Sienna */
-              #CD853F 35%,    /* Peru */
-              #D2691E 50%,    /* Chocolate */
-              #B8860B 70%,    /* Dark Goldenrod */
-              #8B4513 100%    /* Saddle Brown */
-            );
-          background-size: 30px 30px, 40px 40px, 100% 100%;
+          background: linear-gradient(140deg, #8B4513 0%, #A0522D 40%, #B8860B 100%);
           position: relative;
           overflow-x: hidden;
           min-height: 100vh;
           -webkit-overflow-scrolling: touch;
         }
-        
-        /* Multi-layered Atmospheric Effects */
-        .ancient-background::before {
-          content: '';
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: 
-            /* Ambient Lighting */
-            radial-gradient(ellipse at 20% 30%, rgba(218, 165, 32, 0.15) 0%, transparent 60%),
-            radial-gradient(ellipse at 80% 70%, rgba(139, 69, 19, 0.2) 0%, transparent 60%);
-          z-index: 1;
-          pointer-events: none;
-        }
-        
-        .ancient-background::after {
-          content: '';
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: 
-            /* Sacred Patterns */
-            linear-gradient(45deg, transparent 30%, rgba(139, 69, 19, 0.05) 50%, transparent 70%),
-            linear-gradient(-45deg, transparent 30%, rgba(205, 133, 63, 0.05) 50%, transparent 70%);
-          z-index: 1;
-          pointer-events: none;
-        }
-        
-        /* Enhanced Floating Sacred Elements */
-        .floating-mandala {
-          position: fixed;
-          border-radius: 50%;
-          background: 
-            radial-gradient(circle, transparent 40%, rgba(218, 165, 32, 0.08) 41%, rgba(218, 165, 32, 0.08) 45%, transparent 46%),
-            radial-gradient(circle, transparent 65%, rgba(139, 69, 19, 0.1) 66%, rgba(139, 69, 19, 0.1) 68%, transparent 69%);
-          border: 1px solid rgba(218, 165, 32, 0.15);
-          pointer-events: none;
-        }
-        
-        .mandala-1 {
-          top: 8%;
-          left: 3%;
-          width: 200px;
-          height: 200px;
-        }
-        
-        .mandala-2 {
-          top: 55%;
-          right: 5%;
-          width: 150px;
-          height: 150px;
-        }
-        
-        .mandala-3 {
-          bottom: 15%;
-          left: 12%;
-          width: 100px;
-          height: 100px;
-        }
-        
-        /* Enhanced Floating Particles with Variety */
-        .sacred-particle {
-          position: fixed;
-          border-radius: 50%;
-          pointer-events: none;
-          opacity: 0.4;
-        }
-        
-        .sacred-particle.type-1 {
-          width: 3px;
-          height: 3px;
-          background: rgba(218, 165, 32, 0.6);
-        }
-        
-        .sacred-particle.type-2 {
-          width: 2px;
-          height: 2px;
-          background: rgba(205, 133, 63, 0.5);
-        }
-        
-        .sacred-particle.type-3 {
-          width: 4px;
-          height: 4px;
-          background: rgba(139, 69, 19, 0.4);
-        }
-        
-        .particle-1 { top: 12%; left: 28%; }
-        .particle-2 { top: 48%; left: 78%; }
-        .particle-3 { top: 78%; left: 18%; }
-        .particle-4 { top: 32%; left: 88%; }
-        .particle-5 { top: 68%; left: 42%; }
-        .particle-6 { top: 22%; left: 65%; }
-        .particle-7 { top: 88%; left: 75%; }
-        .particle-8 { top: 58%; left: 8%; }
-        .particle-9 { top: 5%; left: 50%; }
-        .particle-10 { top: 95%; left: 35%; }
-        
-        /* Enhanced Grid Container with Depth */
+
         .dashboard-grid {
           position: relative;
           z-index: 10;
-          backdrop-filter: blur(2px);
         }
-        
-        /* Premium Component Containers */
+
         .component-container {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(218, 165, 32, 0.2);
-          box-shadow: 
-            0 8px 24px rgba(139, 69, 19, 0.15),
-            0 2px 8px rgba(218, 165, 32, 0.1);
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(0, 0, 0, 0.04);
+          box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
           border-radius: 16px;
-          transition: box-shadow 0.3s ease, transform 0.3s ease;
+          transition: box-shadow 0.2s ease;
           position: relative;
         }
-        
+
         .component-container:hover {
-          transform: translateY(-2px);
-          box-shadow: 
-            0 12px 32px rgba(139, 69, 19, 0.2),
-            0 4px 12px rgba(218, 165, 32, 0.15);
-        }
-        
-        /* Enhanced Sacred Geometry Patterns */
-        .sacred-pattern {
-          position: fixed;
-          opacity: 0.1;
-          z-index: 2;
-          pointer-events: none;
-        }
-        
-        .pattern-1 {
-          top: 18%;
-          right: 8%;
-          width: 80px;
-          height: 80px;
-          background: 
-            radial-gradient(circle, rgba(218, 165, 32, 0.3) 2px, transparent 2px);
-          background-size: 20px 20px;
-        }
-        
-        .pattern-2 {
-          bottom: 25%;
-          left: 5%;
-          width: 60px;
-          height: 60px;
-          background: 
-            linear-gradient(45deg, rgba(139, 69, 19, 0.2) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(139, 69, 19, 0.2) 25%, transparent 25%);
-          background-size: 12px 12px;
-        }
-        
-        .pattern-3 {
-          top: 50%;
-          right: 30%;
-          width: 50px;
-          height: 50px;
-          background: rgba(205, 133, 63, 0.15);
-          border-radius: 50%;
-        }
-        
-        /* Ambient Light Effects */
-        .ambient-light {
-          position: fixed;
-          pointer-events: none;
-          z-index: 3;
-        }
-        
-        .light-1 {
-          top: 20%;
-          left: 10%;
-          width: 250px;
-          height: 250px;
-          background: radial-gradient(circle, rgba(218, 165, 32, 0.08) 0%, transparent 70%);
-          border-radius: 50%;
-        }
-        
-        .light-2 {
-          bottom: 30%;
-          right: 15%;
-          width: 180px;
-          height: 180px;
-          background: radial-gradient(circle, rgba(205, 133, 63, 0.06) 0%, transparent 70%);
-          border-radius: 50%;
+          box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
         }
 
         /* Simplify and disable fixed decorative layers on mobile to prevent scroll flicker */
@@ -372,11 +187,7 @@ const MainPage: React.FC = () => {
             overflow-y: auto;
           }
           .ancient-background::before,
-          .ancient-background::after {
-            content: none;
-            display: none !important;
-            background: none !important;
-          }
+          .ancient-background::after,
           .floating-mandala,
           .sacred-particle,
           .sacred-pattern,
@@ -399,32 +210,6 @@ const MainPage: React.FC = () => {
       `}</style>
 
       <div className="ancient-background min-h-screen relative">
-        {/* Enhanced Floating Sacred Elements */}
-        <div className="floating-mandala mandala-1"></div>
-        <div className="floating-mandala mandala-2"></div>
-        <div className="floating-mandala mandala-3"></div>
-        
-        {/* Enhanced Sacred Particles */}
-        <div className="sacred-particle type-1 particle-1"></div>
-        <div className="sacred-particle type-2 particle-2"></div>
-        <div className="sacred-particle type-3 particle-3"></div>
-        <div className="sacred-particle type-1 particle-4"></div>
-        <div className="sacred-particle type-2 particle-5"></div>
-        <div className="sacred-particle type-3 particle-6"></div>
-        <div className="sacred-particle type-1 particle-7"></div>
-        <div className="sacred-particle type-2 particle-8"></div>
-        <div className="sacred-particle type-3 particle-9"></div>
-        <div className="sacred-particle type-1 particle-10"></div>
-        
-        {/* Enhanced Sacred Geometry Patterns */}
-        <div className="sacred-pattern pattern-1"></div>
-        <div className="sacred-pattern pattern-2"></div>
-        <div className="sacred-pattern pattern-3"></div>
-        
-        {/* Ambient Light Effects */}
-        <div className="ambient-light light-1"></div>
-        <div className="ambient-light light-2"></div>
-        
         {/* Main Content */}
         <div className="relative z-10">
           <Header />
