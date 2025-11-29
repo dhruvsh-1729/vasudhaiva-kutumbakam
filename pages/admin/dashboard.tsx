@@ -24,6 +24,13 @@ interface AdminUser {
 
 type ActiveTab = 'overview' | 'submissions' | 'users' | 'settings' | 'messages';
 
+const getVisibleTabs = (adminUser: AdminUser | null): ActiveTab[] => {
+  if (adminUser?.email?.toLowerCase() === 'vk4@admin.com') {
+    return ['submissions', 'messages','overview'];
+  }
+  return ['overview', 'submissions', 'messages', 'users', 'settings'];
+};
+
 const AdminDashboard: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -50,11 +57,25 @@ const AdminDashboard: React.FC = () => {
     }
     
     setUser(currentUser as AdminUser);
+    if (currentUser.email?.toLowerCase() === 'vk4@admin.com') {
+      setActiveTab('submissions');
+    }
     setIsLoading(false);
   }, [router]);
 
+  // Ensure restricted admins cannot activate hidden tabs
+  useEffect(() => {
+    if (!user) return;
+    const visibleTabs = getVisibleTabs(user);
+    if (!visibleTabs.includes(activeTab)) {
+      setActiveTab(visibleTabs[0]);
+    }
+  }, [user, activeTab]);
+
   // Handle tab changes
   const handleTabChange = (tab: ActiveTab) => {
+    const visibleTabs = getVisibleTabs(user);
+    if (!visibleTabs.includes(tab)) return;
     setActiveTab(tab);
     setSidebarOpen(false); // Close sidebar on mobile when tab changes
   };
@@ -80,6 +101,8 @@ const AdminDashboard: React.FC = () => {
   if (!user) {
     return null;
   }
+
+  const visibleTabs = getVisibleTabs(user);
 
   // Render active tab content
   const renderTabContent = () => {
@@ -202,6 +225,7 @@ const AdminDashboard: React.FC = () => {
             onTabChange={handleTabChange}
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}
+            visibleTabs={visibleTabs}
           />
 
           {/* Main Content */}

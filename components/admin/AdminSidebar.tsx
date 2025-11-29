@@ -8,6 +8,7 @@ interface AdminSidebarProps {
   onTabChange: (tab: ActiveTab) => void;
   isOpen: boolean;
   onClose: () => void;
+  visibleTabs: ActiveTab[];
 }
 
 interface MenuItems {
@@ -21,7 +22,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
   activeTab, 
   onTabChange, 
   isOpen, 
-  onClose 
+  onClose,
+  visibleTabs
 }) => {
   const menuItems: MenuItems[] = [
     {
@@ -83,7 +85,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-64 lg:overflow-y-auto lg:bg-white lg:border-r lg:border-gray-200">
         <div className="px-6 pt-6">
           <nav className="space-y-2">
-            {menuItems.map((item) => (
+            {menuItems
+              .filter((item) => visibleTabs.includes(item.id))
+              .map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleMenuItemClick(item.id)}
@@ -143,7 +147,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
         <div className="px-4 pt-6 pb-20 overflow-y-auto">
           <nav className="space-y-2">
-            {menuItems.map((item) => (
+            {menuItems
+              .filter((item) => visibleTabs.includes(item.id))
+              .map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleMenuItemClick(item.id)}
