@@ -200,6 +200,7 @@ input[type='radio'],
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-geist-sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    overflow-x: hidden;
   }
 }
 
