@@ -372,12 +372,28 @@ const MainPage: React.FC = () => {
             overflow-y: auto;
           }
           .ancient-background::before,
-          .ancient-background::after,
+          .ancient-background::after {
+            content: none;
+            display: none !important;
+            background: none !important;
+          }
           .floating-mandala,
           .sacred-particle,
           .sacred-pattern,
           .ambient-light {
-            display: none;
+            display: none !important;
+          }
+          .component-container {
+            backdrop-filter: none;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transform: none !important;
+          }
+          .component-container:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+          }
+          .dashboard-grid {
+            backdrop-filter: none;
           }
         }
       `}</style>
