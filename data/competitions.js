@@ -26,7 +26,7 @@ export const timelineIntervals = [
     id: 3,
     title: 'Final Submission Window',
     startDate: '2025-11-20T00:00:00+05:30', // IST (Midnight IST on Nov 20/21)
-    endDate: '2025-12-10T23:59:59+05:30',   // IST
+    endDate: '2025-12-12T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: true,
     weekNumber: 2
@@ -34,7 +34,7 @@ export const timelineIntervals = [
   {
     id: 4,
     title: 'Jury Review',
-    startDate: '2025-12-10T00:00:00+05:30', // IST
+    startDate: '2025-12-12T00:00:00+05:30', // IST
     endDate: '2025-12-18T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: false,
@@ -110,10 +110,10 @@ export const areSubmissionsOpen = () => {
 
 // Basic competition data structure
 export const competitions = [ 
-  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "December 10, 2025", slug:"videos" }, 
-  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "December 10, 2025", slug:"writing" }, 
-  { id: 3, title: "LexToons (AI Comics / Legal Satire)", description: "Create illustrated comics or satire strips using AI + text on the given topics.", icon: "🖍️", color: "from-purple-500 to-purple-600", deadline: "December 10, 2025", slug:"lextoons" },
-  { id: 5, title: "Blog Writing / AI-Assisted Essay", description: "Write engaging 500–800 word blog posts or essays on the weekly topics.", icon: "📝", color: "from-orange-500 to-red-600", deadline: "December 10, 2025", slug:"blogs" },
+  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "December 12, 2025", slug:"videos" }, 
+  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "December 12, 2025", slug:"writing" }, 
+  { id: 3, title: "LexToons (AI Comics / Legal Satire)", description: "Create illustrated comics or satire strips using AI + text on the given topics.", icon: "🖍️", color: "from-purple-500 to-purple-600", deadline: "December 12, 2025", slug:"lextoons" },
+  { id: 5, title: "Blog Writing / AI-Assisted Essay", description: "Write engaging 500–800 word blog posts or essays on the weekly topics.", icon: "📝", color: "from-orange-500 to-red-600", deadline: "December 12, 2025", slug:"blogs" },
   {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"December 30, 2025",slug:"painting"},
   // { id: 3, title: "Political Toons", description: "Create a political satire cartoon using AI tools.", icon: "🖼️", color: "from-purple-500 to-purple-600", deadline: "November 20, 2025" },
 ];

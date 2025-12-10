@@ -32,7 +32,7 @@ export default async function handler(
         id: 2,
         type: 'important',
         title: 'Submission Deadline Extended',
-        content: 'Great news! The submission deadline for all AI/video/writing/comic categories is now December 10, 2025. Painting remains December 30, 2025.',
+        content: 'Great news! The submission deadline for all AI/video/writing/comic categories is now December 12, 2025. Painting remains December 30, 2025.',
         date: 'November 10, 2025',
         createdAt: '2025-11-10T10:00:00Z'
       },
@@ -48,7 +48,7 @@ export default async function handler(
         id: 4,
         type: 'important',
         title: 'Week 2 Commences — Final Submission Window Open',
-        content: 'Week 2 begins today with the final submission window open until December 10, 2025 (all categories except painting). Refine your entries and submit before the deadline!',
+        content: 'Week 2 begins today with the final submission window open until December 12, 2025 (all categories except painting). Refine your entries and submit before the deadline!',
         date: 'November 20, 2025',
         createdAt: '2025-11-20T05:30:00Z'
       },
@@ -56,7 +56,7 @@ export default async function handler(
         id: 5,
         type: 'normal',
         title: 'Two New Categories Added',
-        content: 'We have added LexToons (AI Comics / Legal Satire) and Blog Writing / AI-Assisted Essay. Both follow the same topics and share the December 10, 2025 submission deadline.',
+        content: 'We have added LexToons (AI Comics / Legal Satire) and Blog Writing / AI-Assisted Essay. Both follow the same topics and share the December 12, 2025 submission deadline.',
         date: 'November 21, 2025',
         createdAt: '2025-11-21T05:30:00Z'
       },
