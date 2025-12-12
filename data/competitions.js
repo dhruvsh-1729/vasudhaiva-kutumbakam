@@ -1,5 +1,4 @@
 // data/competitions.js
-
 import { title } from "process";
 
 // Timeline intervals configuration for automatic deadline progression
