@@ -1,5 +1,4 @@
 // data/competitions.js
-import { title } from "process";
 
 // Timeline intervals configuration for automatic deadline progression
 // All dates are in IST (Indian Standard Time - UTC+5:30)
@@ -16,34 +15,42 @@ export const timelineIntervals = [
     id: 2,
     title: 'Week 1 Challenge',
     startDate: '2025-11-02T00:00:00+05:30', // IST
-    endDate: '2025-11-20T23:59:59+05:30',   // IST (11:59:59 PM IST on Nov 20)
+    endDate: '2025-11-30T23:59:59+05:30',   // IST (11:59:59 PM IST on Nov 30)
     status: 'current',
     isSubmissionInterval: true,
     weekNumber: 1
   },
   {
     id: 3,
-    title: 'Final Submission Window',
-    startDate: '2025-11-20T00:00:00+05:30', // IST (Midnight IST on Nov 20/21)
-    endDate: '2025-12-12T23:59:59+05:30',   // IST
+    title: 'Week 2 Challenge',
+    startDate: '2025-12-01T00:00:00+05:30', // IST
+    endDate: '2025-12-11T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: true,
     weekNumber: 2
   },
   {
     id: 4,
-    title: 'Jury Review',
+    title: 'Final Submission Window',
     startDate: '2025-12-12T00:00:00+05:30', // IST
-    endDate: '2025-12-18T23:59:59+05:30',   // IST
+    endDate: '2025-12-30T23:59:59+05:30',   // IST
     status: 'upcoming',
-    isSubmissionInterval: false,
+    isSubmissionInterval: true,
     weekNumber: 3
   },
   {
     id: 5,
+    title: 'Jury Review',
+    startDate: '2025-12-31T00:00:00+05:30', // IST
+    endDate: '2026-01-06T23:59:59+05:30',   // IST
+    status: 'upcoming',
+    isSubmissionInterval: false
+  },
+  {
+    id: 6,
     title: 'Final Results',
-    startDate: '2025-12-18T00:00:00+05:30', // IST
-    endDate: '2025-12-20T23:59:59+05:30',   // IST
+    startDate: '2026-01-07T00:00:00+05:30', // IST
+    endDate: '2026-01-08T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: false
   }
@@ -53,6 +60,12 @@ export const timelineIntervals = [
 export const getCurrentInterval = () => {
   // Get current time in IST
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const firstInterval = timelineIntervals[0];
+  const firstStart = new Date(firstInterval.startDate);
+
+  if (now < firstStart) {
+    return firstInterval;
+  }
   
   // Find the interval that matches current date
   for (const interval of timelineIntervals) {
@@ -72,54 +85,95 @@ export const getCurrentInterval = () => {
 export const getNextDeadline = () => {
   // Get current time in IST
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  let nextInterval;
+  let nextSubmission;
   
-  // Find the next interval that hasn't ended yet
   for (const interval of timelineIntervals) {
     const end = new Date(interval.endDate);
-    
+
     if (now <= end) {
-      return {
-        deadline: interval.endDate,
-        interval: interval,
-        weekNumber: interval.weekNumber || null
-      };
+      if (!nextInterval) {
+        nextInterval = interval;
+      }
+      if (!nextSubmission && interval.isSubmissionInterval) {
+        nextSubmission = interval;
+      }
     }
   }
   
-  // If all intervals have passed, return the last interval's end date
-  const lastInterval = timelineIntervals[timelineIntervals.length - 1];
+  const targetInterval = nextSubmission || nextInterval || timelineIntervals[timelineIntervals.length - 1];
   return {
-    deadline: lastInterval.endDate,
-    interval: lastInterval,
-    weekNumber: lastInterval.weekNumber || null
+    deadline: targetInterval.endDate,
+    interval: targetInterval,
+    weekNumber: targetInterval.weekNumber || null
   };
 };
 
 // Helper function to get current submission interval number (for database)
 export const getCurrentSubmissionInterval = () => {
   const currentInterval = getCurrentInterval();
-  return currentInterval.weekNumber || 1;
+  if (currentInterval.weekNumber) {
+    return currentInterval.weekNumber;
+  }
+
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const upcomingSubmission = timelineIntervals.find(interval => 
+    interval.isSubmissionInterval && new Date(interval.startDate) > now && interval.weekNumber
+  );
+
+  if (upcomingSubmission?.weekNumber) {
+    return upcomingSubmission.weekNumber;
+  }
+
+  const lastSubmissionInterval = [...timelineIntervals]
+    .reverse()
+    .find(interval => interval.isSubmissionInterval && interval.weekNumber);
+
+  return lastSubmissionInterval?.weekNumber || 1;
 };
 
 // Helper function to check if submissions are open based on timeline
 export const areSubmissionsOpen = () => {
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
   const currentInterval = getCurrentInterval();
+
+  if (!currentInterval.isSubmissionInterval) {
+    const upcomingSubmission = timelineIntervals.find(interval => 
+      interval.isSubmissionInterval && new Date(interval.startDate) > now
+    );
+    if (upcomingSubmission) {
+      return true;
+    }
+  }
+
   return currentInterval.isSubmissionInterval === true;
 };
 
 // Basic competition data structure
 export const competitions = [ 
-  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "December 12, 2025", slug:"videos" }, 
-  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "December 12, 2025", slug:"writing" }, 
-  { id: 3, title: "LexToons (AI Comics / Legal Satire)", description: "Create illustrated comics or satire strips using AI + text on the given topics.", icon: "🖍️", color: "from-purple-500 to-purple-600", deadline: "December 12, 2025", slug:"lextoons" },
-  { id: 5, title: "Blog Writing / AI-Assisted Essay", description: "Write engaging 500–800 word blog posts or essays on the weekly topics.", icon: "📝", color: "from-orange-500 to-red-600", deadline: "December 12, 2025", slug:"blogs" },
-  {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"December 30, 2025",slug:"painting"},
+  { id: 1, title: "AI Short Video", description: "Create a 1-3 minute AI-generated reel on weekly themes.", icon: "🎥", color: "from-blue-500 to-blue-600", deadline: "2025-11-30T23:59:59+05:30", slug:"videos" }, 
+  { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "2025-11-30T23:59:59+05:30", slug:"writing" }, 
+  { id: 3, title: "LexToons (AI Comics / Legal Satire)", description: "Create illustrated comics or satire strips using AI + text on the given topics.", icon: "🖍️", color: "from-purple-500 to-purple-600", deadline: "2025-11-30T23:59:59+05:30", slug:"lextoons" },
+  { id: 5, title: "Blog Writing / AI-Assisted Essay", description: "Write engaging 500–800 word blog posts or essays on the weekly topics.", icon: "📝", color: "from-orange-500 to-red-600", deadline: "2025-11-30T23:59:59+05:30", slug:"blogs" },
+  {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"2025-11-30T23:59:59+05:30",slug:"painting"},
   // { id: 3, title: "Political Toons", description: "Create a political satire cartoon using AI tools.", icon: "🖼️", color: "from-purple-500 to-purple-600", deadline: "November 20, 2025" },
 ];
 
 // Generate detailed sections dynamically based on competition type
 const generateSectionsForCompetition = (competition) => {
   const baseSections = [];
+  const formattedDeadline = competition.deadline
+    ? new Date(competition.deadline).toLocaleString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Asia/Kolkata',
+        timeZoneName: 'short'
+      })
+    : 'TBD';
   
   // Problem Statement
   baseSections.push({
@@ -332,7 +386,8 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       
       **Important Dates:**
       • Competition Launch: 2 October 2025
-      • Submission Deadline: 30 December 2025 (11:59 PM IST)
+      • Round 1 Deadline: 30 November 2025 (11:59:59 PM IST)
+      • Final Submission Window: 12–30 December 2025 (11:59:59 PM IST)
       • Results Announcement: VK 4.0 Conclave (16–22 January 2026)`
     });
   }
@@ -423,7 +478,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • Brief explanation of how your artwork addresses a global issue
     
     **Important Deadline:**
-    • Submit before: ${competition.deadline} (11:59 PM IST)`
+    • Submit before: ${formattedDeadline}`
     : competition.id === 1
       ? `Follow these guidelines for a successful submission:
     
@@ -433,7 +488,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • Share your Google Drive video link
     • Ensure link permissions are set to "Anyone with the link can view"
     • Include a brief description of your approach
-    • Submit before the deadline: ${competition.deadline}
+    • Submit before the deadline: ${formattedDeadline}
     
     **Required Information:**
     • List all AI tools used in creation
@@ -451,7 +506,7 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • Use the submission panel on this page to upload your file directly (no Drive link needed)
     • Provide your name and email address
     • Include a brief description of your approach
-    • Submit before the deadline: ${competition.deadline}
+    • Submit before the deadline: ${formattedDeadline}
     
     **Required Information:**
     • List all AI tools used in creation

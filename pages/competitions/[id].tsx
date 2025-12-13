@@ -209,13 +209,14 @@ export async function getStaticProps({ params }: { params?: { id?: string } }) {
 
     if (dbComp) {
       const fallbackStatic = getCompetitionBySlug(slug) || (Number.isInteger(numeric) ? getCompetitionBySlug(String(dbComp.slug)) : null);
+      const deadlineValue = dbComp.deadline
+        ? new Date(dbComp.deadline).toISOString()
+        : fallbackStatic?.deadline;
       competition = {
         id: dbComp.legacyId,
         title: dbComp.title,
         icon: dbComp.icon || '✨',
-        deadline: dbComp.deadline
-          ? new Date(dbComp.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-          : 'TBD',
+        deadline: deadlineValue || 'TBD',
         slug: dbComp.slug,
         sections: Array.isArray(dbComp.sections) && dbComp.sections.length
           ? dbComp.sections as any

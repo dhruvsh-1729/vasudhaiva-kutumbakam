@@ -1,29 +1,5 @@
 const bannedKeywords = [
-  'abuse',
-  'harass',
-  'hate',
-  'kill',
-  'suicide',
-  'sexual',
-  'porn',
-  'nude',
-  'fuck',
-  'shit',
-  'bakchod',
-  'mc',
-  'bc',
-  'chutiya',
-  'harami',
-  'gaand',
-  'madarchod',
-  'bhosdi',
-  'बेवकूफ',
-  'गंदा',
-  'गाली',
-  'मूर्ख',
-  'कुत्ता',
-  'कमीना',
-  'साला',
+  'spam', 'abuse', 'scam', 'malware'
 ];
 
 export function detectAbuse(text: string): string[] {

@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const competitions = await prisma.competition.findMany({
       where: { isPublished: true },
-      orderBy: { legacyId: 'asc' },
+      orderBy: { legacyId: 'desc' },
     });
     return res.status(200).json(competitions);
   } catch (error) {

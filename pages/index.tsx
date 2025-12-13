@@ -265,7 +265,7 @@ const Home: React.FC = () => {
             .filter((c: any) => c.isPublished !== false)
             .map((c: any) => {
               const deadlineText = c.deadline
-                ? `Deadline: ${new Date(c.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}.`
+                ? `Deadline: ${new Date(c.deadline).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kolkata', timeZoneName: 'short' })}.`
                 : '';
               const prizeText = c.prizePool ? `Prize Pool: ${c.prizePool}.` : '';
               return {

@@ -66,6 +66,11 @@ export const ourFileRouter = {
         maxFileSize: "64MB",
         maxFileCount: 1,
       },
+      audio: {
+        // Supports mp3, wav, m4a from uploadthing
+        maxFileSize: "32MB",
+        maxFileCount: 1,
+      },
     }),
   ),
 } satisfies FileRouter;

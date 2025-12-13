@@ -563,7 +563,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                 ) : (
                   <div className="mb-6 p-5 rounded-2xl border border-orange-200/60 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 shadow-inner">
                     <p className="font-inter text-base font-semibold text-orange-900">Upload your work directly here.</p>
-                    <p className="text-sm text-orange-700 font-inter">We accept images, PDFs, documents, slides, and zipped assets. Videos should still be shared via Google Drive in the video category.</p>
+                    <p className="text-sm text-orange-700 font-inter">We accept images, PDFs, documents, slides, zipped assets, and audio (mp3, wav, m4a). Videos should still be shared via Google Drive in the video category.</p>
                     <ul className="mt-3 text-sm text-orange-800 font-inter space-y-1">
                       <li className="flex items-start gap-2">
                         <span className="text-green-600 mt-0.5">✓</span>
@@ -632,9 +632,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm font-semibold text-orange-800">Upload your file</div>
-                        <span className="text-xs text-gray-600">Max 1 file • no videos</span>
+                      <div className="flex items-center justify-center">
+                        <div className="text-sm font-semibold text-orange-800">Upload your file here, no video files please</div>
+                        {/* <span className="text-xs text-gray-600">Max 1 file • images/docs/pdf/slides/zip/audio (no video)</span> */}
                       </div>
                       <UploadButton
                         endpoint="submissionUploader"
@@ -670,7 +670,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                             ) : (
                               'Choose file'
                             ),
-                          allowedContent: () => '1 file • images, pdf, docs, slides, zip',
+                          allowedContent: () => '1 file • images, pdf, docs, slides, zip, audio (mp3/wav/m4a)',
                         }}
                       />
                       {uploading && (
@@ -693,7 +693,7 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                       <input type="hidden" name="fileUrl" value={formData.fileUrl} />
                       {errors.fileUrl && <p className="mt-1 text-xs text-red-600 font-inter">{errors.fileUrl}</p>}
                       <div className="mt-2 text-xs text-gray-700 bg-amber-50/60 border border-amber-100 rounded-lg p-3">
-                        Allowed: images, pdf, docs, slides, zip (no video). Files are stored securely and linked to your submission automatically.
+                        Allowed: images, pdf, docs, slides, zip, audio (mp3/wav/m4a) — no video. Files are stored securely and linked to your submission automatically.
                       </div>
                     </div>
                   )}

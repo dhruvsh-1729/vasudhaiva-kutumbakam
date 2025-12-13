@@ -158,7 +158,7 @@ export class EmailService {
 
     return {
       subject:
-        'Last Week to Submit – AI Video & Creative Expression (Deadline: 20 November)',
+        'Last Week to Submit – AI Video & Creative Expression (Deadline: 30 November, 11:59:59 PM IST)',
       htmlContent: `
         <!DOCTYPE html>
         <html>
@@ -189,13 +189,17 @@ export class EmailService {
                 <p style="color:#374151; font-size:15px; line-height:1.6; margin:0 0 16px;">
                   This is a gentle reminder that the 
                   <strong>deadline for the AI Video and Creative Expression categories</strong> 
-                  is on <strong>20 November</strong>. 🌟
+                  is on <strong>30 November 2025 at 11:59:59 PM IST</strong>. 🌟
                 </p>
 
                 <p style="color:#374151; font-size:15px; line-height:1.6; margin:0 0 16px;">
                   You are now in the <strong>last week</strong> to submit your entries. 
                   We encourage you to carefully go through the guidelines and 
                   complete your submissions in time.
+                </p>
+
+                <p style="color:#374151; font-size:15px; line-height:1.6; margin:0 0 16px;">
+                  Finalists will have a <strong>final submission window from 12–30 December 2025</strong>, so be sure your Round 1 entry is in before the November 30 cut-off.
                 </p>
 
                 <div style="background:linear-gradient(135deg,#fefce8,#fffbeb); border:1px solid #facc15; border-radius:12px; padding:20px; margin:24px 0;">
@@ -270,13 +274,15 @@ VK Competition – Deadline Reminder
 
 Dear ${userName || 'Participant'},
 
-This is a gentle reminder that the deadline for the AI Video and Creative Expression categories is on 20 November. 
+This is a gentle reminder that the deadline for the AI Video and Creative Expression categories is on 30 November 2025 at 11:59:59 PM IST. 
 You are now in the last week to submit your entries.
 
 Please:
 - Go through the guidelines carefully
 - Finalize and upload your AI Video / Creative Expression entry
 - Ensure all required details are correctly filled
+
+Finalists will have a final submission window from 12–30 December 2025, so submit your Round 1 entry before the November 30 cut-off.
 
 Submit your entry here:
 ${baseUrl}/main

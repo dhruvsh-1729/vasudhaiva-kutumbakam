@@ -26,6 +26,21 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const startXRef = useRef<number | null>(null);
   const [slideH, setSlideH] = useState<number>(0);
+  const deadlineDisplay = useMemo(() => {
+    if (!competition.deadline) return 'TBD';
+    const parsed = new Date(competition.deadline);
+    if (Number.isNaN(parsed.getTime())) return competition.deadline;
+    
+    // Format date
+    const dateStr = parsed.toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata'
+    });
+    
+    return `${dateStr}, 23:59:59 IST`;
+  }, [competition.deadline]);
 
   // Compute slide height so each slide fills exactly the viewport below the header
   const recalc = (): void => {
@@ -182,7 +197,7 @@ const CompetitionDetails: React.FC<CompetitionDetailsProps> = ({ competition }) 
             </div>
             <div className="text-right flex-shrink-0">
               <span className="font-inter text-xs text-white/70 block hidden sm:block">Deadline</span>
-              <span className="font-inter font-semibold text-xs sm:text-sm">{competition.deadline}</span>
+              <span className="font-inter font-semibold text-xs sm:text-sm">{deadlineDisplay}</span>
             </div>
           </div>
         </div>

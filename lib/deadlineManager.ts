@@ -46,34 +46,42 @@ export const timelineIntervals: TimelineInterval[] = [
     id: 2,
     title: 'Week 1 Challenge',
     startDate: '2025-11-02T00:00:00+05:30', // IST
-    endDate: '2025-11-20T23:59:59+05:30',   // IST
+    endDate: '2025-11-30T23:59:59+05:30',   // IST (11:59:59 PM IST on Nov 30)
     status: 'current',
     isSubmissionInterval: true,
     weekNumber: 1
   },
   {
     id: 3,
-    title: 'Final Submission Window',
-    startDate: '2025-11-20T00:00:00+05:30', // IST (Midnight IST, not UTC)
-    endDate: '2025-12-12T23:59:59+05:30',   // IST
+    title: 'Week 2 Challenge',
+    startDate: '2025-12-01T00:00:00+05:30', // IST
+    endDate: '2025-12-11T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: true,
     weekNumber: 2
   },
   {
     id: 4,
-    title: 'Jury Review',
+    title: 'Final Submission Window',
     startDate: '2025-12-12T00:00:00+05:30', // IST
-    endDate: '2025-12-18T23:59:59+05:30',   // IST
+    endDate: '2025-12-30T23:59:59+05:30',   // IST
     status: 'upcoming',
-    isSubmissionInterval: false,
+    isSubmissionInterval: true,
     weekNumber: 3
   },
   {
     id: 5,
+    title: 'Jury Review',
+    startDate: '2025-12-31T00:00:00+05:30', // IST
+    endDate: '2026-01-06T23:59:59+05:30',   // IST
+    status: 'upcoming',
+    isSubmissionInterval: false
+  },
+  {
+    id: 6,
     title: 'Final Results',
-    startDate: '2025-12-18T00:00:00+05:30', // IST
-    endDate: '2025-12-20T23:59:59+05:30',   // IST
+    startDate: '2026-01-07T00:00:00+05:30', // IST
+    endDate: '2026-01-08T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: false
   }
@@ -84,6 +92,12 @@ export const timelineIntervals: TimelineInterval[] = [
  */
 export function getCurrentInterval(customDate?: Date): TimelineInterval {
   const now = getCurrentIST(customDate);
+  const firstInterval = timelineIntervals[0];
+  const firstStart = new Date(firstInterval.startDate);
+
+  if (now < firstStart) {
+    return firstInterval;
+  }
   
   // Find the interval that matches current date
   for (const interval of timelineIntervals) {
@@ -104,28 +118,28 @@ export function getCurrentInterval(customDate?: Date): TimelineInterval {
  */
 export function getNextDeadline(customDate?: Date) {
   const now = getCurrentIST(customDate);
-  
-  // Find the next interval that hasn't ended yet
+  let nextInterval: TimelineInterval | undefined;
+  let nextSubmission: TimelineInterval | undefined;
+
   for (const interval of timelineIntervals) {
     const end = new Date(interval.endDate);
-    
+
     if (now <= end) {
-      return {
-        deadline: interval.endDate,
-        interval: interval,
-        weekNumber: interval.weekNumber || null,
-        title: interval.title
-      };
+      if (!nextInterval) {
+        nextInterval = interval;
+      }
+      if (!nextSubmission && interval.isSubmissionInterval) {
+        nextSubmission = interval;
+      }
     }
   }
-  
-  // If all intervals have passed, return the last interval's end date
-  const lastInterval = timelineIntervals[timelineIntervals.length - 1];
+
+  const targetInterval = nextSubmission || nextInterval || timelineIntervals[timelineIntervals.length - 1];
   return {
-    deadline: lastInterval.endDate,
-    interval: lastInterval,
-    weekNumber: lastInterval.weekNumber || null,
-    title: lastInterval.title
+    deadline: targetInterval.endDate,
+    interval: targetInterval,
+    weekNumber: targetInterval.weekNumber || null,
+    title: targetInterval.title
   };
 }
 
@@ -134,14 +148,42 @@ export function getNextDeadline(customDate?: Date) {
  */
 export function getCurrentSubmissionInterval(customDate?: Date): number {
   const currentInterval = getCurrentInterval(customDate);
-  return currentInterval.weekNumber || 1;
+  if (currentInterval.weekNumber) {
+    return currentInterval.weekNumber;
+  }
+
+  const now = getCurrentIST(customDate);
+  const upcomingSubmission = timelineIntervals.find(interval =>
+    interval.isSubmissionInterval && new Date(interval.startDate) > now && interval.weekNumber
+  );
+
+  if (upcomingSubmission?.weekNumber) {
+    return upcomingSubmission.weekNumber;
+  }
+
+  const lastSubmissionInterval = [...timelineIntervals]
+    .reverse()
+    .find(interval => interval.isSubmissionInterval && interval.weekNumber);
+
+  return lastSubmissionInterval?.weekNumber || 1;
 }
 
 /**
  * Check if submissions are currently open based on timeline
  */
 export function areSubmissionsOpen(customDate?: Date): boolean {
+  const now = getCurrentIST(customDate);
   const currentInterval = getCurrentInterval(customDate);
+
+  if (!currentInterval.isSubmissionInterval) {
+    const upcomingSubmission = timelineIntervals.find(interval => 
+      interval.isSubmissionInterval && new Date(interval.startDate) > now
+    );
+    if (upcomingSubmission) {
+      return true;
+    }
+  }
+
   return currentInterval.isSubmissionInterval === true;
 }
 
@@ -219,7 +261,7 @@ export function getCurrentWeekLabel(customDate?: Date): string {
   const currentInterval = getCurrentInterval(customDate);
   
   if (!currentInterval.weekNumber) {
-    return 'Pre-competition';
+    return currentInterval.title;
   }
   
   const totalWeeks = timelineIntervals.filter(i => i.isSubmissionInterval).length;

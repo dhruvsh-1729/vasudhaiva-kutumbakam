@@ -26,39 +26,47 @@ export default async function handler(
         title: 'New AI Challenges Added',
         content: 'We have added new AI challenges to the competition lineup.',
         date: 'October 01, 2025',
-        createdAt: '2025-10-01T09:15:00Z'
+        createdAt: '2025-10-01T09:15:00+05:30'
       },
       {
         id: 2,
         type: 'important',
-        title: 'Submission Deadline Extended',
-        content: 'Great news! The submission deadline for all AI/video/writing/comic categories is now December 12, 2025. Painting remains December 30, 2025.',
+        title: 'Submission Deadline Updated',
+        content: 'All categories now close on November 30, 2025 at 11:59:59 PM IST for Round 1. The Week 2 Challenge (Dec 1–11) and Final Submission Window (Dec 12–30) are live on the updated timeline.',
         date: 'November 10, 2025',
-        createdAt: '2025-11-10T10:00:00Z'
+        createdAt: '2025-11-10T10:00:00+05:30'
       },
       {
         id: 3,
         type: 'normal',
-        title: 'Submission Deadline for Painting Competition Extended',
-        content: 'The submission deadline for the painting competition has been extended to December 30th. Take advantage of this extra time to perfect your artwork!',
-        date: 'October 16, 2025',
-        createdAt: '2025-10-16T14:30:00Z'
+        title: 'New Categories: Memes, Singing, Poetry',
+        content: 'VK Memes, VK Harmonies (Singing), and VK Verses (Poetry) are live. All three share the November 30, 2025 11:59:59 PM IST deadline for Round 1.',
+        date: 'November 12, 2025',
+        createdAt: '2025-11-12T09:00:00+05:30'
       },
       {
         id: 4,
         type: 'important',
-        title: 'Week 2 Commences — Final Submission Window Open',
-        content: 'Week 2 begins today with the final submission window open until December 12, 2025 (all categories except painting). Refine your entries and submit before the deadline!',
-        date: 'November 20, 2025',
-        createdAt: '2025-11-20T05:30:00Z'
+        title: 'Week 2 Challenge Window',
+        content: 'Week 2 Challenge runs from December 1–11, 2025. Use this window to polish submissions before the final round.',
+        date: 'December 01, 2025',
+        createdAt: '2025-12-01T05:30:00+05:30'
       },
       {
         id: 5,
         type: 'normal',
-        title: 'Two New Categories Added',
-        content: 'We have added LexToons (AI Comics / Legal Satire) and Blog Writing / AI-Assisted Essay. Both follow the same topics and share the December 12, 2025 submission deadline.',
-        date: 'November 21, 2025',
-        createdAt: '2025-11-21T05:30:00Z'
+        title: 'Final Submission Window (Round 3)',
+        content: 'The final submission window is open from December 12–30, 2025. Submit final versions by 11:59:59 PM IST on December 30.',
+        date: 'December 12, 2025',
+        createdAt: '2025-12-12T05:30:00+05:30'
+      },
+      {
+        id: 6,
+        type: 'important',
+        title: 'Timeline & Jury Review Updated',
+        content: 'Jury review moves to December 31, 2025 – January 6, 2026, with results rolling out from January 7, 2026.',
+        date: 'December 20, 2025',
+        createdAt: '2025-12-20T05:30:00+05:30'
       },
     ];
 

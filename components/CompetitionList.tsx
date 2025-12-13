@@ -7,6 +7,7 @@ import { competitions as staticCompetitions } from '../data/competitions';
 interface Competition {
   id: number;
   title: string;
+  legacyId?: number;
   description: string;
   icon: string;
   deadline?: string;
@@ -52,11 +53,11 @@ const CompetitionList: React.FC = () => {
               description: c.description,
               icon: c.icon || '✨',
               color: c.color || 'from-orange-500 to-red-600',
-              deadline: c.deadline ? new Date(c.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined,
+              deadline: c.deadline ? new Date(c.deadline).toISOString() : undefined,
               slug: c.slug,
               prizes: c.prizes || null,
               prizePool: c.prizePool || null,
-            }));
+            }))
           setLiveCompetitions(mapped);
         }
       } catch (error) {
@@ -68,6 +69,22 @@ const CompetitionList: React.FC = () => {
     };
     fetchCompetitions();
   }, []);
+
+  const formatDeadlineDisplay = (deadline?: string) => {
+    if (!deadline) return 'TBD';
+    const parsed = new Date(deadline);
+    if (Number.isNaN(parsed.getTime())) return deadline;
+    
+    // Format date
+    const dateStr = parsed.toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata'
+    });
+    
+    return `${dateStr}, 23:59:59 IST`;
+  };
 
   // Prize information configuration
   const prizeMap: Record<number, PrizeInfo[]> = {
@@ -210,7 +227,7 @@ const CompetitionList: React.FC = () => {
                             {(() => {
                               if (!competition.deadline) return 'Ongoing';
                               const deadlineDate = new Date(competition.deadline);
-                              const currentDate = new Date();
+                              const currentDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
                               const timeDiff = deadlineDate.getTime() - currentDate.getTime();
                               const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
                               return daysLeft > 0 ? `${daysLeft} days left` : 'Expired';
@@ -222,7 +239,7 @@ const CompetitionList: React.FC = () => {
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
                           </svg>
-                          <span className="font-inter font-medium">Deadline: {competition.deadline || 'Ongoing'}</span>
+                          <span className="font-inter font-medium">Deadline: {formatDeadlineDisplay(competition.deadline)}</span>
                         </div>
                       </div>
 
