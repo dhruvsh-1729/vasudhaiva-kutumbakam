@@ -55,7 +55,7 @@ export const timelineIntervals: TimelineInterval[] = [
     id: 3,
     title: 'Final Submission Window',
     startDate: '2025-11-20T00:00:00+05:30', // IST (Midnight IST, not UTC)
-    endDate: '2025-12-10T23:59:59+05:30',   // IST
+    endDate: '2025-12-12T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: true,
     weekNumber: 2
@@ -63,7 +63,7 @@ export const timelineIntervals: TimelineInterval[] = [
   {
     id: 4,
     title: 'Jury Review',
-    startDate: '2025-12-10T00:00:00+05:30', // IST
+    startDate: '2025-12-12T00:00:00+05:30', // IST
     endDate: '2025-12-18T23:59:59+05:30',   // IST
     status: 'upcoming',
     isSubmissionInterval: false,

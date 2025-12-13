@@ -37,7 +37,7 @@ const UsersManager: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
-    limit: 15,
+    limit: 50,
     total: 0,
     totalPages: 0,
   });
@@ -506,7 +506,7 @@ const UsersManager: React.FC = () => {
             </div>
 
             {/* Pagination */}
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-gray-500">
                 Showing {((pagination?.page - 1) * pagination?.limit) + 1} to {Math.min(pagination?.page * pagination?.limit, pagination?.total)} of {pagination?.total} users
               </div>
@@ -521,22 +521,62 @@ const UsersManager: React.FC = () => {
                 </button>
                 
                 <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, pagination?.totalPages) }, (_, i) => {
-                    const page = i + 1;
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`px-3 py-1 text-sm rounded-lg transition-colors ${
-                          pagination?.page === page
-                            ? 'bg-blue-600 text-white'
-                            : 'hover:bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
+                  {(() => {
+                    const currentPage = pagination?.page;
+                    const totalPages = pagination?.totalPages;
+                    const pages: (number | string)[] = [];
+                    
+                    if (totalPages <= 7) {
+                      // Show all pages if total is 7 or less
+                      for (let i = 1; i <= totalPages; i++) {
+                        pages.push(i);
+                      }
+                    } else {
+                      // Always show first page
+                      pages.push(1);
+                      
+                      if (currentPage <= 3) {
+                        // Near start: show 1, 2, 3, 4, ..., last
+                        pages.push(2, 3, 4);
+                        pages.push('...');
+                        pages.push(totalPages);
+                      } else if (currentPage >= totalPages - 2) {
+                        // Near end: show 1, ..., last-3, last-2, last-1, last
+                        pages.push('...');
+                        pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                      } else {
+                        // In middle: show 1, ..., current-1, current, current+1, ..., last
+                        pages.push('...');
+                        pages.push(currentPage - 1, currentPage, currentPage + 1);
+                        pages.push('...');
+                        pages.push(totalPages);
+                      }
+                    }
+                    
+                    return pages.map((page, index) => {
+                      if (page === '...') {
+                        return (
+                          <span key={`ellipsis-${index}`} className="px-2 py-1 text-gray-400">
+                            ...
+                          </span>
+                        );
+                      }
+                      
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page as number)}
+                          className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                            pagination?.page === page
+                              ? 'bg-blue-600 text-white'
+                              : 'hover:bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    });
+                  })()}
                 </div>
                 
                 <button
