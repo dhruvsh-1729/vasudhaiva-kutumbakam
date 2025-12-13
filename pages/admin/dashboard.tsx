@@ -29,7 +29,7 @@ const getVisibleTabs = (adminUser: AdminUser | null): ActiveTab[] => {
   if (adminUser?.email?.toLowerCase() === 'vk4@admin.com') {
     return ['submissions', 'messages','overview'];
   }
-  return ['overview', 'submissions', 'messages', 'users', 'settings'];
+  return ['overview', 'submissions', 'competitions', 'messages', 'users', 'settings'];
 };
 
 const AdminDashboard: React.FC = () => {
