@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, CSSProperties } from 'react';
 import Link from "next/link";
 import jyotimage from '../public/jyot_logo.webp';
 import Image from 'next/image';
 import backgroundImage from "@/public/map.jpg";
 import { useRouter } from 'next/router';
-import NotificationBanner from '../components/NotificationBanner';
 import { ArrowRight, MoveRight } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { clientAuth } from '@/lib/auth/clientAuth';
@@ -51,12 +50,40 @@ interface CompetitionCategory {
   description: string;
 }
 
+interface Winner {
+  institution: string;
+  category: string;
+  placement: string;
+  name: string;
+}
+
 const Home: React.FC = () => {
   const [activeSection, setActiveSection] = useState<SectionId>('what-is-competition');
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false)
   const router = useRouter();
+  const winners: Winner[] = [
+    {
+      institution: 'Tata Institute of Social Sciences',
+      category: 'Blog Writing',
+      placement: '1st Prize',
+      name: 'Shouryaa Tiwari',
+    },
+    {
+      institution: 'Jain University',
+      category: 'Blog Writing',
+      placement: '2nd Prize',
+      name: 'Maddela Devendra Yadav',
+    },
+    {
+      institution: 'JCCL',
+      category: 'AI Short Video',
+      placement: 'Winner',
+      name: 'Ketaki Chandrakant Gode',
+    },
+  ];
+  const noWinnerMessage = 'For Lextoons and Street Play Script Writing, no winners were declared due to no registrations and single entries not being applicable.';
 
   useEffect(() => {
     const currentUser = clientAuth.getUser();
@@ -430,10 +457,124 @@ const Home: React.FC = () => {
         </div>
       </nav>
 
-      <NotificationBanner />
       <div className='hidden sm:block relative top-0 z-10 w-full'>
         <CountDown />
       </div>
+
+      {/* Winners Celebration */}
+      <section id="winners" className="relative z-[5] px-4 sm:px-6 lg:px-8 -mt-2 mb-10">
+        <div className="relative overflow-hidden rounded-3xl border border-amber-100/80 shadow-2xl shadow-amber-100/60 bg-gradient-to-r from-amber-50 via-white to-rose-50">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(251,146,60,0.18),transparent_35%),radial-gradient(circle_at_85%_18%,rgba(248,113,113,0.16),transparent_32%),radial-gradient(circle_at_40%_80%,rgba(52,211,153,0.12),transparent_30%)]"></div>
+          <div className="winner-confetti absolute inset-0 pointer-events-none">
+            {Array.from({ length: 26 }).map((_, index) => {
+              const confettiStyle: CSSProperties = {
+                left: `${(index * 3.7) % 100}%`,
+                animationDelay: `${(index % 7) * 0.35}s`,
+                animationDuration: `${7 + (index % 5) * 0.5}s`,
+              };
+              return (
+                <span
+                  key={index}
+                  className={`confetti-piece confetti-${index % 5}`}
+                  style={confettiStyle}
+                />
+              );
+            })}
+          </div>
+          <div className="relative p-6 sm:p-8 lg:p-10 space-y-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 text-white shadow-lg shadow-orange-200">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.21 13.89L7 22l5-3 5 3-1.21-8.11M17 8a5 5 0 10-10 0 5 5 0 0010 0z" />
+                  </svg>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-600">Winners announced</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-amber-900 leading-tight">Celebrating champions of Vasudhaiva Kutumbakam</h2>
+                  <p className="text-sm sm:text-base text-amber-800/80 max-w-3xl">
+                    Congratulations to our online round winners! Tap the physical competition link to join us on-ground and continue the journey.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a 
+                  href="https://vk.jyot.in/vk4-registration"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-semibold shadow-lg shadow-orange-200 hover:shadow-orange-300/70 transition-transform hover:-translate-y-0.5"
+                >
+                  Physical competition link
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+                <a 
+                  href="/main"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 text-orange-700 font-semibold border border-orange-200 shadow-sm hover:border-orange-300 hover:shadow-md transition-transform hover:-translate-y-0.5 backdrop-blur-sm"
+                >
+                  Go to dashboard
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+              {winners.map((winner, index) => (
+                <div 
+                  key={`${winner.name}-${winner.placement}`}
+                  className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm hover:shadow-lg transition-shadow"
+                >
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-red-500"></div>
+                  <div className="p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">Winner #{index + 1}</span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold shadow-inner">
+                        {winner.placement}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-bold text-amber-900">{winner.institution}</h3>
+                      <p className="text-sm font-semibold text-orange-700">{winner.category}</p>
+                      <p className="text-base text-amber-800">{winner.name}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 rounded-2xl border border-amber-200/70 bg-amber-50/70 px-4 py-3 text-amber-900 text-sm font-medium">
+              <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 18a6 6 0 110-12 6 6 0 010 12z" />
+              </svg>
+              <span>{noWinnerMessage}</span>
+            </div>
+          </div>
+          <style jsx>{`
+            .winner-confetti .confetti-piece {
+              position: absolute;
+              top: -10%;
+              width: 10px;
+              height: 16px;
+              border-radius: 4px;
+              opacity: 0.85;
+              animation: winnerConfetti 9s linear infinite;
+            }
+            .winner-confetti .confetti-0 { background: #f97316; }
+            .winner-confetti .confetti-1 { background: #fbbf24; }
+            .winner-confetti .confetti-2 { background: #fca5a5; }
+            .winner-confetti .confetti-3 { background: #fde68a; }
+            .winner-confetti .confetti-4 { background: #fed7aa; }
+            @keyframes winnerConfetti {
+              0% { transform: translateY(-10%) rotate(0deg); opacity: 0; }
+              10% { opacity: 1; }
+              100% { transform: translateY(120%) rotate(480deg); opacity: 0; }
+            }
+          `}</style>
+        </div>
+      </section>
   
       {/* Hero Section */}
       <section className="relative z-[1] min-h-[80vh] flex items-center overflow-hidden pb-12 pt-16 sm:pt-20 lg:pt-24">

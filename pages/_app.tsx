@@ -7,6 +7,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { clientAuth } from "@/lib/auth/clientAuth";
 import { useIntervalSync } from "@/lib/hooks/useIntervalSync";
+import NotificationBanner from "@/components/NotificationBanner";
 
 // In your main app initialization
 // import { initializeCleanupScheduler } from '../lib/scheduledCleanup';
@@ -31,6 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
     </Head>
     {isProduction && <SpeedInsights />}
     {isProduction && <Analytics />}
+    <NotificationBanner />
     <Toaster position="top-right" />
     <Component {...pageProps} />
     </>

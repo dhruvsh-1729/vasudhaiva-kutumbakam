@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Header from '@/components/Header';
 import CompetitionList from '../components/CompetitionList';
-import NotificationBanner from '@/components/NotificationBanner';
 import NoticeBoard from '@/components/NoticeBoard';
 import Timeline from '@/components/Timeline';
 import Footer from '@/components/Footer';
@@ -213,7 +212,6 @@ const MainPage: React.FC = () => {
         {/* Main Content */}
         <div className="relative z-10">
           <Header />
-          <NotificationBanner />
           
             {/* Welcome Section for Authenticated User */}
             {/* <div className="w-full px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">

@@ -21,6 +21,14 @@ export default async function handler(
     // Mock data for now - replace with your database query
     const announcements: Announcement[] = [
       {
+        id: 7,
+        type: 'winner',
+        title: 'Winners announced for first two-week categories',
+        content: 'Our first two-week category winners are out! Congratulations to the champs. Keep submitting for the final round to grab the prize money.',
+        date: 'December 22, 2025',
+        createdAt: '2025-12-22T09:00:00+05:30'
+      },
+      {
         id: 1,
         type: 'normal',
         title: 'New AI Challenges Added',

@@ -8,7 +8,6 @@ import CompetitionDetails from '@/components/CompetitionDetails';
 import SubmissionPanel from '@/components/SubmissionPanel';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import NotificationBanner from '@/components/NotificationBanner';
 import CountDown from '@/components/CountDown';
 import { clientAuth } from '@/lib/auth/clientAuth';
 import { prisma } from '@/lib/prisma';
@@ -148,7 +147,6 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
       <div className="min-h-screen bg-gray-50">
         {/* Header/Breadcrumb */}
         <Header />
-        <NotificationBanner />
         {/* Use specific deadline for competition 4, dynamic for others */}
         <CountDown deadline={competition.deadline} />
         {/* Main Content */}
