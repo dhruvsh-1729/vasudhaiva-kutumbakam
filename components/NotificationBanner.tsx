@@ -1,5 +1,6 @@
 // components/NotificationBanner.tsx
 import { useState, CSSProperties } from 'react';
+import Link from 'next/link';
 
 const NotificationBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
@@ -109,7 +110,7 @@ const NotificationBanner: React.FC = () => {
             <div className="text-white/95 text-sm sm:text-base font-medium">
               Winners announced! Celebrate our champs & join the physical competitions.
             </div>
-            <a 
+            <Link 
               href="/#winners"
               className="group inline-flex items-center px-3 py-1.5 rounded-full bg-white/15 border border-white/25 text-white text-xs sm:text-sm font-semibold backdrop-blur-sm hover:bg-white/25 transition-all"
             >
@@ -117,7 +118,7 @@ const NotificationBanner: React.FC = () => {
               <svg className="w-4 h-4 ml-1 sm:ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </a>
+            </Link>
             <a 
               href="https://vk.jyot.in/vk4-registration"
               target="_blank"
