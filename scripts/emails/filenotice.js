@@ -133,15 +133,15 @@ Vasudhaiva Kutumbakam – The World is One Family`;
 // ---------- Main script ----------
 async function main() {
   // For testing, uncomment this line:
-  // const users = [{ name: "Dhruv Shah", email: "dhruvsh2003@gmail.com" }];
+  const users = [{ name: "Dhruv Shah", email: "dhruvsh2003@gmail.com" }];
 
   // Fetch all users from database
-  const users = await prisma.user.findMany({
-    select: {
-      email: true,
-      name: true,
-    },
-  });
+  // const users = await prisma.user.findMany({
+  //   select: {
+  //     email: true,
+  //     name: true,
+  //   },
+  // });
 
   console.log(`Found ${users.length} users. Starting to send emails...`);
   console.log("📧 DEBUG: First user:", users[0]); // Debug line
