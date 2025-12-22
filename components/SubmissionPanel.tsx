@@ -307,7 +307,12 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId, compet
     }
 
     if (!isCompetition4 && !canSubmitMore()) {
-      toast.error(`Maximum ${adminSettings.maxSubmissionsPerInterval} submissions allowed per interval`);
+      const maxSubmissions = adminSettings?.maxSubmissionsPerInterval;
+      toast.error(
+        maxSubmissions
+          ? `Maximum ${maxSubmissions} submissions allowed per interval`
+          : 'Submission limit not available yet. Please try again in a moment.'
+      );
       return;
     }
     
