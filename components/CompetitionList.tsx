@@ -1,6 +1,6 @@
 // components/CompetitionList.tsx
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { competitions as staticCompetitions } from '../data/competitions';
 
 // Type definitions
@@ -36,6 +36,15 @@ interface CompetitionStats {
 const CompetitionList: React.FC = () => {
   const [liveCompetitions, setLiveCompetitions] = useState<Competition[]>(staticCompetitions);
   const [loading, setLoading] = useState<boolean>(false);
+  const deadlineOverrides = useMemo(() => {
+    const map: Record<number, string> = {};
+    staticCompetitions.forEach((comp) => {
+      if (comp.deadline) {
+        map[comp.id] = comp.deadline;
+      }
+    });
+    return map;
+  }, []);
 
   useEffect(() => {
     const fetchCompetitions = async () => {
@@ -47,17 +56,26 @@ const CompetitionList: React.FC = () => {
         if (Array.isArray(data) && data.length) {
           const mapped = data
             .filter((c: any) => c.isPublished !== false)
-            .map((c: any) => ({
-              id: c.legacyId,
-              title: c.title,
-              description: c.description,
-              icon: c.icon || '✨',
-              color: c.color || 'from-orange-500 to-red-600',
-              deadline: c.deadline ? new Date(c.deadline).toISOString() : undefined,
-              slug: c.slug,
-              prizes: c.prizes || null,
-              prizePool: c.prizePool || null,
-            }))
+            .map((c: any) => {
+              const overrideDeadline = deadlineOverrides[c.legacyId];
+              const deadlineValue = overrideDeadline
+                ? new Date(overrideDeadline).toISOString()
+                : c.deadline
+                  ? new Date(c.deadline).toISOString()
+                  : undefined;
+
+              return {
+                id: c.legacyId,
+                title: c.title,
+                description: c.description,
+                icon: c.icon || '✨',
+                color: c.color || 'from-orange-500 to-red-600',
+                deadline: deadlineValue,
+                slug: c.slug,
+                prizes: c.prizes || null,
+                prizePool: c.prizePool || null,
+              };
+            });
           setLiveCompetitions(mapped);
         }
       } catch (error) {
@@ -68,7 +86,7 @@ const CompetitionList: React.FC = () => {
       }
     };
     fetchCompetitions();
-  }, []);
+  }, [deadlineOverrides]);
 
   const formatDeadlineDisplay = (deadline?: string) => {
     if (!deadline) return 'TBD';

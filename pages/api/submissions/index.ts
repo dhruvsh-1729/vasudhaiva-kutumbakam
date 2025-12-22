@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth/serverAuth';
 import { getCurrentSubmissionInterval, areSubmissionsOpen } from '@/lib/deadlineManager';
+import { competitions as staticCompetitions } from '@/data/competitions';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -184,8 +185,13 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
     // Map to competition document if present
     const competitionDoc = await prisma.competition.findFirst({
       where: { legacyId: compId },
-      select: { id: true },
+      select: { id: true, deadline: true },
     });
+    const fallbackCompetition = staticCompetitions.find((c) => c.id === compId);
+    const competitionDeadline = fallbackCompetition?.deadline ?? competitionDoc?.deadline;
+    if (isDeadlinePassed(competitionDeadline)) {
+      return res.status(403).json({ error: 'Submissions are closed for this competition' });
+    }
 
     // Check if submissions are open based on timeline
     if (!isOpen) {
@@ -277,6 +283,17 @@ enum SubmissionStatus {
 }
 
 // ---------- Helpers ----------
+
+function getIstNow(): Date {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+}
+
+function isDeadlinePassed(deadline?: Date | string | null): boolean {
+  if (!deadline) return false;
+  const parsed = deadline instanceof Date ? deadline : new Date(deadline);
+  if (Number.isNaN(parsed.getTime())) return false;
+  return getIstNow().getTime() > parsed.getTime();
+}
 
 function isValidGoogleDriveUrl(url: string): boolean {
   const patterns = [

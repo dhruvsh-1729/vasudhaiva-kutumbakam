@@ -1,5 +1,5 @@
 // components/SubmissionPanel.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { clientAuth } from '@/lib/auth/clientAuth';
 import { UploadButton } from '@/utils/uploadthing';
@@ -43,6 +43,7 @@ interface SubmissionMessage {
 
 interface SubmissionPanelProps {
   competitionId: number | string;
+  competitionDeadline?: string;
 }
 
 interface AdminSettings {
@@ -60,7 +61,7 @@ interface SubmissionMessage {
   author?: { id: string; name: string; isAdmin?: boolean };
 }
 
-const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
+const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId, competitionDeadline }) => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     fileUrl: '',
@@ -85,6 +86,28 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
   const isCompetition4 = Number(competitionId) === 4;
   const isVideoCompetition = Number(competitionId) === 1;
   const usesUploadThing = !isVideoCompetition;
+  const getIstNow = () => new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+
+  const competitionDeadlineDate = useMemo(() => {
+    if (!competitionDeadline) return null;
+    const parsed = new Date(competitionDeadline);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }, [competitionDeadline]);
+
+  const isCompetitionClosed = useMemo(() => {
+    if (!competitionDeadlineDate) return false;
+    return getIstNow().getTime() > competitionDeadlineDate.getTime();
+  }, [competitionDeadlineDate]);
+
+  const formattedCompetitionDeadline = useMemo(() => {
+    if (!competitionDeadlineDate) return '';
+    return competitionDeadlineDate.toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata',
+    });
+  }, [competitionDeadlineDate]);
 
   // Fetch admin settings and user submissions on component mount
   useEffect(() => {
@@ -253,11 +276,22 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
     return currentSubmissions.length < adminSettings.maxSubmissionsPerInterval;
   };
 
+  const isSubmissionsOpenForCompetition = Boolean(adminSettings?.isSubmissionsOpen) && !isCompetitionClosed;
+  const submissionStatusLabel = isCompetitionClosed
+    ? 'Closed (deadline passed)'
+    : adminSettings?.isSubmissionsOpen
+      ? 'Open'
+      : 'Closed';
+  const submissionStatusClass =
+    isCompetitionClosed || !adminSettings?.isSubmissionsOpen
+      ? 'bg-red-100 text-red-800'
+      : 'bg-green-100 text-green-800';
+
   const isSubmitDisabled =
     isSubmitting ||
     isVerifyingAccess ||
     uploading ||
-    !adminSettings?.isSubmissionsOpen ||
+    !isSubmissionsOpenForCompetition ||
     (!isCompetition4 && !canSubmitMore());
 
   const handleSubmit = async (): Promise<void> => {
@@ -267,8 +301,8 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
       return;
     }
 
-    if (!adminSettings?.isSubmissionsOpen) {
-      toast.error('Submissions are currently closed');
+    if (!isSubmissionsOpenForCompetition) {
+      toast.error(isCompetitionClosed ? 'Submissions are closed for this competition' : 'Submissions are currently closed');
       return;
     }
 
@@ -480,25 +514,33 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                   )}
                 </div>
 
+                {isCompetitionClosed && (
+                  <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50 text-red-800 font-inter text-sm">
+                    Submissions for this category closed on {formattedCompetitionDeadline || 'the deadline'}. You can still view your past submissions in the My Submissions tab.
+                  </div>
+                )}
+
                 {/* Submission Status Info - Only show for non-competition 4 */}
                 {adminSettings && !isCompetition4 && (
                   <div className="mb-6 p-4 bg-blue-50/80 rounded-xl border border-blue-200/50">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-inter text-sm font-semibold text-blue-800">Current Week: {adminSettings.currentInterval}</span>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        adminSettings.isSubmissionsOpen 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {adminSettings.isSubmissionsOpen ? 'Open' : 'Closed'}
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${submissionStatusClass}`}>
+                        {submissionStatusLabel}
                       </span>
                     </div>
                     <div className="text-sm text-blue-700 font-inter">
                       <span>Submissions: {getCurrentIntervalSubmissions().length}/{adminSettings.maxSubmissionsPerInterval}</span>
                     </div>
-                    <div className="text-xs text-blue-600 font-inter mt-2">
-                      💡 Deadlines automatically advance to the next week when current week ends
-                    </div>
+                    {isCompetitionClosed ? (
+                      <div className="text-xs text-red-700 font-inter mt-2">
+                        This category&apos;s submission deadline has passed.
+                      </div>
+                    ) : (
+                      <div className="text-xs text-blue-600 font-inter mt-2">
+                        💡 Deadlines automatically advance to the next week when current week ends
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -742,8 +784,8 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId }) => {
                         </svg>
                         Submitting...
                       </div>
-                    ) : !adminSettings?.isSubmissionsOpen ? (
-                      'Submissions Closed'
+                    ) : !isSubmissionsOpenForCompetition ? (
+                      isCompetitionClosed ? 'Submissions Closed (deadline passed)' : 'Submissions Closed'
                     ) : (!isCompetition4 && !canSubmitMore()) ? (
                       'Submission Limit Reached'
                     ) : (

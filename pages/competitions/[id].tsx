@@ -159,7 +159,7 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
 
             {/* Right Panel - Submission Panel */}
             <div className="lg:col-span-4 space-y-6">
-              <SubmissionPanel competitionId={competition.id} />
+              <SubmissionPanel competitionId={competition.id} competitionDeadline={competition.deadline} />
             </div>
           </div>
         </main>
@@ -207,9 +207,11 @@ export async function getStaticProps({ params }: { params?: { id?: string } }) {
 
     if (dbComp) {
       const fallbackStatic = getCompetitionBySlug(slug) || (Number.isInteger(numeric) ? getCompetitionBySlug(String(dbComp.slug)) : null);
-      const deadlineValue = dbComp.deadline
-        ? new Date(dbComp.deadline).toISOString()
-        : fallbackStatic?.deadline;
+      const deadlineValue = fallbackStatic?.deadline
+        ? new Date(fallbackStatic.deadline).toISOString()
+        : dbComp.deadline
+          ? new Date(dbComp.deadline).toISOString()
+          : undefined;
       competition = {
         id: dbComp.legacyId,
         title: dbComp.title,

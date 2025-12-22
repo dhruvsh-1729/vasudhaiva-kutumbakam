@@ -13,7 +13,7 @@ async function main() {
       slug: 'singing',
       icon: '🎵',
       color: 'from-red-500 to-red-600',
-      deadline: new Date('2025-11-30T23:59:59+05:30'),
+      deadline: new Date('2025-12-30T23:59:59+05:30'),
       prizePool: '₹50,000',
       prizes: {
         first: '₹25,000',
@@ -125,7 +125,7 @@ async function main() {
 <li>Provide your name and email address</li>
 <li>Upload your audio file directly (MP3, WAV, or M4A)</li>
 <li>Include a brief description of your song concept</li>
-<li>Submit before the deadline: <strong>November 30, 2025 11:59:59 PM IST</strong></li>
+<li>Submit before the deadline: <strong>December 30, 2025 11:59:59 PM IST</strong></li>
 </ul>
 
 <p><strong>Required Information:</strong></p>
@@ -157,7 +157,7 @@ async function main() {
       slug: 'singing',
       icon: '🎵',
       color: 'from-red-500 to-red-600',
-      deadline: new Date('2025-11-30T23:59:59+05:30'),
+      deadline: new Date('2025-12-30T23:59:59+05:30'),
       prizePool: '₹50,000',
       prizes: {
         first: '₹25,000',
@@ -269,7 +269,7 @@ async function main() {
 <li>Provide your name and email address</li>
 <li>Upload your audio file directly (MP3, WAV, or M4A)</li>
 <li>Include a brief description of your song concept</li>
-<li>Submit before the deadline: <strong>November 30, 2025 11:59:59 PM IST</strong></li>
+<li>Submit before the deadline: <strong>December 30, 2025 11:59:59 PM IST</strong></li>
 </ul>
 
 <p><strong>Required Information:</strong></p>
@@ -307,7 +307,7 @@ async function main() {
       slug: 'poetry',
       icon: '✨',
       color: 'from-indigo-500 to-indigo-600',
-      deadline: new Date('2025-11-30T23:59:59+05:30'),
+      deadline: new Date('2025-12-30T23:59:59+05:30'),
       prizePool: '₹35,200',
       prizes: {
         first: '₹16,000',
@@ -391,7 +391,7 @@ async function main() {
 <li>Provide your name and email address</li>
 <li>Upload your poetry file directly (PDF or DOCX format)</li>
 <li>Include a brief introduction to your work</li>
-<li>Submit before the deadline: <strong>November 30, 2025 11:59:59 PM IST</strong></li>
+<li>Submit before the deadline: <strong>December 30, 2025 11:59:59 PM IST</strong></li>
 </ul>
 
 <p><strong>Required Information:</strong></p>
@@ -434,7 +434,7 @@ async function main() {
       slug: 'poetry',
       icon: '✨',
       color: 'from-indigo-500 to-indigo-600',
-      deadline: new Date('2025-11-30T23:59:59+05:30'),
+      deadline: new Date('2025-12-30T23:59:59+05:30'),
       prizePool: '₹35,200',
       prizes: {
         first: '₹16,000',
@@ -518,7 +518,7 @@ async function main() {
 <li>Provide your name and email address</li>
 <li>Upload your poetry file directly (PDF or DOCX format)</li>
 <li>Include a brief introduction to your work</li>
-<li>Submit before the deadline: <strong>November 30, 2025 11:59:59 PM IST</strong></li>
+<li>Submit before the deadline: <strong>December 30, 2025 11:59:59 PM IST</strong></li>
 </ul>
 
 <p><strong>Required Information:</strong></p>
