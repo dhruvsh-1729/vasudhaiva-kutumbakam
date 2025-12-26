@@ -1,25 +1,12 @@
 #!/usr/bin/env node
 
-// Load environment variables (BREVO_API_KEY, DATABASE_URL, NEXT_PUBLIC_BASE_URL, etc.)
+// Load environment variables (MAILEROO_API_KEY, DATABASE_URL, NEXT_PUBLIC_BASE_URL, etc.)
 require("dotenv").config();
 
 const fs = require("fs");
 const path = require("path");
-const brevo = require("@getbrevo/brevo");
 const { PrismaClient } = require("@prisma/client");
-
-// ---------- Brevo setup ----------
-const transactionalEmailsApi = new brevo.TransactionalEmailsApi();
-
-// Use BREVO_API_KEY from .env
-if (!process.env.BREVO_API_KEY) {
-  console.error("❌ BREVO_API_KEY is not set in environment variables.");
-  process.exit(1);
-}
-transactionalEmailsApi.setApiKey(
-  brevo.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
+const maileroo = require("../maileroo-client");
 
 // ---------- Prisma setup ----------
 const prisma = new PrismaClient();
@@ -230,7 +217,7 @@ async function main() {
     };
 
     try {
-      const response = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+      const response = await maileroo.sendTransacEmail(sendSmtpEmail);
       const msgId =
         (response && response.body && response.body.messageId) || response.messageId;
       console.log(`✅ Sent to ${toEmail} (messageId: ${msgId || "N/A"})`);

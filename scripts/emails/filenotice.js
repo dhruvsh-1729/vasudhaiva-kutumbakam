@@ -1,24 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const brevo = require("@getbrevo/brevo");
 const { PrismaClient } = require("@prisma/client");
+const maileroo = require("../maileroo-client");
 
 // Load environment variables
 require("dotenv").config();
-
-// ---------- Brevo setup ----------
-const apiInstance = new brevo.TransactionalEmailsApi();
-
-if (!process.env.BREVO_API_KEY) {
-  console.error("❌ BREVO_API_KEY is not set in environment variables.");
-  process.exit(1);
-}
-
-// Correct API key setup
-apiInstance.setApiKey(
-  brevo.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
 
 // ---------- Prisma setup ----------
 const prisma = new PrismaClient();
@@ -155,21 +141,21 @@ async function main() {
     const userName = user.name || "Participant";
     const template = getDirectUploadEmailTemplate(userName);
 
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.sender = {
-      email: "vk4.ki.oar@gmail.com",
-      name: "VK Competition",
+    const sendSmtpEmail = {
+      sender: {
+        email: "vk4.ki.oar@gmail.com",
+        name: "VK Competition",
+      },
+      to: [{ email: user.email, name: userName }],
+      subject: template.subject,
+      htmlContent: template.htmlContent,
+      textContent: template.textContent,
+      replyTo: {
+        email: "vk4.ki.oar@gmail.com",
+        name: "VK Competition",
+      },
+      tags: ["vk-competition-direct-upload"],
     };
-    sendSmtpEmail.to = [{ email: user.email, name: userName }];
-    sendSmtpEmail.subject = template.subject;
-    sendSmtpEmail.htmlContent = template.htmlContent;
-    sendSmtpEmail.textContent = template.textContent;
-    sendSmtpEmail.replyTo = {
-      email: "vk4.ki.oar@gmail.com",
-      name: "VK Competition",
-    };
-    // Optional: tag for Brevo analytics
-    sendSmtpEmail.tags = ["vk-competition-direct-upload"];
 
     console.log(`\n📤 Attempting to send to: ${user.email}`); // Debug line
     console.log(`📝 Subject: ${template.subject}`); // Debug line
@@ -180,7 +166,7 @@ async function main() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
+      const response = await maileroo.sendTransacEmail(sendSmtpEmail);
       console.log(`📊 Full response:`, JSON.stringify(response, null, 2)); // Debug line
       console.log(
         `✅ Sent email to ${user.email} (messageId: ${
@@ -202,9 +188,9 @@ async function main() {
   console.log(`✅ Success: ${successCount}`);
   console.log(`❌ Failed:  ${failureCount}`);
   console.log("\n💡 Next steps:");
-  console.log("1. Check your Brevo dashboard for email logs");
+  console.log("1. Check your Maileroo dashboard for email logs");
   console.log("2. Check spam/junk folder");
-  console.log("3. Verify sender email is authenticated in Brevo");
+  console.log("3. Verify sender email is authenticated in Maileroo");
 }
 
 main()

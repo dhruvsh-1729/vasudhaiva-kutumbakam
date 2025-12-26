@@ -6,25 +6,14 @@
  * Promotions triggers while still including competition details and attaching a PDF.
  */
 
-const brevo = require("@getbrevo/brevo");
 const { PrismaClient } = require("@prisma/client");
 const readline = require("readline");
 const path = require("path");
 const fs = require("fs");
+const maileroo = require("../maileroo-client");
 
 // Load env
 require("dotenv").config();
-
-// ---------- Brevo setup ----------
-const transactionalEmailsApi = new brevo.TransactionalEmailsApi();
-if (!process.env.BREVO_API_KEY) {
-  console.error("❌ BREVO_API_KEY is not set in environment variables.");
-  process.exit(1);
-}
-transactionalEmailsApi.setApiKey(
-  brevo.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
 
 // ---------- Prisma setup ----------
 const prisma = new PrismaClient();
@@ -250,41 +239,29 @@ async function sendEmail({ user, competitions, attachment, senderEmail }) {
   const userFirstName = (user.name || "").split(" ")[0] || "there";
   const template = getEmailTemplate(userFirstName, competitions);
 
-  // Use SendSmtpEmail (like your script that lands in Primary)
-  const sendSmtpEmail = new brevo.SendSmtpEmail();
-
-  // IMPORTANT: Human sender name generally performs better than brand sender name
-  sendSmtpEmail.sender = {
-    email: senderEmail || "vk4.ki.oar@gmail.com",
-    name: "Dhruv",
+  const sendSmtpEmail = {
+    sender: {
+      email: senderEmail || "vk4.ki.oar@gmail.com",
+      name: "Dhruv",
+    },
+    to: [{ email: user.email, name: user.name || "Participant" }],
+    replyTo: {
+      email: senderEmail || "vk4.ki.oar@gmail.com",
+      name: "Dhruv",
+    },
+    subject: template.subject,
+    htmlContent: template.htmlContent,
+    textContent: template.textContent,
+    attachment: attachment || [],
+    headers: {
+      "X-Priority": "3",
+      "Precedence": "personal",
+      "X-Entity-Ref-ID": `vk-${Buffer.from(user.email).toString("base64")}-${Date.now()}`,
+    },
+    tags: ["vk-details-with-pdf"],
   };
 
-  sendSmtpEmail.to = [{ email: user.email, name: user.name || "Participant" }];
-
-  // Reply-to as a real person
-  sendSmtpEmail.replyTo = {
-    email: senderEmail || "vk4.ki.oar@gmail.com",
-    name: "Dhruv",
-  };
-
-  sendSmtpEmail.subject = template.subject;
-  sendSmtpEmail.htmlContent = template.htmlContent;
-  sendSmtpEmail.textContent = template.textContent;
-
-  // Keep attachment
-  sendSmtpEmail.attachment = attachment || [];
-
-  // Reduce “bulk” fingerprint a little
-  sendSmtpEmail.headers = {
-    "X-Priority": "3",
-    "Precedence": "personal",
-    "X-Entity-Ref-ID": `vk-${Buffer.from(user.email).toString("base64")}-${Date.now()}`,
-  };
-
-  // If you suspect tags correlate with Promotions in your account, remove this.
-  sendSmtpEmail.tags = ["vk-details-with-pdf"];
-
-  return transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+  return maileroo.sendTransacEmail(sendSmtpEmail);
 }
 
 // ---------- Main ----------
@@ -388,7 +365,7 @@ async function main() {
   console.log("\nReality check:");
   console.log("- PDF attachments + multi-item content increases Promotions probability.");
   console.log("- This script keeps details but removes the strongest newsletter/digest fingerprints.");
-  console.log("- For the biggest improvement: send from an authenticated custom domain (SPF/DKIM/DMARC) in Brevo.");
+  console.log("- For the biggest improvement: send from an authenticated custom domain (SPF/DKIM/DMARC) in Maileroo.");
 }
 
 main()

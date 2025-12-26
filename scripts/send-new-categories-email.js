@@ -1,19 +1,8 @@
-const brevo = require("@getbrevo/brevo");
 const { PrismaClient } = require("@prisma/client");
+const maileroo = require("./maileroo-client");
 
 // Load environment variables
 require("dotenv").config();
-
-// ---------- Brevo setup ----------
-const transactionalEmailsApi = new brevo.TransactionalEmailsApi();
-if (!process.env.BREVO_API_KEY) {
-  console.error("❌ BREVO_API_KEY is not set in environment variables.");
-  process.exit(1);
-}
-transactionalEmailsApi.setApiKey(
-  brevo.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
 
 // ---------- Prisma setup ----------
 const prisma = new PrismaClient();
@@ -230,7 +219,7 @@ async function sendEmail(user, competitions) {
     tags: ["transactional", "new-categories", "winners-announcement"],
   };
 
-  const response = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+  const response = await maileroo.sendTransacEmail(sendSmtpEmail);
   return response;
 }
 

@@ -1,24 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const brevo = require("@getbrevo/brevo");
 const { PrismaClient } = require("@prisma/client");
+const maileroo = require("../maileroo-client");
 
 // Load environment variables
 require("dotenv").config();
-
-// ---------- Brevo setup ----------
-const apiInstance = new brevo.TransactionalEmailsApi();
-
-if (!process.env.BREVO_API_KEY) {
-  console.error("❌ BREVO_API_KEY is not set in environment variables.");
-  process.exit(1);
-}
-
-// Correct API key setup
-apiInstance.setApiKey(
-  brevo.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
 
 // ---------- Prisma setup ----------
 const prisma = new PrismaClient();
@@ -174,21 +160,21 @@ async function main() {
     const userName = user.name || "Participant";
     const template = getWeekTwoEmailTemplate(userName);
 
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.sender = {
-      email: "vk4.ki.oar@gmail.com", // consider using a domain email here if you can
-      name: "VK Competition",
+    const sendSmtpEmail = {
+      sender: {
+        email: "vk4.ki.oar@gmail.com", // consider using a domain email here if you can
+        name: "VK Competition",
+      },
+      to: [{ email: user.email, name: userName }],
+      subject: template.subject,
+      htmlContent: template.htmlContent,
+      textContent: template.textContent,
+      replyTo: {
+        email: "vk4.ki.oar@gmail.com",
+        name: "VK Competition",
+      },
+      tags: ["vk-competition-week2"],
     };
-    sendSmtpEmail.to = [{ email: user.email, name: userName }];
-    sendSmtpEmail.subject = template.subject;
-    sendSmtpEmail.htmlContent = template.htmlContent;
-    sendSmtpEmail.textContent = template.textContent;
-    sendSmtpEmail.replyTo = {
-      email: "vk4.ki.oar@gmail.com",
-      name: "VK Competition",
-    };
-    // Optional: tag for Brevo analytics
-    sendSmtpEmail.tags = ["vk-competition-week2"];
 
     try {
       // Small delay between emails to avoid rate limiting / bulk spikes
@@ -196,7 +182,7 @@ async function main() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
+      const response = await maileroo.sendTransacEmail(sendSmtpEmail);
       console.log(
         `✅ Sent email to ${user.email} (messageId: ${
           response.messageId || "N/A"

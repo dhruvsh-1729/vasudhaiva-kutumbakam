@@ -1,5 +1,5 @@
 // lib/emailService.ts
-import { apiInstance } from './brevo';
+import { apiInstance } from './maileroo';
 
 export interface EmailTemplate {
   subject: string;
@@ -71,7 +71,7 @@ export class EmailService {
         subject: template.subject,
         htmlContent: template.htmlContent,
         textContent: template.textContent,
-        // Brevo attachment format: [{ name, content(base64) }]
+        // Maileroo attachment format: [{ name, content(base64) }]
         attachment: attachment ? [attachment] : undefined,
       };
 
