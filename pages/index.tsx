@@ -272,7 +272,7 @@ const Home: React.FC = () => {
   ];
 
   const [competitionCategories, setCompetitionCategories] = useState<CompetitionCategory[]>([
-    { category: "AI Short Video", icon: "🎬", description: "Create 1–3 minute AI-powered reels on the weekly topics. Deadline: Dec 30, 2025." },
+    { category: "AI Short Video", icon: "🎬", description: "Create 1–3 minute AI-powered reels on the weekly topics. Deadline: Dec 12, 2025." },
     { category: "Creative Expression (Scripts)", icon: "✨", description: "Original scripts for videos or street plays aligned to Vasudhaiva Kutumbakam. Deadline: Dec 12, 2025." },
     { category: "LexToons (AI Comics / Legal Satire)", icon: "🖍️", description: "Illustrated comics or satire strips using AI visuals and text on the given topics. Deadline: Dec 12, 2025." },
     { category: "Blog Writing / AI-Assisted Essay", icon: "📝", description: "500–800 word original blogs or essays focused on the listed topics. Deadline: Dec 12, 2025." },

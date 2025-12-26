@@ -34,7 +34,17 @@ interface CompetitionStats {
 }
 
 const CompetitionList: React.FC = () => {
-  const [liveCompetitions, setLiveCompetitions] = useState<Competition[]>(staticCompetitions);
+  const getIstNow = () => new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const isExpired = (deadline?: string | null) => {
+    if (!deadline) return false;
+    const parsed = new Date(deadline);
+    if (Number.isNaN(parsed.getTime())) return false;
+    return getIstNow().getTime() > parsed.getTime();
+  };
+
+  const [liveCompetitions, setLiveCompetitions] = useState<Competition[]>(
+    staticCompetitions.filter((comp) => !isExpired(comp.deadline))
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const deadlineOverrides = useMemo(() => {
     const map: Record<number, string> = {};
@@ -75,12 +85,13 @@ const CompetitionList: React.FC = () => {
                 prizes: c.prizes || null,
                 prizePool: c.prizePool || null,
               };
-            });
+            })
+            .filter((comp: Competition) => !isExpired(comp.deadline));
           setLiveCompetitions(mapped);
         }
       } catch (error) {
         console.error('Failed to load competitions from API, using static data', error);
-        setLiveCompetitions(staticCompetitions);
+        setLiveCompetitions(staticCompetitions.filter((comp) => !isExpired(comp.deadline)));
       } finally {
         setLoading(false);
       }
