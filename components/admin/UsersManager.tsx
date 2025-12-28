@@ -47,6 +47,7 @@ const UsersManager: React.FC = () => {
   const [showUserModal, setShowUserModal] = useState<boolean>(false);
   const [bulkSelectMode, setBulkSelectMode] = useState<boolean>(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [unverifiedCount, setUnverifiedCount] = useState<number>(0);
 
   // Fetch users with filters and pagination?
   useEffect(() => {
@@ -70,6 +71,10 @@ const UsersManager: React.FC = () => {
         const data = await response.json();
         setUsers(data.users);
         setPagination(data.pagination);
+        
+        // Calculate unverified users count
+        const unverified = data.users.filter((u: User) => !u.isEmailVerified).length;
+        setUnverifiedCount(unverified);
       } catch (error) {
         console.error('Error fetching users:', error);
         toast.error('Failed to load users');
@@ -185,6 +190,34 @@ const UsersManager: React.FC = () => {
     }
   };
 
+  // Handle bulk email verification for all unverified users
+  const handleBulkVerifyAllEmails = async () => {
+    const confirmMessage = `Are you sure you want to verify all unverified users' emails? This will update all users with unverified emails to verified status.`;
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      const response = await clientAuth.authFetch('/api/admin/users/bulk-verify-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to bulk verify emails');
+      }
+
+      const data = await response.json();
+      toast.success(data.message);
+      
+      // Refresh users list to show updated data
+      window.location.reload();
+    } catch (error) {
+      console.error('Error with bulk email verification:', error);
+      toast.error('Failed to verify emails');
+    }
+  };
+
   const getUserInitials = (name: string): string => {
     return name
       .split(' ')
@@ -241,6 +274,21 @@ const UsersManager: React.FC = () => {
               className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
             >
               Export CSV
+            </button>
+            <button
+              onClick={handleBulkVerifyAllEmails}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-2"
+              title="Verify all unverified users' emails"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Verify All Emails
+              {unverifiedCount > 0 && (
+                <span className="bg-white text-blue-600 px-2 py-0.5 rounded-full text-xs font-semibold">
+                  {unverifiedCount}
+                </span>
+              )}
             </button>
             <button
               onClick={() => setBulkSelectMode(!bulkSelectMode)}
