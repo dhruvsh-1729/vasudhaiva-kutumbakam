@@ -132,7 +132,7 @@ export default async function handler(
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create new user with email already verified
+    // Create new user - email verification bypassed per business requirements
     const newUser = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -141,7 +141,7 @@ export default async function handler(
         institution: institution.trim(),
         password: hashedPassword,
         isActive: true,
-        isEmailVerified: true, // Email verification bypassed - set to true immediately
+        isEmailVerified: true
       },
       select: {
         id: true,
@@ -157,7 +157,7 @@ export default async function handler(
     // Log successful registration
     console.log(`New user registered: ${newUser.email} at ${new Date().toISOString()}`);
 
-    // Return success response - account is ready to use
+    // Return success response - account is immediately usable without email verification
     return res.status(201).json({
       success: true,
       message: 'Registration successful! Your account has been created. Please login to continue.',
