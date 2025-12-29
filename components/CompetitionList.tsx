@@ -34,7 +34,9 @@ interface CompetitionStats {
 }
 
 const CompetitionList: React.FC = () => {
-  const getIstNow = () => new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Helper function for deadline comparison
+  // Since deadlines include IST timezone offset (+05:30), direct comparison works
+  const getIstNow = () => new Date();
   const isExpired = (deadline?: string | null) => {
     if (!deadline) return false;
     const parsed = new Date(deadline);
@@ -256,7 +258,7 @@ const CompetitionList: React.FC = () => {
                             {(() => {
                               if (!competition.deadline) return 'Ongoing';
                               const deadlineDate = new Date(competition.deadline);
-                              const currentDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                              const currentDate = new Date();
                               const timeDiff = deadlineDate.getTime() - currentDate.getTime();
                               const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
                               return daysLeft > 0 ? `${daysLeft} days left` : 'Expired';

@@ -57,9 +57,11 @@ export const timelineIntervals = [
 ];
 
 // Helper function to get current active interval based on current date in IST
+// Since our interval dates include IST timezone offset (+05:30),
+// we can directly compare with current time for accurate results
 export const getCurrentInterval = () => {
-  // Get current time in IST
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Get current time (works correctly with timezone-aware date strings)
+  const now = new Date();
   const firstInterval = timelineIntervals[0];
   const firstStart = new Date(firstInterval.startDate);
 
@@ -83,8 +85,8 @@ export const getCurrentInterval = () => {
 
 // Helper function to get the next deadline in IST
 export const getNextDeadline = () => {
-  // Get current time in IST
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Get current time (works correctly with timezone-aware date strings)
+  const now = new Date();
   let nextInterval;
   let nextSubmission;
   
@@ -116,7 +118,7 @@ export const getCurrentSubmissionInterval = () => {
     return currentInterval.weekNumber;
   }
 
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const now = new Date();
   const upcomingSubmission = timelineIntervals.find(interval => 
     interval.isSubmissionInterval && new Date(interval.startDate) > now && interval.weekNumber
   );
@@ -134,7 +136,7 @@ export const getCurrentSubmissionInterval = () => {
 
 // Helper function to check if submissions are open based on timeline
 export const areSubmissionsOpen = () => {
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const now = new Date();
   const currentInterval = getCurrentInterval();
 
   if (!currentInterval.isSubmissionInterval) {
