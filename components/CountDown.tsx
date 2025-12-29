@@ -43,10 +43,16 @@ const CountDown: React.FC<CountDownProps> = ({ deadline: propDeadline }) => {
         }
       }
 
-      // Parse deadline in IST timezone
+      // Parse deadline - it should include IST timezone offset (+05:30)
+      // The deadline string format: "YYYY-MM-DDTHH:MM:SS+05:30"
       const deadlineDate = new Date(deadlineToUse);
-      // Get current time in IST
-      const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+      
+      // Get current time in UTC and convert to IST for comparison
+      // We use a proper timezone-aware approach here
+      const now = new Date();
+      
+      // Calculate the difference in milliseconds
+      // Both dates are timezone-aware, so this gives us the correct difference
       const difference = deadlineDate.getTime() - now.getTime();
 
       if (difference > 0) {

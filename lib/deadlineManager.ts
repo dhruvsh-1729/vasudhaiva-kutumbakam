@@ -1,5 +1,32 @@
 // lib/deadlineManager.ts
 // Utility functions for managing competition deadlines and intervals
+//
+// ===== IST (Indian Standard Time) HANDLING =====
+//
+// This module ensures all deadlines are treated as 11:59:59 PM IST (UTC+5:30).
+//
+// KEY PRINCIPLES:
+// 1. All deadline strings in the timeline are stored with explicit IST timezone offset (+05:30)
+//    Example: "2025-11-30T23:59:59+05:30" means Nov 30, 2025 at 11:59:59 PM IST
+//
+// 2. JavaScript Date objects handle timezone-aware strings correctly
+//    When you do: new Date("2025-11-30T23:59:59+05:30")
+//    The Date object stores the correct UTC timestamp internally
+//
+// 3. Comparisons work correctly because Date.getTime() returns UTC milliseconds
+//    new Date("2025-11-30T23:59:59+05:30").getTime() - new Date().getTime()
+//    This gives the correct time difference regardless of the user's local timezone
+//
+// 4. No need for manual timezone conversion with toLocaleString
+//    The old approach of toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }) 
+//    was error-prone because it converted to a string and back, potentially losing precision
+//
+// 5. For displaying dates to users in IST, use Intl.DateTimeFormat with timeZone: 'Asia/Kolkata'
+//    This is only for display purposes, not for calculations
+//
+// IMPORTANT: All deadlines should be stored with the +05:30 timezone offset to ensure
+// they are correctly interpreted as IST times.
+//
 
 interface TimelineInterval {
   id: number;
@@ -14,21 +41,100 @@ interface TimelineInterval {
 /**
  * Get current time in IST (Indian Standard Time)
  * IST is UTC+5:30
+ * 
+ * This function returns the current time as it would be in IST timezone.
+ * The returned Date object represents the same moment in time, just constructed
+ * to match IST clock time.
  */
 function getCurrentIST(customDate?: Date): Date {
   const now = customDate || new Date();
-  // Convert to IST by adding 5 hours 30 minutes
-  const istTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-  return istTime;
+  
+  // Create a date formatter for IST
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const getValue = (type: string) => parts.find(p => p.type === type)?.value || '0';
+  
+  // Create new Date using IST values
+  // Note: This creates a Date object with IST time values but in local timezone
+  // This is intentional for comparison purposes
+  const istDate = new Date(
+    parseInt(getValue('year')),
+    parseInt(getValue('month')) - 1,
+    parseInt(getValue('day')),
+    parseInt(getValue('hour')),
+    parseInt(getValue('minute')),
+    parseInt(getValue('second'))
+  );
+  
+  return istDate;
 }
 
 /**
- * Convert a date string to IST Date object
+ * Convert a date string to a Date object
+ * Handles dates with IST timezone offset (+05:30)
  */
 function toISTDate(dateString: string): Date {
-  // Parse the date string as IST
+  // Parse the date string - it should already have IST timezone offset
   const date = new Date(dateString);
   return date;
+}
+
+/**
+ * Normalize a date to end of day (11:59:59 PM) in IST
+ * This ensures all deadlines are consistently set to 11:59:59 PM IST
+ * 
+ * @param dateInput - Date string or Date object
+ * @returns Date string in ISO format with IST timezone (YYYY-MM-DDTHH:MM:SS+05:30)
+ */
+export function normalizeToEndOfDayIST(dateInput: string | Date): string {
+  let date: Date;
+  
+  if (typeof dateInput === 'string') {
+    // If string already has time and timezone, parse it
+    if (dateInput.includes('T') && (dateInput.includes('+') || dateInput.includes('Z'))) {
+      date = new Date(dateInput);
+    } else {
+      // If it's just a date string (YYYY-MM-DD), treat it as that date in IST
+      // and set to end of day
+      const parts = dateInput.split('-');
+      if (parts.length === 3) {
+        const [year, month, day] = parts.map(Number);
+        // Create date at end of day IST (23:59:59)
+        return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:59:59+05:30`;
+      }
+      date = new Date(dateInput);
+    }
+  } else {
+    date = dateInput;
+  }
+  
+  // Get the date parts in IST timezone
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  
+  const parts = formatter.formatToParts(date);
+  const getValue = (type: string) => parts.find(p => p.type === type)?.value || '01';
+  
+  const year = getValue('year');
+  const month = getValue('month');
+  const day = getValue('day');
+  
+  // Return as end of day IST
+  return `${year}-${month}-${day}T23:59:59+05:30`;
 }
 
 // Timeline intervals configuration for automatic deadline progression
