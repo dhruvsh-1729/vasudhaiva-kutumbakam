@@ -42,41 +42,13 @@ interface TimelineInterval {
  * Get current time in IST (Indian Standard Time)
  * IST is UTC+5:30
  * 
- * This function returns the current time as it would be in IST timezone.
- * The returned Date object represents the same moment in time, just constructed
- * to match IST clock time.
+ * Since our deadline strings already include IST timezone offset (+05:30),
+ * we can just return the current Date object. JavaScript Date objects
+ * internally store UTC timestamps, so comparisons work correctly regardless
+ * of the user's local timezone.
  */
 function getCurrentIST(customDate?: Date): Date {
-  const now = customDate || new Date();
-  
-  // Create a date formatter for IST
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Kolkata',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  });
-  
-  const parts = formatter.formatToParts(now);
-  const getValue = (type: string) => parts.find(p => p.type === type)?.value || '0';
-  
-  // Create new Date using IST values
-  // Note: This creates a Date object with IST time values but in local timezone
-  // This is intentional for comparison purposes
-  const istDate = new Date(
-    parseInt(getValue('year')),
-    parseInt(getValue('month')) - 1,
-    parseInt(getValue('day')),
-    parseInt(getValue('hour')),
-    parseInt(getValue('minute')),
-    parseInt(getValue('second'))
-  );
-  
-  return istDate;
+  return customDate || new Date();
 }
 
 /**
