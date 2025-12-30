@@ -144,6 +144,16 @@ const CompetitionList: React.FC = () => {
       { position: 2, amount: '₹8,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
       { position: 3, amount: '₹6,400', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
     ],
+    7: [
+      { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+    8: [
+      { position: 1, amount: '₹16,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹11,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹8,200', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
   };
 
   const prizeObjectToInfo = (prizes?: Record<string, string>): PrizeInfo[] => {
