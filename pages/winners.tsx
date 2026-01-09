@@ -116,7 +116,7 @@ const Winners: React.FC = () => {
     if (placement.includes('1st')) {
       return <Trophy className="w-5 h-5 text-yellow-500" />;
     } else if (placement.includes('2nd')) {
-      return <Medal className="w-5 h-5 text-gray-400" />;
+      return <Medal className="w-5 h-5 text-slate-500" />;
     } else if (placement.includes('3rd')) {
       return <Award className="w-5 h-5 text-amber-600" />;
     }
@@ -127,7 +127,7 @@ const Winners: React.FC = () => {
     if (placement.includes('1st')) {
       return 'from-yellow-400 to-yellow-600';
     } else if (placement.includes('2nd')) {
-      return 'from-gray-300 to-gray-500';
+      return 'from-slate-300 to-slate-500';
     } else if (placement.includes('3rd')) {
       return 'from-amber-500 to-amber-700';
     }
