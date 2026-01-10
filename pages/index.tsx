@@ -66,21 +66,75 @@ const Home: React.FC = () => {
   const winners: Winner[] = [
     {
       institution: 'Tata Institute of Social Sciences',
-      category: 'Blog Writing',
+      category: 'Poetry Competition',
       placement: '1st Prize',
-      name: 'Shouryaa Tiwari',
+      name: 'Suyash Shukla',
     },
     {
       institution: 'Jain University',
-      category: 'Blog Writing',
+      category: 'Poetry Competition',
       placement: '2nd Prize',
       name: 'Maddela Devendra Yadav',
     },
     {
-      institution: 'JCCL',
-      category: 'AI Short Video',
-      placement: 'Winner',
-      name: 'Ketaki Chandrakant Gode',
+      institution: 'Mithibai College of Arts',
+      category: 'Poetry Competition',
+      placement: '3rd Prize',
+      name: 'Jainil Shah',
+    },
+    {
+      institution: 'K J Somaiya College',
+      category: 'MEME Creations',
+      placement: '1st Prize',
+      name: 'Dhruv Shah',
+    },
+    {
+      institution: 'SVKM\'s Narsee Monjee College of Commerce and Economics',
+      category: 'MEME Creations',
+      placement: '2nd Prize',
+      name: 'Pari Kenia',
+    },
+    {
+      institution: 'MCC College',
+      category: 'MEME Creations',
+      placement: '3rd Prize',
+      name: 'Prathmesh Parab',
+    },
+    {
+      institution: 'Sardar Patel Institute of Technology',
+      category: 'Singing Composition',
+      placement: '1st Prize',
+      name: 'Dhruv Solanki',
+    },
+    {
+      institution: 'S K Somaiya',
+      category: 'Singing Composition',
+      placement: '2nd Prize',
+      name: 'Rahul Ratda',
+    },
+    {
+      institution: 'R A Podar College',
+      category: 'Singing Composition',
+      placement: '3rd Prize',
+      name: 'Priyal Gutka',
+    },
+    {
+      institution: 'D J Sanghvi',
+      category: 'Painting Competition',
+      placement: '1st Prize',
+      name: 'Yash Shah',
+    },
+    {
+      institution: 'K J Somaiya',
+      category: 'Painting Competition',
+      placement: '2nd Prize',
+      name: 'Vama Dedhia',
+    },
+    {
+      institution: 'S M Shetty',
+      category: 'Painting Competition',
+      placement: '3rd Prize',
+      name: 'Nikhil Patel',
     },
   ];
   const noWinnerMessage = 'For Lextoons and Street Play Script Writing, no winners were declared due to no registrations and single entries not being applicable.';
@@ -523,28 +577,39 @@ const Home: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
               {winners.map((winner, index) => (
                 <div 
                   key={`${winner.name}-${winner.placement}`}
                   className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm hover:shadow-lg transition-shadow"
                 >
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-red-500"></div>
-                  <div className="p-5 space-y-3">
+                  <div className="p-4 space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">Winner #{index + 1}</span>
-                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold shadow-inner">
+                      <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">{winner.category}</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold shadow-inner">
                         {winner.placement}
                       </span>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-amber-900">{winner.institution}</h3>
-                      <p className="text-sm font-semibold text-orange-700">{winner.category}</p>
-                      <p className="text-base text-amber-800">{winner.name}</p>
+                      <h3 className="text-base font-bold text-amber-900 leading-tight">{winner.name}</h3>
+                      <p className="text-sm text-orange-700 leading-snug">{winner.institution}</p>
                     </div>
                   </div>
                 </div>
               ))}
+            </div>
+            
+            <div className="flex justify-center mt-6">
+              <Link 
+                href="/winners"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold shadow-lg shadow-amber-200 hover:shadow-amber-300/70 transition-transform hover:-translate-y-0.5"
+              >
+                View All Winners Details
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
 
             <div className="flex items-center gap-2 rounded-2xl border border-amber-200/70 bg-amber-50/70 px-4 py-3 text-amber-900 text-sm font-medium">
