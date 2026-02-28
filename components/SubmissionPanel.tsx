@@ -95,8 +95,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId, compet
   }, [competitionDeadline]);
 
   const isCompetitionClosed = useMemo(() => {
-    if (!competitionDeadlineDate) return false;
-    return getIstNow().getTime() > competitionDeadlineDate.getTime();
+    // if (!competitionDeadlineDate) return false;
+    return false;
+    // return getIstNow().getTime() > competitionDeadlineDate.getTime();
   }, [competitionDeadlineDate]);
 
   const formattedCompetitionDeadline = useMemo(() => {
@@ -276,7 +277,8 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId, compet
     return currentSubmissions.length < adminSettings.maxSubmissionsPerInterval;
   };
 
-  const isSubmissionsOpenForCompetition = Boolean(adminSettings?.isSubmissionsOpen) && !isCompetitionClosed;
+  const isSubmissionsOpenForCompetition = true;
+  // const isSubmissionsOpenForCompetition = Boolean(adminSettings?.isSubmissionsOpen) && !isCompetitionClosed;
   const submissionStatusLabel = isCompetitionClosed
     ? 'Closed (deadline passed)'
     : adminSettings?.isSubmissionsOpen

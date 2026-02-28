@@ -180,7 +180,8 @@ async function createSubmission(req: NextApiRequest, res: NextApiResponse, userI
 
     // Get dynamically calculated interval and submission status
     const currentInterval = getCurrentSubmissionInterval();
-    const isOpen = areSubmissionsOpen();
+    // const isOpen = areSubmissionsOpen();
+    const isOpen = true;
 
     // Map to competition document if present
     const competitionDoc = await prisma.competition.findFirst({
@@ -289,10 +290,11 @@ function getIstNow(): Date {
 }
 
 function isDeadlinePassed(deadline?: Date | string | null): boolean {
-  if (!deadline) return false;
-  const parsed = deadline instanceof Date ? deadline : new Date(deadline);
-  if (Number.isNaN(parsed.getTime())) return false;
-  return getIstNow().getTime() > parsed.getTime();
+  // if (!deadline) return false;
+  // const parsed = deadline instanceof Date ? deadline : new Date(deadline);
+  // if (Number.isNaN(parsed.getTime())) return false;
+  // return getIstNow().getTime() > parsed.getTime();
+  return false;
 }
 
 function isValidGoogleDriveUrl(url: string): boolean {

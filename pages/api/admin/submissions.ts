@@ -2,6 +2,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth/serverAuth';
+import { getCurrentSubmissionInterval } from '@/lib/deadlineManager';
+import { competitions as staticCompetitions } from '@/data/competitions';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -13,8 +15,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return await getSubmissions(req, res);
       case 'PUT':
         return await updateSubmissions(req, res);
+      case 'POST':
+        return await createSubmissionForUser(req, res);
       default:
-        res.setHeader('Allow', ['GET', 'PUT']);
+        res.setHeader('Allow', ['GET', 'PUT', 'POST']);
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
@@ -137,5 +141,134 @@ async function updateSubmissions(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     console.error('Update submissions error:', error);
     return res.status(500).json({ error: 'Failed to update submissions' });
+  }
+}
+
+async function createSubmissionForUser(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const { userId, userEmail, competitionId, title, fileUrl, description, interval } = req.body as {
+      userId?: string;
+      userEmail?: string;
+      competitionId?: number | string;
+      title?: string;
+      fileUrl?: string;
+      description?: string;
+      interval?: number;
+    };
+
+    if (!userId && !userEmail) {
+      return res.status(400).json({ error: 'User ID or email is required' });
+    }
+
+    const compId = typeof competitionId === 'string' ? Number(competitionId) : competitionId;
+    if (!compId || !Number.isInteger(compId)) {
+      return res.status(400).json({ error: 'Valid competition legacyId is required' });
+    }
+
+    if (!title || typeof title !== 'string' || !title.trim()) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+
+    if (title.length > 100) {
+      return res.status(400).json({ error: 'Title cannot exceed 100 characters' });
+    }
+
+    if (!fileUrl || typeof fileUrl !== 'string' || !fileUrl.trim()) {
+      return res.status(400).json({ error: 'File URL is required' });
+    }
+
+    const normalizedEmail = userEmail ? String(userEmail).toLowerCase().trim() : undefined;
+    const user = userId
+      ? await prisma.user.findUnique({ where: { id: userId } })
+      : await prisma.user.findUnique({ where: { email: normalizedEmail } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isVideoCompetition = compId === 1;
+    if (isVideoCompetition) {
+      if (!isValidGoogleDriveUrl(fileUrl)) {
+        return res.status(400).json({ error: 'Video entries must use a Google Drive sharing link.' });
+      }
+    } else if (!isValidUploadThingUrl(fileUrl)) {
+      return res.status(400).json({ error: 'Please upload the file through the submission uploader.' });
+    }
+
+    const currentInterval = interval && Number.isInteger(interval) && interval > 0
+      ? interval
+      : getCurrentSubmissionInterval();
+
+    const competitionDoc = await prisma.competition.findFirst({
+      where: { legacyId: compId },
+      select: { id: true, deadline: true },
+    });
+    const fallbackCompetition = staticCompetitions.find((c) => c.id === compId);
+    const competitionDeadline = fallbackCompetition?.deadline ?? competitionDoc?.deadline;
+
+    if (isDeadlinePassed(competitionDeadline)) {
+      return res.status(403).json({ error: 'Submissions are closed for this competition' });
+    }
+
+    const created = await prisma.submission.create({
+      data: {
+        title: title.trim(),
+        competitionId: compId,
+        competitionDbId: competitionDoc?.id,
+        userId: user.id,
+        interval: currentInterval,
+        fileUrl: fileUrl.trim(),
+        description: description?.trim() || null,
+        isAccessVerified: true,
+        accessCheckError: null,
+        status: SubmissionStatus.PENDING,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            institution: true,
+          },
+        },
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: created,
+      message: 'Submission created for user',
+    });
+  } catch (error) {
+    console.error('Create submission for user error:', error);
+    return res.status(500).json({ error: 'Failed to create submission' });
+  }
+}
+
+enum SubmissionStatus {
+  PENDING = 'PENDING',
+  REJECTED = 'REJECTED',
+}
+
+function isDeadlinePassed(deadline?: Date | string | null): boolean {
+  return false;
+}
+
+function isValidGoogleDriveUrl(url: string): boolean {
+  const patterns = [
+    /^https:\/\/drive\.google\.com\/file\/d\/[a-zA-Z0-9_-]+/i,
+    /^https:\/\/drive\.google\.com\/drive\/folders\/[a-zA-Z0-9_-]+/i,
+    /^https:\/\/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/[a-zA-Z0-9_-]+/i,
+  ];
+  return patterns.some((p) => p.test(url));
+}
+
+function isValidUploadThingUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ['utfs.io', 'uploadthing.com'].some((host) => parsed.host.includes(host));
+  } catch {
+    return false;
   }
 }

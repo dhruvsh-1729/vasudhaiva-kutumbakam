@@ -68,7 +68,7 @@ async function sendEmail(user, senderEmail) {
   const { subject, htmlContent, textContent } = getEmailTemplate(firstName);
 
   const sendSmtpEmail = {
-    sender: { email: senderEmail || "vk4.ki.oar@e696732678450cac.maileroo.org", name: "Vasudhaiva Kutumbakam" },
+    sender: { email: senderEmail || "vk4.ki.oar@vk4.maileroo.app", name: "Vasudhaiva Kutumbakam" },
     to: [{ email: user.email, name: user.name || "Participant" }],
     subject,
     htmlContent,
@@ -88,7 +88,7 @@ async function main() {
     where: {
       createdAt: {
         gte: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // last 20 days
-        lt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // up to 10 days ago
+        // lt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // up to 10 days ago
       }
     },
     select: { email: true, name: true },

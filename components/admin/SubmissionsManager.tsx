@@ -1,7 +1,8 @@
 // components/admin/SubmissionsManager.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { toast } from 'sonner';
 import { clientAuth } from '@/lib/auth/clientAuth';
+import { UploadButton } from '@/utils/uploadthing';
 
 // Type definitions
 interface Submission {
@@ -79,6 +80,19 @@ const SubmissionsManager: React.FC = () => {
   const [messages, setMessages] = useState<SubmissionMessage[]>([]);
   const [messageDraft, setMessageDraft] = useState<string>('');
   const [loadingMessages, setLoadingMessages] = useState<boolean>(false);
+  const [createForm, setCreateForm] = useState({
+    userEmail: '',
+    userId: '',
+    competitionId: '',
+    title: '',
+    fileUrl: '',
+    description: '',
+  });
+  const [createErrors, setCreateErrors] = useState<Record<string, string>>({});
+  const [creatingSubmission, setCreatingSubmission] = useState<boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string>('');
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Competition titles for display
   const [competitionTitles, setCompetitionTitles] = useState<{ [key: number]: string }>({
@@ -88,6 +102,9 @@ const SubmissionsManager: React.FC = () => {
     4: 'Painting Competition',
     5: 'Blog Writing / AI-Assisted Essay',
   });
+  const [competitionOptions, setCompetitionOptions] = useState<Array<{ legacyId: number; title: string }>>([]);
+  const selectedCompetitionId = Number(createForm.competitionId);
+  const isVideoCompetition = selectedCompetitionId === 1;
 
   // Fetch submissions with filters and pagination
   useEffect(() => {
@@ -97,11 +114,18 @@ const SubmissionsManager: React.FC = () => {
         if (!res.ok) return;
         const data = await res.json();
         const map: Record<number, string> = {};
+        const options: Array<{ legacyId: number; title: string }> = [];
         (data || []).forEach((c: any) => {
-          if (c?.legacyId) map[c.legacyId] = c.title;
+          if (c?.legacyId) {
+            map[c.legacyId] = c.title;
+            options.push({ legacyId: c.legacyId, title: c.title });
+          }
         });
         if (Object.keys(map).length > 0) {
           setCompetitionTitles(map);
+        }
+        if (options.length > 0) {
+          setCompetitionOptions(options.sort((a, b) => a.legacyId - b.legacyId));
         }
       } catch (error) {
         console.error('Failed to load competition titles', error);
@@ -140,7 +164,7 @@ const SubmissionsManager: React.FC = () => {
     };
 
     fetchSubmissions();
-  }, [pagination.page, pagination.limit, filters]);
+  }, [pagination.page, pagination.limit, filters, refreshKey]);
 
   // Handle filter changes
   const handleFilterChange = (key: keyof Filters, value: any) => {
@@ -169,6 +193,104 @@ const SubmissionsManager: React.FC = () => {
       setSelectedSubmissions(new Set());
     } else {
       setSelectedSubmissions(new Set(submissions.map(s => s.id)));
+    }
+  };
+
+  const handleCreateInputChange = (field: keyof typeof createForm, value: string) => {
+    setCreateForm((prev) => ({ ...prev, [field]: value }));
+    if (createErrors[field]) {
+      setCreateErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateCreateForm = (): Record<string, string> => {
+    const errors: Record<string, string> = {};
+    if (!createForm.userEmail.trim() && !createForm.userId.trim()) {
+      errors.userEmail = 'User email or ID is required';
+    }
+    if (!createForm.competitionId) {
+      errors.competitionId = 'Competition is required';
+    }
+    if (!createForm.title.trim()) {
+      errors.title = 'Title is required';
+    } else if (createForm.title.length > 100) {
+      errors.title = 'Title cannot exceed 100 characters';
+    }
+    if (isVideoCompetition) {
+      if (!createForm.fileUrl.trim()) {
+        errors.fileUrl = 'Google Drive link is required';
+      }
+    } else if (!createForm.fileUrl.trim()) {
+      errors.fileUrl = 'Upload a file first';
+    }
+    return errors;
+  };
+
+  const handleUploadComplete = (files: Array<{ url: string; name?: string }>) => {
+    setUploading(false);
+    if (!files || files.length === 0) {
+      toast.error('Upload failed. Please try again.');
+      return;
+    }
+    const uploaded = files[0];
+    setCreateForm((prev) => ({ ...prev, fileUrl: uploaded.url }));
+    setUploadedFileName(uploaded.name || 'Uploaded file');
+    setCreateErrors((prev) => ({ ...prev, fileUrl: '' }));
+    toast.success('File uploaded. Ready to submit.');
+  };
+
+  const handleUploadError = (error: Error) => {
+    setUploading(false);
+    toast.error(error?.message || 'Upload failed. Please try again.');
+  };
+
+  const handleCreateSubmission = async (e?: FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
+    const errors = validateCreateForm();
+    setCreateErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setCreatingSubmission(true);
+    try {
+      const normalizedEmail = createForm.userEmail.trim().toLowerCase();
+      const response = await clientAuth.authFetch('/api/admin/submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userEmail: normalizedEmail || undefined,
+          userId: createForm.userId.trim() || undefined,
+          competitionId: Number(createForm.competitionId),
+          title: createForm.title.trim(),
+          fileUrl: createForm.fileUrl.trim(),
+          description: createForm.description.trim() || undefined,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to create submission');
+        return;
+      }
+      const created = data.data;
+      if (created) {
+        setSubmissions(prev => [created, ...prev]);
+      }
+      setPagination(prev => ({ ...prev, page: 1 }));
+      setRefreshKey(key => key + 1);
+      toast.success(data.message || 'Submission created for user');
+      setCreateForm({
+        userEmail: '',
+        userId: '',
+        competitionId: '',
+        title: '',
+        fileUrl: '',
+        description: '',
+      });
+      setUploadedFileName('');
+    } catch (error) {
+      console.error('Failed to create submission for user', error);
+      toast.error('Failed to create submission');
+    } finally {
+      setCreatingSubmission(false);
     }
   };
 
@@ -270,6 +392,201 @@ const SubmissionsManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Admin-create submission */}
+      <div className="admin-card rounded-xl p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 font-poppins">Add Submission for a User</h2>
+            <p className="text-gray-600 text-sm">Upload on behalf of an existing participant using the same flow as the public submission panel.</p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-100 rounded-full px-3 py-1">
+            <span className="w-2 h-2 bg-blue-500 rounded-full" />
+            <span>Admin override</span>
+          </div>
+        </div>
+
+        <form onSubmit={handleCreateSubmission} className="mt-5 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">User Email *</label>
+              <input
+                type="email"
+                value={createForm.userEmail}
+                onChange={(e) => handleCreateInputChange('userEmail', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${createErrors.userEmail ? 'border-red-300' : 'border-gray-300'}`}
+                placeholder="participant@example.com"
+              />
+              {createErrors.userEmail && <p className="text-xs text-red-600 mt-1">{createErrors.userEmail}</p>}
+              <p className="text-xs text-gray-500 mt-1">Case-insensitive; must already exist in the database.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">User ID (optional)</label>
+              <input
+                type="text"
+                value={createForm.userId}
+                onChange={(e) => handleCreateInputChange('userId', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                placeholder="MongoDB ObjectId (optional override)"
+              />
+              <p className="text-xs text-gray-500 mt-1">Use if multiple accounts share similar emails.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Competition (legacyId) *</label>
+              <select
+                value={createForm.competitionId}
+                onChange={(e) => handleCreateInputChange('competitionId', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${createErrors.competitionId ? 'border-red-300' : 'border-gray-300'}`}
+              >
+                <option value="">Select competition</option>
+                {competitionOptions.map((c) => (
+                  <option key={c.legacyId} value={c.legacyId}>
+                    {c.title} (#{c.legacyId})
+                  </option>
+                ))}
+              </select>
+              {createErrors.competitionId && <p className="text-xs text-red-600 mt-1">{createErrors.competitionId}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+              <input
+                type="text"
+                value={createForm.title}
+                onChange={(e) => handleCreateInputChange('title', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${createErrors.title ? 'border-red-300' : 'border-gray-300'}`}
+                placeholder="Submission title"
+                maxLength={100}
+              />
+              {createErrors.title && <p className="text-xs text-red-600 mt-1">{createErrors.title}</p>}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description (optional)</label>
+            <textarea
+              value={createForm.description}
+              onChange={(e) => handleCreateInputChange('description', e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              placeholder="Notes for reviewers or context for the submission"
+              maxLength={500}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-gray-700">
+              <span className="font-medium">File</span>
+              <span className="text-gray-400">•</span>
+              {isVideoCompetition ? (
+                <span className="text-orange-700">Google Drive link required for AI Short Video (#{selectedCompetitionId || '1'}).</span>
+              ) : (
+                <span className="text-gray-600">Use the uploadthing pipeline (same as public submissions).</span>
+              )}
+            </div>
+
+            {isVideoCompetition ? (
+              <div>
+                <input
+                  type="url"
+                  value={createForm.fileUrl}
+                  onChange={(e) => handleCreateInputChange('fileUrl', e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${createErrors.fileUrl ? 'border-red-300' : 'border-gray-300'}`}
+                  placeholder="https://drive.google.com/file/d/..."
+                />
+                {createErrors.fileUrl && <p className="text-xs text-red-600 mt-1">{createErrors.fileUrl}</p>}
+                <p className="text-xs text-gray-500 mt-1">Set link visibility to &quot;Anyone with the link can view&quot;.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <UploadButton
+                  endpoint="submissionUploader"
+                  disabled={uploading}
+                  onUploadBegin={() => {
+                    setUploading(true);
+                    setCreateErrors((prev) => ({ ...prev, fileUrl: '' }));
+                  }}
+                  onClientUploadComplete={handleUploadComplete}
+                  onUploadError={handleUploadError}
+                  onBeforeUploadBegin={(files) => files.slice(0, 1)}
+                  headers={() => ({
+                    Authorization: `Bearer ${clientAuth.getToken() || ''}`,
+                  })}
+                  config={{ mode: 'auto' }}
+                  appearance={{
+                    button: 'bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow hover:bg-blue-700 transition-colors',
+                    allowedContent: 'text-xs text-gray-600',
+                  }}
+                  content={{
+                    button: ({ isUploading, uploadProgress }) =>
+                      isUploading ? (
+                        <div className="flex items-center gap-2">
+                          <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Uploading {Math.round(uploadProgress ?? 0)}%</span>
+                        </div>
+                      ) : (
+                        'Upload file'
+                      ),
+                    allowedContent: () => '1 file • images, pdf, docs, slides, zip, audio (no video)',
+                  }}
+                />
+                {uploading && (
+                  <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <svg className="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Uploading... please keep this tab open.</span>
+                  </div>
+                )}
+                {!uploading && uploadedFileName && (
+                  <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                    <svg className="h-4 w-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{uploadedFileName}</span>
+                  </div>
+                )}
+                {createErrors.fileUrl && <p className="text-xs text-red-600">{createErrors.fileUrl}</p>}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setCreateForm({
+                  userEmail: '',
+                  userId: '',
+                  competitionId: '',
+                  title: '',
+                  fileUrl: '',
+                  description: '',
+                });
+                setCreateErrors({});
+                setUploadedFileName('');
+              }}
+              className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+              disabled={creatingSubmission || uploading}
+            >
+              Reset
+            </button>
+            <button
+              type="submit"
+              disabled={creatingSubmission || uploading}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors ${creatingSubmission || uploading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+            >
+              {creatingSubmission ? 'Creating...' : 'Create submission'}
+            </button>
+          </div>
+        </form>
+      </div>
+
       {/* Filters and Controls */}
       <div className="admin-card rounded-xl p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
