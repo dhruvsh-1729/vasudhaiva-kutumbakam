@@ -1,5 +1,5 @@
 // components/NotificationBanner.tsx
-import { useState, CSSProperties } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 const NotificationBanner: React.FC = () => {
@@ -43,26 +43,13 @@ const NotificationBanner: React.FC = () => {
           100% { left: 100%; }
         }
 
-        .notification-confetti .confetti-piece {
-          position: absolute;
-          top: -10%;
-          width: 8px;
-          height: 14px;
-          border-radius: 3px;
-          opacity: 0.85;
-          animation: confetti-fall linear infinite;
+        .notification-pulse {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
-        .confetti-0 { background: #fff3b0; }
-        .confetti-1 { background: #ffedd5; }
-        .confetti-2 { background: #fee2e2; }
-        .confetti-3 { background: #ffe4e6; }
-        .confetti-4 { background: #fef3c7; }
-
-        @keyframes confetti-fall {
-          0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
-          10% { opacity: 1; }
-          100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
         }
 
         .banner-slide-out {
@@ -82,41 +69,23 @@ const NotificationBanner: React.FC = () => {
       `}</style>
 
       <div className="notification-gradient notification-shimmer relative z-40 border-b border-red-600/20 overflow-hidden">
-        <div className="notification-confetti absolute inset-0 pointer-events-none">
-          {Array.from({ length: 26 }).map((_, index) => {
-            const confettiStyle: CSSProperties = {
-              left: `${(index * 4) % 100}%`,
-              animationDelay: `${(index % 6) * 0.35}s`,
-              animationDuration: `${6 + (index % 5) * 0.6}s`,
-            };
-
-            return (
-              <span
-                key={index}
-                className={`confetti-piece confetti-${index % 5}`}
-                style={confettiStyle}
-              />
-            );
-          })}
-        </div>
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 relative">
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner shadow-white/10">
+            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner shadow-white/10 notification-pulse">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <div className="text-white/95 text-sm sm:text-base font-medium">
-              Winners announced! Celebrate our champs & join the physical competitions.
+            <div className="text-white/95 text-sm sm:text-base font-bold">
+              ⚠️ LAST DAY: Online Competitions Closing Today (Dec 30th) at 11:59 PM IST!
             </div>
             <Link 
-              href="/#winners"
+              href="/main"
               className="group inline-flex items-center px-3 py-1.5 rounded-full bg-white/15 border border-white/25 text-white text-xs sm:text-sm font-semibold backdrop-blur-sm hover:bg-white/25 transition-all"
             >
-              View winners
+              Submit Now
               <svg className="w-4 h-4 ml-1 sm:ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Link>
             <a 
@@ -125,9 +94,9 @@ const NotificationBanner: React.FC = () => {
               rel="noopener noreferrer"
               className="group inline-flex items-center px-3 py-1.5 rounded-full bg-white text-red-700 text-xs sm:text-sm font-semibold shadow hover:shadow-lg transition-all"
             >
-              Physical competition link
+              Physical Competition Link
               <svg className="w-4 h-4 ml-1 sm:ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
             <button 

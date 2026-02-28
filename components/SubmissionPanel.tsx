@@ -86,7 +86,9 @@ const SubmissionPanel: React.FC<SubmissionPanelProps> = ({ competitionId, compet
   const isCompetition4 = Number(competitionId) === 4;
   const isVideoCompetition = Number(competitionId) === 1;
   const usesUploadThing = !isVideoCompetition;
-  const getIstNow = () => new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Helper function to get current time for IST timezone comparison
+  // Since deadlines are stored with +05:30 offset, JavaScript Date comparison works correctly
+  const getIstNow = () => new Date();
 
   const competitionDeadlineDate = useMemo(() => {
     if (!competitionDeadline) return null;

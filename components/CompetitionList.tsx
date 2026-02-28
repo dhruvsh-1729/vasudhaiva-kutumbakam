@@ -34,7 +34,9 @@ interface CompetitionStats {
 }
 
 const CompetitionList: React.FC = () => {
-  const getIstNow = () => new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Helper function for deadline comparison
+  // Since deadlines include IST timezone offset (+05:30), direct comparison works
+  const getIstNow = () => new Date();
   const isExpired = (deadline?: string | null) => {
     if (!deadline) return false;
     const parsed = new Date(deadline);
@@ -141,6 +143,16 @@ const CompetitionList: React.FC = () => {
       { position: 1, amount: '₹12,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
       { position: 2, amount: '₹8,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
       { position: 3, amount: '₹6,400', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+    7: [
+      { position: 1, amount: '₹25,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹15,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹10,000', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
+    ],
+    8: [
+      { position: 1, amount: '₹16,000', color: 'gold', bgColor: 'yellow-600', textColor: 'yellow-700' },
+      { position: 2, amount: '₹11,000', color: 'silver', bgColor: 'gray-600', textColor: 'gray-700' },
+      { position: 3, amount: '₹8,200', color: 'bronze', bgColor: 'orange-700', textColor: 'amber-700' }
     ],
   };
 
@@ -256,7 +268,7 @@ const CompetitionList: React.FC = () => {
                             {(() => {
                               if (!competition.deadline) return 'Ongoing';
                               const deadlineDate = new Date(competition.deadline);
-                              const currentDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                              const currentDate = new Date();
                               const timeDiff = deadlineDate.getTime() - currentDate.getTime();
                               const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
                               return daysLeft > 0 ? `${daysLeft} days left` : 'Expired';

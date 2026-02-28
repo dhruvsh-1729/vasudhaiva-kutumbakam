@@ -174,7 +174,19 @@ const CompetitionDetailPage: React.FC<CompetitionDetailPageProps> = ({ competiti
 export default CompetitionDetailPage;
 
 export async function getStaticPaths() {
-  const dbComps = await prisma.competition.findMany({ where: { isPublished: true }, select: { slug: true, legacyId: true } });
+  let dbComps: Array<{ slug: string; legacyId: number }> = [];
+  
+  // Try to get paths from database, but fall back to static paths if connection fails
+  try {
+    dbComps = await prisma.competition.findMany({ 
+      where: { isPublished: true }, 
+      select: { slug: true, legacyId: true } 
+    });
+  } catch (dbError) {
+    console.warn('Database connection failed during build, using only static paths:', dbError);
+    // Fall through with empty dbComps array
+  }
+  
   const staticPaths = getAllCompetitionSlugs();
   const dbPaths = dbComps.map((c) => ({ params: { id: c.slug } }));
   const legacyPaths = dbComps.filter((c) => c.legacyId).map((c) => ({ params: { id: c.legacyId.toString() } }));
@@ -201,7 +213,15 @@ export async function getStaticProps({ params }: { params?: { id?: string } }) {
     const or: any[] = [{ slug }];
     if (!Number.isNaN(numeric)) or.push({ legacyId: numeric });
 
-    const dbComp = await prisma.competition.findFirst({ where: { AND: [{ isPublished: true }, { OR: or }] } });
+    let dbComp = null;
+    
+    // Try to get from database, but fall back to static data if connection fails
+    try {
+      dbComp = await prisma.competition.findFirst({ where: { AND: [{ isPublished: true }, { OR: or }] } });
+    } catch (dbError) {
+      console.warn('Database connection failed during build, using static data:', dbError);
+      // Fall through to use static data
+    }
 
     let competition: Competition | null = null;
 
@@ -223,6 +243,7 @@ export async function getStaticProps({ params }: { params?: { id?: string } }) {
           : fallbackStatic?.sections || [],
       } as any;
     } else {
+      // Use static data if database is not available
       competition = getCompetitionBySlug(slug);
     }
 
@@ -231,6 +252,11 @@ export async function getStaticProps({ params }: { params?: { id?: string } }) {
     return { props: { competition }, revalidate: 60 };
   } catch (error) {
     console.error('Error fetching competition:', error);
+    // Try to use static data as fallback
+    const competition = getCompetitionBySlug(slug);
+    if (competition) {
+      return { props: { competition }, revalidate: 60 };
+    }
     return { notFound: true, revalidate: 60 };
   }
 }

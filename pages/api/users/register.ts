@@ -2,8 +2,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { EmailService } from '../../../lib/emailService';
-import { TokenUtils } from '../../../lib/tokenUtils';
 
 // Initialize Prisma Client
 const prisma = new PrismaClient();
@@ -134,7 +132,7 @@ export default async function handler(
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create new user (email not verified by default)
+    // Create new user - email verification bypassed per business requirements
     const newUser = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -143,7 +141,7 @@ export default async function handler(
         institution: institution.trim(),
         password: hashedPassword,
         isActive: true,
-        isEmailVerified: false, // Important: email not verified initially
+        isEmailVerified: true
       },
       select: {
         id: true,
@@ -156,32 +154,14 @@ export default async function handler(
       },
     });
 
-    // Generate verification token
-    const verificationToken = await TokenUtils.createVerificationToken(newUser.id);    
-
-    // Send verification email
-    const emailService = EmailService.getInstance();
-    const emailSent = await emailService.sendVerificationEmail(
-      newUser.email,
-      newUser.name,
-      verificationToken
-    );
-
-    if (!emailSent) {
-      console.error('Failed to send verification email to:', newUser.email);
-      // Continue with registration but inform user
-    }
-
     // Log successful registration
     console.log(`New user registered: ${newUser.email} at ${new Date().toISOString()}`);
 
-    // Return success response - NO TOKEN until email is verified
+    // Return success response - account is immediately usable without email verification
     return res.status(201).json({
       success: true,
-      message: emailSent 
-        ? 'Registration successful! Please check your email to verify your account before signing in.'
-        : 'Registration successful! Please contact support to verify your email address.',
-      requiresEmailVerification: true,
+      message: 'Registration successful! Your account has been created. Please login to continue.',
+      requiresEmailVerification: false,
       user: {
         id: newUser.id,
         name: newUser.name,

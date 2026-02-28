@@ -285,8 +285,13 @@ enum SubmissionStatus {
 
 // ---------- Helpers ----------
 
+/**
+ * Get current time for deadline comparison
+ * Since deadlines are stored with IST timezone offset (+05:30),
+ * we can directly compare with current time
+ */
 function getIstNow(): Date {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  return new Date();
 }
 
 function isDeadlinePassed(deadline?: Date | string | null): boolean {

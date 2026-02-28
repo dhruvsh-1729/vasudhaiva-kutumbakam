@@ -57,9 +57,11 @@ export const timelineIntervals = [
 ];
 
 // Helper function to get current active interval based on current date in IST
+// Since our interval dates include IST timezone offset (+05:30),
+// we can directly compare with current time for accurate results
 export const getCurrentInterval = () => {
-  // Get current time in IST
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Get current time (works correctly with timezone-aware date strings)
+  const now = new Date();
   const firstInterval = timelineIntervals[0];
   const firstStart = new Date(firstInterval.startDate);
 
@@ -83,8 +85,8 @@ export const getCurrentInterval = () => {
 
 // Helper function to get the next deadline in IST
 export const getNextDeadline = () => {
-  // Get current time in IST
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Get current time (works correctly with timezone-aware date strings)
+  const now = new Date();
   let nextInterval;
   let nextSubmission;
   
@@ -116,7 +118,7 @@ export const getCurrentSubmissionInterval = () => {
     return currentInterval.weekNumber;
   }
 
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const now = new Date();
   const upcomingSubmission = timelineIntervals.find(interval => 
     interval.isSubmissionInterval && new Date(interval.startDate) > now && interval.weekNumber
   );
@@ -134,7 +136,7 @@ export const getCurrentSubmissionInterval = () => {
 
 // Helper function to check if submissions are open based on timeline
 export const areSubmissionsOpen = () => {
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const now = new Date();
   const currentInterval = getCurrentInterval();
 
   if (!currentInterval.isSubmissionInterval) {
@@ -155,7 +157,9 @@ export const competitions = [
   { id: 2, title: "Creative Expression", description: "Creative script made using AI tools.", icon: "✍️", color: "from-green-500 to-green-600", deadline: "2025-12-12T23:59:59+05:30", slug:"writing" }, 
   { id: 3, title: "LexToons (AI Comics / Legal Satire)", description: "Create illustrated comics or satire strips using AI + text on the given topics.", icon: "🖍️", color: "from-purple-500 to-purple-600", deadline: "2025-12-12T23:59:59+05:30", slug:"lextoons" },
   { id: 5, title: "Blog Writing / AI-Assisted Essay", description: "Write engaging 500–800 word blog posts or essays on the weekly topics.", icon: "📝", color: "from-orange-500 to-red-600", deadline: "2025-12-12T23:59:59+05:30", slug:"blogs" },
-  {id: 4 ,title:"VK Painting Competition", description:"Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon:"🖌️", color:"from-yellow-500 to-yellow-600", deadline:"2025-12-30T23:59:59+05:30",slug:"painting"},
+  { id: 4, title: "VK Painting Competition", description: "Create a painting inspired by Vasudhaiva Kutumbakam philosophy.", icon: "🖌️", color: "from-yellow-500 to-yellow-600", deadline: "2025-12-30T23:59:59+05:30", slug: "painting" },
+  { id: 7, title: "VK Harmonies (Original Composition)", description: "Compose and perform original songs inspired by Vasudhaiva Kutumbakam values.", icon: "🎵", color: "from-red-500 to-red-600", deadline: "2025-12-30T23:59:59+05:30", slug: "singing" },
+  { id: 8, title: "VK Verses (Poetry)", description: "Write original poetry expressing Vasudhaiva Kutumbakam values and global unity.", icon: "✨", color: "from-indigo-500 to-indigo-600", deadline: "2025-12-30T23:59:59+05:30", slug: "poetry" },
   // { id: 3, title: "Political Toons", description: "Create a political satire cartoon using AI tools.", icon: "🖼️", color: "from-purple-500 to-purple-600", deadline: "November 20, 2025" },
 ];
 
@@ -205,7 +209,55 @@ Express through visual art how traditional values and guarantees can provide inn
 
 **More Details:**
 Click on the banner in the dashboard page to know more about Vasudhaiva Kutumbakam and the Five Guarantees theme.`
-      : `Welcome to the ${competition.title} competition! ${competition.description}
+      : competition.id === 7
+        ? `Welcome to ${competition.title}! Compose and perform original songs inspired by Vasudhaiva Kutumbakam philosophy.
+
+**📢 Week 1 Challenge – VK Competition**
+
+Global governance, diplomacy, culture, and law face huge challenges today. Powerful nations often influence global decisions, while the wisdom of ancient civilizations offers timeless solutions. Your task: Use music and creativity to explore solutions for modern global and legal issues through original compositions aligned with VK themes.
+
+**🌏 Geopolitics & Global Governance**
+
+1. Reforming the UN for fair global participation
+2. Uniting the Global South to raise its collective voice
+3. Lessons from ancient diplomacy for modern international relations
+4. Promoting global peace through Vasudhaiva Kutumbakam philosophy
+5. Decolonizing the consciousness of the Global South
+
+**⚖️ Legal & Constitutional Focus**
+
+1. Reclaiming Bharat's Civilizational Ethos: The Constitutional Amendment Imperative
+2. Secularism in Ancient India: Beyond the Western Paradigm
+3. Rights vs Duties: What Should Take Precedence in Nation-Building?
+
+Choose any one topic and express your ideas through ${competition.title}. Be creative, ethical, and inspiring!
+
+**Objective:** Create original musical compositions that combine the importance of ancient wisdom aligned to VK themes with contemporary concerns to inspire global unity and shared responsibility. For resources, visit **vk.jyot.in**`
+        : competition.id === 8
+          ? `Welcome to ${competition.title}! Write original poetry inspired by Vasudhaiva Kutumbakam values and global unity.
+
+**📢 Week 1 Challenge – VK Competition**
+
+Global governance, diplomacy, culture, and law face huge challenges today. Powerful nations often influence global decisions, while the wisdom of ancient civilizations offers timeless solutions. Your task: Use the power of words and verse to explore solutions for modern global and legal issues through poetry grounded in VK philosophy.
+
+**🌏 Geopolitics & Global Governance**
+
+1. Reforming the UN for fair global participation
+2. Uniting the Global South to raise its collective voice
+3. Lessons from ancient diplomacy for modern international relations
+4. Promoting global peace through Vasudhaiva Kutumbakam philosophy
+5. Decolonizing the consciousness of the Global South
+
+**⚖️ Legal & Constitutional Focus**
+
+1. Reclaiming Bharat's Civilizational Ethos: The Constitutional Amendment Imperative
+2. Secularism in Ancient India: Beyond the Western Paradigm
+3. Rights vs Duties: What Should Take Precedence in Nation-Building?
+
+Choose any one topic and express your ideas through ${competition.title}. Be creative, ethical, and inspiring!
+
+**Objective:** Create original poetry that weaves together ancient philosophy, civilizational wisdom, and contemporary concerns to illuminate paths toward global harmony and ethical leadership. For guidelines, visit **vk.jyot.in**`
+          : `Welcome to the ${competition.title} competition! ${competition.description}
           
       **📢 Week 1 Challenge – VK Competition**
 
@@ -449,6 +501,98 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
       • ChatGPT - Advanced language model for creative writing
       • Gemini - Google's AI for content generation and brainstorming`
     });
+  } else if (competition.id === 7) { // VK Harmonies (Singing)
+    baseSections.push({
+      id: "song-guidelines",
+      title: "Song Composition Guidelines",
+      content: `Compose an entirely original song based on the importance of ancient wisdom aligned to VK themes.
+
+**Technical Specifications:**
+• Duration: 2-4 minutes
+• Format: MP3, WAV, or M4A audio file
+• Language: English, Hindi, or any Indian language
+• Audio Quality: Record in a quiet environment with clear sound
+• Instrumentation: Simple instrumentation or acapella—clarity is more important than effects`
+    });
+    baseSections.push({
+      id: "dos-donts",
+      title: "Do's & Don'ts",
+      content: `**✓ Do:**
+• Compose an entirely original song based on importance of ancient wisdom aligned to VK themes
+• Ensure the lyrics are clear, clean, and meaningful
+• Maintain good audio quality—record in a quiet environment
+• Keep the duration within the specified time limit (2-4 minutes)
+• Mention the composer and lyricist clearly (the participant can be both)
+• Use simple instrumentation or acapella if needed—clarity is more important than effects
+
+**✗ Don't:**
+• Do not use copyrighted tunes, background tracks, or melodies
+• Do not submit songs with abusive, political, communal, or controversial content
+• Do not over-edit or auto-tune excessively
+• Do not perform cover songs or adapt existing movie/music tunes`
+    });
+    baseSections.push({
+      id: "recommended-tools",
+      title: "Recommended Tools",
+      content: `Explore these tools to enhance your composition:
+
+**Music Production:**
+• GarageBand - Simple music creation and recording
+• Audacity - Free audio recording and editing
+• FL Studio - Professional music production
+• Ableton Live - Advanced music composition
+
+**Lyric Writing & AI Assistance:**
+• ChatGPT - Lyric ideation and refinement
+• Gemini - Creative brainstorming`
+    });
+    baseSections.push({
+      id: "prizes",
+      title: "Prizes",
+      content: `Total Prize Pool: **₹50,000**
+• 1st: **₹25,000**
+• 2nd: **₹15,000**
+• 3rd: **₹10,000**`
+    });
+  } else if (competition.id === 8) { // VK Verses (Poetry)
+    baseSections.push({
+      id: "poetry-guidelines",
+      title: "Poetry Writing Guidelines",
+      content: `Write an original poem inspired by VK values.
+
+**Technical Specifications:**
+• Word Count: 300-1000 words (for complete poem or collection)
+• Format: PDF or DOCX
+• Language: English, Hindi, Sanskrit, or any Indian language
+• Poetry Forms: Free verse, rhyme, haiku, sonnet, couplets, or any traditional/modern form
+• Submission Format: Typed or clearly handwritten
+• Clarity: Ensure clarity in presentation and readability`
+    });
+    baseSections.push({
+      id: "dos-donts",
+      title: "Do's & Don'ts",
+      content: `**✓ Do:**
+• Write an original poem inspired by VK values
+• Ensure the poem is meaningful, coherent, and emotionally resonant
+• Use any style—free verse, rhyme, haiku, etc.
+• Keep language polite, respectful, and appropriate for all ages
+• Maintain clarity in typed submission
+• Stay within the word limit (300-1000 words)
+
+**✗ Don't:**
+• Do not copy poems from books
+• Do not use offensive, political, abusive, or discriminatory language
+• Do not include religious bias, personal attacks, or sensitive references
+• Do not exceed the allowed length or submit unreadable presentation`
+    });
+    baseSections.push({
+      id: "prizes",
+      title: "Prizes",
+      content: `Total Prize Pool: **₹35,200**
+• 1st: **₹16,000**
+• 2nd: **₹11,000**
+• 3rd: **₹8,200**`
+    });
   }
 
   // Submission Guidelines
@@ -500,7 +644,56 @@ There are no limits on style or format: it can be funny, emotional, futuristic, 
     • Relevance to the theme(35%)
     • Clarity of Message (20%)
     • Aritistic / Technical Quality(15%)`
-      : `Follow these guidelines for a successful submission:
+      : competition.id === 7
+        ? `Follow these guidelines for a successful submission:
+    
+    **Submission Process:**
+    • Use the submission panel on this page
+    • Provide your name and email address
+    • Upload your audio file directly (MP3, WAV, or M4A)
+    • Include a brief description of your song concept
+    • Submit before the deadline: ${formattedDeadline}
+    
+    **Required Information:**
+    • Song title and duration
+    • Lyrics (in text format, attached as .txt or .pdf)
+    • Which topic you've chosen
+    • Composer and lyricist name(s)
+    • Brief explanation of your creative process
+    • Inspiration or reference sources
+    • List of music production tools used
+    
+    **Evaluation Criteria:**
+    • Creativity and Originality (30%)
+    • Relevance to the theme (35%)
+    • Lyrical Quality and Message (20%)
+    • Audio Quality and Production (15%)`
+        : competition.id === 8
+          ? `Follow these guidelines for a successful submission:
+    
+    **Submission Process:**
+    • Use the submission panel on this page
+    • Provide your name and email address
+    • Upload your poetry file directly (PDF or DOCX format)
+    • Include a brief introduction to your work
+    • Submit before the deadline: ${formattedDeadline}
+    
+    **Required Information:**
+    • Title(s) of your poem(s)
+    • Which topic you've chosen
+    • Poetry form(s) used
+    • Language(s) of composition
+    • Word count
+    • Brief explanation of your creative process and inspiration
+    • List of any AI tools used (if applicable)
+    • Literary influences or reference sources (if any)
+    
+    **Evaluation Criteria:**
+    • Creativity and Originality (30%)
+    • Relevance to the theme (35%)
+    • Poetic Quality and Language (20%)
+    • Emotional Impact and Depth (15%)`
+          : `Follow these guidelines for a successful submission:
     
     **Submission Process:**
     • Use the submission panel on this page to upload your file directly (no Drive link needed)
